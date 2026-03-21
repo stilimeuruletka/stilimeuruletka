@@ -69,7 +69,8 @@
   width: min(140px, 34vw);
   height: auto;
   display: block;
-  margin-top: 8px;
+  margin-top: 4px;
+  margin-left: 6px;
 }
 
 .titleImage {
@@ -175,7 +176,7 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
-  transform: translateX(4px) scale(0.97);
+  transform: scale(0.97);
   transform-origin: center top;
 }
 
