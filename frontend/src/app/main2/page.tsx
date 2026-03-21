@@ -11,14 +11,16 @@ export default function Main2Page() {
       <main className={styles.container}>
         <SwipeNavigation prevPath="/main" />
         <div className={styles.top}>
-          <Image
-            src="/основавверх-trim.png"
-            alt="Верхняя часть"
-            width={90}
-            height={12}
-            className={styles.topImage}
-            priority
-          />
+          <a href="https://t.me/stilimeu" target="_blank" rel="noreferrer">
+            <Image
+              src="/основавверх-trim.png"
+              alt="Верхняя часть"
+              width={90}
+              height={12}
+              className={styles.topImage}
+              priority
+            />
+          </a>
           <Image
             src="/основавверхниже-trim.png"
             alt="Заголовок"
