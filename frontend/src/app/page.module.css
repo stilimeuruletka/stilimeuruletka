@@ -84,7 +84,7 @@
   width: min(230px, 60vw);
   height: auto;
   display: block;
-  margin: 26px auto 0;
+  margin: 24px auto 0;
 }
 
 .carousel {
@@ -101,7 +101,7 @@
 }
 
 .scrollDots {
-  margin: 16px auto 0;
+  margin: 14px auto 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -197,6 +197,12 @@
 
   .container {
     max-width: 350px;
+  }
+
+  @media (min-width: 400px) and (max-width: 450px) {
+    .topImage {
+      margin-top: 8px;
+    }
   }
 
   .grid {
