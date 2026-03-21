@@ -5,7 +5,7 @@ export default function ProfilePage() {
   return (
     <div className={styles.profileScreen}>
       <Image
-        src="/пробникпрофиль2.png"
+        src="/профильбаза.png"
         alt="Профиль"
         width={720}
         height={1280}

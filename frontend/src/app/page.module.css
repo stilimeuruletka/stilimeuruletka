@@ -76,14 +76,14 @@
   width: 100%;
   height: auto;
   display: block;
-  margin-top: 18px;
+  margin-top: 26px;
 }
 
 .bottomImage {
   width: min(230px, 60vw);
   height: auto;
   display: block;
-  margin: 20px auto 0;
+  margin: 26px auto 0;
 }
 
 .carousel {
@@ -100,7 +100,7 @@
 }
 
 .scrollDots {
-  margin: 10px auto 0;
+  margin: 16px auto 0;
   display: flex;
   justify-content: center;
   align-items: center;
