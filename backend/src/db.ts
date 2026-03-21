@@ -1,0 +1,79 @@
+import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+const HandleStartResultSchema = z.object({
+  is_new_user: z.boolean(),
+  referral_processed: z.boolean(),
+  inviter_user_id: z.number().int().positive().nullable()
+});
+
+const TicketBalanceSchema = z.object({
+  balance: z.number().int().min(0)
+});
+
+const SpinResultSchema = z.object({
+  spin_id: z.string().uuid(),
+  prize_id: z.string().uuid().nullable(),
+  prize_title: z.string().nullable(),
+  prize_value: z.number().nullable(),
+  win: z.boolean(),
+  balance_after: z.number().int().min(0)
+});
+
+export type SpinResult = z.infer<typeof SpinResultSchema>;
+
+async function rpc<T>(supabase: SupabaseClient, fn: string, args: Record<string, unknown>) {
+  const { data, error } = await supabase.rpc(fn, args);
+  if (error) throw new Error(`${fn}: ${error.message}`);
+  return data as T;
+}
+
+export async function handleStart(
+  supabase: SupabaseClient,
+  input: { tg_user_id: number; username?: string; ref_code?: string | null }
+) {
+  const data = await rpc<unknown>(supabase, "handle_start", {
+    p_tg_user_id: input.tg_user_id,
+    p_username: input.username ?? null,
+    p_ref_code: input.ref_code ?? null
+  });
+  return HandleStartResultSchema.parse(data);
+}
+
+export async function getTicketBalance(supabase: SupabaseClient, tgUserId: number) {
+  const data = await rpc<unknown>(supabase, "get_ticket_balance", { p_tg_user_id: tgUserId });
+  return TicketBalanceSchema.parse(data);
+}
+
+export async function grantSubscriptionTicket(supabase: SupabaseClient, tgUserId: number, channelId: string) {
+  const data = await rpc<unknown>(supabase, "grant_subscription_ticket", { p_tg_user_id: tgUserId, p_channel_id: channelId });
+  return TicketBalanceSchema.parse(data);
+}
+
+export async function spinWheel(supabase: SupabaseClient, tgUserId: number) {
+  const data = await rpc<unknown>(supabase, "spin_wheel", { p_tg_user_id: tgUserId });
+  return SpinResultSchema.parse(data);
+}
+
+export async function writeAuditEvent(
+  supabase: SupabaseClient,
+  event: { tg_user_id: number; event_type: string; payload?: Record<string, unknown> }
+) {
+  const { error } = await supabase.from("audit_events").insert({
+    tg_user_id: event.tg_user_id,
+    event_type: event.event_type,
+    payload: event.payload ?? {}
+  });
+  if (error) throw new Error(`audit_events: ${error.message}`);
+}
+
+export async function getReferralCode(supabase: SupabaseClient, tgUserId: number) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("referral_code")
+    .eq("tg_user_id", tgUserId)
+    .maybeSingle();
+  if (error) throw new Error(`users: ${error.message}`);
+  if (!data?.referral_code) throw new Error("Referral code not found");
+  return data.referral_code as string;
+}

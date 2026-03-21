@@ -1,0 +1,13 @@
+{
+  "name": "telegram-lottery-system",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "lint": "npm -w backend run lint && npm -w frontend run lint",
+    "typecheck": "npm -w backend run typecheck && npm -w frontend run typecheck",
+    "test": "npm -w backend run test && npm -w frontend run test"
+  }
+}

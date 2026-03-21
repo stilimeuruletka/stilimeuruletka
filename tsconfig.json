@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["backend/src/**/*.ts", "frontend/src/**/*.ts", "frontend/src/**/*.tsx"],
+  "exclude": ["node_modules", "**/node_modules/**", "backend/dist/**", "frontend/.next/**", "frontend/coverage/**"]
+}
+
