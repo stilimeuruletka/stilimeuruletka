@@ -178,7 +178,7 @@ export default function MainPage() {
               </Link>
             </div>
 
-            <Image src="/низ-final.png" alt="Низ" width={1186} height={591} className={styles.bottomImage} priority />
+            <Image src="/низ.png" alt="Низ" width={1186} height={591} className={styles.bottomImage} priority />
           </section>
 
         </div>
