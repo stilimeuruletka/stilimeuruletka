@@ -134,7 +134,7 @@ export default function Main2Page() {
           </svg>
         </div>
 
-        <Image src="/низ.png" alt="Низ" width={1186} height={591} className={styles.bottomImage} priority />
+        <Image src="/низ-trim.png" alt="Низ" width={1186} height={591} className={styles.bottomImage} priority />
       </main>
     </div>
   );

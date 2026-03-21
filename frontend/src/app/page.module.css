@@ -46,7 +46,7 @@
   background: #ffffff;
   font-family: var(--font-uncage);
   color: #0f172a;
-  padding: 224px 14px 24px;
+  padding: 260px 14px 24px;
 }
 
 .container {
@@ -105,6 +105,11 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
+}
+
+.scrollDots a {
+  display: flex;
+  align-items: center;
 }
 
 .profileImage {
