@@ -51,30 +51,30 @@ export default function Main2Page() {
             <div className={styles.girlWrap}>
               <Image src="/8девушка.PNG" alt="Девушка 2" width={600} height={1100} className={styles.girl} priority />
             </div>
-            <button type="button" className={styles.imageButton}>
+            <Link href="/main/roulette" className={styles.imageButton} role="button">
               <Image
                 src="/сомнгкнопка-trim.png"
-                alt="Кнопка профиля"
+                alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={styles.btnImg}
               />
-            </button>
+            </Link>
           </div>
 
           <div className={styles.card}>
             <div className={styles.girlWrap}>
               <Image src="/9девушка.PNG" alt="Девушка 3" width={600} height={1100} className={styles.girl} priority />
             </div>
-            <button type="button" className={styles.imageButton}>
+            <Link href="/main/roulette" className={styles.imageButton} role="button">
               <Image
                 src="/сомнгкнопка-trim.png"
-                alt="Кнопка профиля"
+                alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={styles.btnImg}
               />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -83,45 +83,45 @@ export default function Main2Page() {
             <div className={styles.girlWrap}>
               <Image src="/10девушка.PNG" alt="Девушка 4" width={1340} height={2400} className={styles.girl} priority />
             </div>
-            <button type="button" className={styles.imageButton}>
+            <Link href="/main/roulette" className={styles.imageButton} role="button">
               <Image
                 src="/сомнгкнопка-trim.png"
-                alt="Кнопка профиля"
+                alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={styles.btnImg}
               />
-            </button>
+            </Link>
           </div>
 
           <div className={styles.card}>
             <div className={styles.girlWrap}>
               <Image src="/11девушка.PNG" alt="Девушка 5" width={1340} height={2400} className={styles.girl} priority />
             </div>
-            <button type="button" className={styles.imageButton}>
+            <Link href="/main/roulette" className={styles.imageButton} role="button">
               <Image
                 src="/сомнгкнопка-trim.png"
-                alt="Кнопка профиля"
+                alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={styles.btnImg}
               />
-            </button>
+            </Link>
           </div>
 
           <div className={styles.card}>
             <div className={styles.girlWrap}>
               <Image src="/12девушка.PNG" alt="Девушка 6" width={1340} height={2400} className={styles.girl} priority />
             </div>
-            <button type="button" className={styles.imageButton}>
+            <Link href="/main/roulette" className={styles.imageButton} role="button">
               <Image
                 src="/сомнгкнопка-trim.png"
-                alt="Кнопка профиля"
+                alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={styles.btnImg}
               />
-            </button>
+            </Link>
           </div>
         </div>
 

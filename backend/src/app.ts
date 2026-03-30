@@ -128,14 +128,17 @@ export function buildApp(
 
     const handleStartCommand = async (chatId: number, userId: number, username?: string, payload?: string) => {
       const refCode = payload?.startsWith("ref_") ? payload.slice(4) : null;
-      const result = await db.handleStart({
+      const result = await db
+        .handleStart({
         tg_user_id: userId,
         ...(username ? { username } : {}),
         ref_code: refCode
-      }).catch((e) => {
-        req.log.error({ err: e }, "handle_start_failed");
-        throw e;
-      });
+        })
+        .catch((e) => {
+          req.log.error({ err: e }, "handle_start_failed");
+          throw e;
+        });
+
       await db
         .writeAuditEvent({
         tg_user_id: userId,
@@ -145,24 +148,12 @@ export function buildApp(
         .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
 
       const lines: string[] = [];
-      if (result.is_new_user) {
-        lines.push("Добро пожаловать в лотерею!");
-      } else {
-        lines.push("С возвращением!");
-      }
-      if (refCode && result.referral_processed) {
-        lines.push("Реферальная ссылка принята. Пригласивший пользователь получил 1 билет.");
-      }
-      lines.push("");
-      lines.push("Доступные действия:");
+      lines.push("Приглашайте друзей и получайте дополнительные билеты для прокрутов в игре.");
 
       await telegram.sendMessage(chatId, lines.join("\n"), {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "Проверить подписку и получить билет", callback_data: "check_sub" }],
-            [{ text: "Крутить колесо (1 билет)", callback_data: "spin" }],
-            [{ text: "Мой баланс билетов", callback_data: "balance" }],
-            [{ text: "Открыть приложение", web_app: { url: env.PUBLIC_WEBAPP_URL } }]
+            [{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: env.PUBLIC_WEBAPP_URL } }]
           ]
         }
       });
