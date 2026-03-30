@@ -45,7 +45,7 @@ export default function MainPage() {
                     priority
                   />
                 </div>
-                <button type="button" className={styles.imageButton}>
+                <Link href="/main/roulette" className={styles.imageButton} role="button">
                   <Image
                     src="/стильнаярулетка-trim.png"
                     alt="Стильная рулетка"
@@ -53,7 +53,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                   />
-                </button>
+                </Link>
               </div>
 
               <div className={styles.card}>
@@ -89,7 +89,7 @@ export default function MainPage() {
                     priority
                   />
                 </div>
-                <button type="button" className={styles.imageButton}>
+                <Link href="/main/how-to-play" className={styles.imageButton} role="button">
                   <Image
                     src="/какиграть-trim.png"
                     alt="Как играть"
@@ -97,7 +97,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                   />
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -113,7 +113,7 @@ export default function MainPage() {
                     priority
                   />
                 </div>
-                <button type="button" className={styles.imageButton}>
+                <Link href="/main/invite" className={styles.imageButton} role="button">
                   <Image
                     src="/пригласитьдр-trim.png"
                     alt="Пригласить друзей"
@@ -121,7 +121,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                   />
-                </button>
+                </Link>
               </div>
 
               <div className={styles.card}>
@@ -135,7 +135,7 @@ export default function MainPage() {
                     priority
                   />
                 </div>
-                <button type="button" className={styles.imageButton}>
+                <Link href="/main/prizes" className={styles.imageButton} role="button">
                   <Image
                     src="/списокпризов-trim.png"
                     alt="Список призов"
@@ -143,7 +143,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                   />
-                </button>
+                </Link>
               </div>
 
               <div className={styles.card}>
@@ -157,7 +157,7 @@ export default function MainPage() {
                     priority
                   />
                 </div>
-                <button type="button" className={styles.imageButton}>
+                <Link href="/main/support" className={styles.imageButton} role="button">
                   <Image
                     src="/поддержка-trim.png"
                     alt="Поддержка"
@@ -165,7 +165,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                   />
-                </button>
+                </Link>
               </div>
             </div>
 
