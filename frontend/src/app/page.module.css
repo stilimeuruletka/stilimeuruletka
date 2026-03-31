@@ -192,11 +192,12 @@
 
 .profileHeaderTextLeft {
   font-family: var(--font-uncage);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: right;
-  color: #ff0000;
+  color: #b31313;
+  font-weight: 700;
 }
 
 .profileHeaderSideRight {
@@ -207,11 +208,12 @@
 
 .profileHeaderTextRight {
   font-family: var(--font-uncage);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: left;
-  color: #ff0000;
+  color: #b31313;
+  font-weight: 700;
 }
 
 .profileAvatarBlock {
@@ -272,14 +274,14 @@
   width: 100%;
   height: auto;
   display: block;
-  margin-top: -6px;
-  margin-bottom: -6px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .profileSubtext {
   margin: 4px 0 0;
   font-family: var(--font-uncage);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: center;
@@ -293,6 +295,8 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 4px;
+  align-self: flex-start;
+  margin-left: 8px;
 }
 
 .profileLinkRow {
@@ -316,7 +320,7 @@
 }
 
 .profileIcon {
-  width: 24px;
+  width: 40px;
   height: auto;
 }
 

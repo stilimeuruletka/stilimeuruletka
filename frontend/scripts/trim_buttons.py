@@ -21,7 +21,7 @@ def trim_image(path: Path) -> Path:
 
 def main() -> None:
   root = Path(__file__).resolve().parents[1] / "public"
-  files = ["другоекнопка.png", "сомнгкнопка.png"]
+  files = ["другоекнопка.png", "сомнгкнопка.png", "пригласить.PNG"]
   for name in files:
     src = root / name
     if not src.exists():
@@ -32,4 +32,3 @@ def main() -> None:
 
 if __name__ == "__main__":
   main()
-

@@ -80,7 +80,7 @@ export default function ProfilePage() {
 
         <button type="button" className={styles.profileInviteButton}>
           <Image
-            src="/пригласить.PNG"
+            src="/пригласить-trim.png"
             alt="Пригласить"
             width={720}
             height={160}
