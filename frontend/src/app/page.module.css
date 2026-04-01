@@ -125,9 +125,10 @@
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  background: #fff;
+  background: linear-gradient(180deg, #f1f1f1 0%, #e8eae9 33%, #f3f5f4 66%, #e9ebea 100%);
   overflow: hidden;
 }
 
@@ -142,6 +143,29 @@
 
 .profileContainer {
   padding: 0;
+}
+
+.profileBottomImage {
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  display: block;
+}
+
+.profileStack {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+}
+
+.profileOverlayImage {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
 }
 
 .profileCard {
