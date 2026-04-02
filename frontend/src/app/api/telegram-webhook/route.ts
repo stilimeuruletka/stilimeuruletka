@@ -25,24 +25,13 @@ type TelegramUpdate = {
   message?: TelegramMessage;
 };
 
-async function sendStartMessage(chatId: number) {
+async function sendTelegramRequest(method: string, body: unknown) {
   if (!TELEGRAM_BOT_TOKEN) {
     console.error("TELEGRAM_BOT_TOKEN is not set");
     return;
   }
 
-  const text =
-    "Приглашайте друзей и получайте дополнительные билеты для прокрутов в игре.";
-
-  const body = {
-    chat_id: chatId,
-    text,
-    reply_markup: {
-      inline_keyboard: [[{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: PUBLIC_WEBAPP_URL } }]]
-    }
-  };
-
-  const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+  const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`, {
     method: "POST",
     headers: {
       "content-type": "application/json"
@@ -52,8 +41,40 @@ async function sendStartMessage(chatId: number) {
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
-    console.error("Failed to send Telegram start message", res.status, errorText);
+    console.error(`Failed to send Telegram ${method}`, res.status, errorText);
   }
+}
+
+async function sendStartMessage(chatId: number) {
+  const text = `Добро пожаловать в Стильную Рулетку ! Место, где стиль встречается с удачей и становится частью вашей истории. 
+
+— Что это такое? 
+Пространство, где объединяются самые модные и красивые: читатели, бренды, инфлюенсеры. Каждый день — новая возможность заполучить ценные призы. 
+
+Стильная Рулетка  — цифровой  формат розыгрышей с ежедневной механикой: вы вращаете колесо и получаете один из возможных исходов — от подарков до специальных предложений от брендов и создателя приложения @stilimeu 
+
+— Что нужно делать? 
+Крутите виртуальное колесо удачи ежедневно, черпайте вдохновение и радуйтесь выигрышу. И, конечно, не забывайте приглашать друзей! Каждый присоединившийся по вашей ссылке друг — дополнительный шанс на победу. 
+
+— Как начать? 
+Проще простого! Нажмите /start и испытайте фортуну прямо сейчас! 
+
+И помните: удача — это тоже стиль!`;
+
+  const photoUrl = `${PUBLIC_WEBAPP_URL}/${encodeURIComponent("Frame 164.png")}`;
+
+  await sendTelegramRequest("sendPhoto", {
+    chat_id: chatId,
+    photo: photoUrl
+  });
+
+  await sendTelegramRequest("sendMessage", {
+    chat_id: chatId,
+    text,
+    reply_markup: {
+      inline_keyboard: [[{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: PUBLIC_WEBAPP_URL } }]]
+    }
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -81,4 +102,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
-

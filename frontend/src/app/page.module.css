@@ -470,6 +470,64 @@
   object-fit: contain;
 }
 
+.placeholderPage {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  overflow: hidden;
+}
+
+.placeholderFrame {
+  width: min(520px, calc(100vh * 9 / 16));
+  height: 100vh;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+}
+
+.placeholderImage {
+  object-fit: cover;
+}
+
+.placeholderBackLink {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  display: inline-flex;
+}
+
+.placeholderBackIcon {
+  width: 52px;
+  height: auto;
+  display: block;
+}
+
+.howToPlayLeftImage {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(180px, 50vw);
+  height: auto;
+  display: block;
+  z-index: 2;
+}
+
+.howToPlayRightImage {
+  position: absolute;
+  left: 160px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(60px, 18vw);
+  height: auto;
+  display: block;
+  z-index: 1;
+}
+
 .profileQuickButtonImg {
   width: min(180px, 44vw);
   height: 44px;
