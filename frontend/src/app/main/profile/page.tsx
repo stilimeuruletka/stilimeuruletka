@@ -101,6 +101,17 @@ export default function ProfilePage() {
         <div className={styles.profileUsername}>{displayName}</div>
       </div>
 
+      <Link href="/main" className={styles.profileArrowLeft} aria-label="Назад в меню">
+        <Image
+          src="/стрелканазад.PNG"
+          alt="Назад"
+          width={52}
+          height={26}
+          className={styles.profileArrow}
+          priority
+        />
+      </Link>
+
       <div className={styles.profileActionsOverlay}>
         <div className={styles.profileQuickButtons}>
           <div className={styles.profileQuickButtonsCenter}>
@@ -120,7 +131,7 @@ export default function ProfilePage() {
                 alt="Пригласить стильных друзей"
                 width={3882}
                 height={608}
-                className={styles.profileQuickButtonImg}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
               />
             </Link>
             <Image
@@ -128,17 +139,17 @@ export default function ProfilePage() {
               alt="Реклама и сотрудничество"
               width={3882}
               height={608}
-              className={styles.profileQuickButtonImg}
+              className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
             />
           </div>
 
-          <div className={`${styles.profileQuickButtonsRow} ${styles.profileQuickButtonsRowShiftRight}`}>
+          <div className={styles.profileQuickButtonsRow}>
             <Image
               src="/telegram-cloud-document-2-5364327192501197090 1.png"
               alt="Канал сообщества"
               width={3882}
               height={608}
-              className={styles.profileQuickButtonImg}
+              className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
             />
             <Link href="/main/about" className={styles.profileQuickButtonLink}>
               <Image
@@ -146,7 +157,7 @@ export default function ProfilePage() {
                 alt="О бренде"
                 width={3882}
                 height={608}
-                className={styles.profileQuickButtonImg}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
               />
             </Link>
           </div>
@@ -154,7 +165,7 @@ export default function ProfilePage() {
 
         <div className={styles.profileSpinTimer}>
           <Image
-            src="/IMG_1290.PNG"
+            src="/овальчик.png"
             alt="До следующего спина"
             width={720}
             height={320}
