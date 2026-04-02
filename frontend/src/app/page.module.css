@@ -415,6 +415,34 @@
   cursor: pointer;
 }
 
+.fullScreenPage {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #A80F14;
+  overflow: hidden;
+}
+
+.fullScreenFrame {
+  width: 100%;
+  max-width: 520px;
+  height: 100vh;
+  position: relative;
+  background: #A80F14;
+}
+
+.fullScreenLink {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fullScreenImage {
+  object-fit: contain;
+}
+
 .profileQuickButtonImg {
   width: min(180px, 44vw);
   height: 44px;
@@ -422,6 +450,7 @@
   display: block;
   flex: 0 0 auto;
 }
+
 
 .profileBtnImg {
   width: 260px;

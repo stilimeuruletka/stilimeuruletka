@@ -140,13 +140,15 @@ export default function ProfilePage() {
               height={608}
               className={styles.profileQuickButtonImg}
             />
-            <Image
-              src="/telegram-cloud-document-2-5364327192501197096 1.png"
-              alt="О бренде"
-              width={3882}
-              height={608}
-              className={styles.profileQuickButtonImg}
-            />
+            <Link href="/main/about" className={styles.profileQuickButtonLink}>
+              <Image
+                src="/telegram-cloud-document-2-5364327192501197096 1.png"
+                alt="О бренде"
+                width={3882}
+                height={608}
+                className={styles.profileQuickButtonImg}
+              />
+            </Link>
           </div>
         </div>
 
