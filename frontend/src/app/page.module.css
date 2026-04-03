@@ -509,7 +509,7 @@
 }
 
 .placeholderBackIcon {
-  width: 52px;
+  width: 200px;
   height: auto;
   display: block;
 }
@@ -552,15 +552,6 @@
   display: block;
 }
 
-.placeholderCheck {
-  position: absolute;
-  top: 200px;
-  right: 16px;
-  z-index: 2;
-  width: 26px;
-  height: 26px;
-  display: block;
-}
 
 .howToPlayOverlay {
   position: absolute;
