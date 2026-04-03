@@ -5,10 +5,41 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../page.module.css";
 
+type TelegramWebAppUser = {
+  id?: number;
+  username?: string;
+  photo_url?: string;
+};
+
+type TelegramWebApp = {
+  initDataUnsafe?: {
+    user?: TelegramWebAppUser;
+  };
+};
+
+type TelegramSdkWindow = Window & {
+  Telegram?: {
+    WebApp?: TelegramWebApp;
+  };
+};
+
 export default function HowToPlayPlaceholderPage() {
   const storageKey = "how_to_play_seen_v1";
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const overlayCardRef = useRef<HTMLDivElement | null>(null);
+  const [{ displayName, avatarSrc }] = useState(() => {
+    if (typeof window === "undefined") {
+      return { displayName: "@username", avatarSrc: null as string | null };
+    }
+
+    const w = window as TelegramSdkWindow;
+    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+
+    return {
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+      avatarSrc: tgUser?.photo_url ?? null
+    };
+  });
   const [seen, setSeen] = useState<[boolean, boolean, boolean]>(() => {
     if (typeof window === "undefined") {
       return [false, false, false];
@@ -87,6 +118,24 @@ export default function HowToPlayPlaceholderPage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
+        <div className={styles.howToPlayTopHeader} aria-hidden="true">
+          <Image
+            src="/главноеменюрулетка.png"
+            alt=""
+            width={4052}
+            height={1312}
+            className={styles.howToPlayTopHeaderImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={90}
+          />
+          <div className={styles.howToPlayTopHeaderUser}>
+            <div className={styles.howToPlayTopHeaderAvatar}>
+              {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
+            </div>
+            <div className={styles.howToPlayTopHeaderName}>{displayName}</div>
+          </div>
+        </div>
         <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
           <Image src="/стрелканадпись.png" alt="Назад" width={3340} height={1472} className={styles.placeholderBackIcon} priority />
         </Link>
