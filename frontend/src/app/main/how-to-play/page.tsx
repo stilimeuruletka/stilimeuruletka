@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../page.module.css";
 
 export default function HowToPlayPlaceholderPage() {
   const storageKey = "how_to_play_seen_v1";
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const overlayCardRef = useRef<HTMLDivElement | null>(null);
   const [seen, setSeen] = useState<[boolean, boolean, boolean]>(() => {
     if (typeof window === "undefined") {
       return [false, false, false];
@@ -43,7 +44,7 @@ export default function HowToPlayPlaceholderPage() {
     return null;
   }, [activeIndex]);
 
-  const closeOverlay = () => {
+  const closeOverlay = useCallback(() => {
     if (activeIndex == null) {
       return;
     }
@@ -57,7 +58,37 @@ export default function HowToPlayPlaceholderPage() {
       return next;
     });
     setActiveIndex(null);
-  };
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (activeIndex == null) {
+      return;
+    }
+
+    const handlePointerDown = (e: PointerEvent) => {
+      const card = overlayCardRef.current;
+      const target = e.target as Node | null;
+      if (card && target && card.contains(target)) {
+        return;
+      }
+
+      closeOverlay();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeOverlay();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeIndex, closeOverlay]);
 
   return (
     <div className={styles.placeholderPage}>
@@ -77,8 +108,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={14}
-              height={14}
+              width={18}
+              height={18}
               className={styles.howToPlayRuleIcon}
             />
           </button>
@@ -86,8 +117,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={14}
-              height={14}
+              width={18}
+              height={18}
               className={styles.howToPlayRuleIcon}
             />
           </button>
@@ -95,27 +126,18 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={14}
-              height={14}
+              width={18}
+              height={18}
               className={styles.howToPlayRuleIcon}
             />
           </button>
         </div>
 
         {overlaySrc && (
-          <div
-            className={styles.howToPlayOverlay}
-            onPointerDown={closeOverlay}
-            onTouchStart={closeOverlay}
-            onClick={closeOverlay}
-            role="dialog"
-            aria-modal="true"
-          >
+          <div className={styles.howToPlayOverlay} role="dialog" aria-modal="true">
             <div
               className={styles.howToPlayOverlayCard}
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
+              ref={overlayCardRef}
             >
               <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
             </div>

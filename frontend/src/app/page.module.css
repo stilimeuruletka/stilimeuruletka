@@ -191,7 +191,7 @@
 
 .profileArrow {
   position: absolute;
-  top: 110px;
+  top: 160px;
   width: 32px;
   height: auto;
   z-index: 2;
@@ -502,7 +502,7 @@
 
 .placeholderBackLink {
   position: absolute;
-  top: 110px;
+  top: 160px;
   left: 16px;
   z-index: 2;
   display: inline-flex;
@@ -525,9 +525,9 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 88px;
+  left: 72px;
   transform: none;
-  bottom: 70px;
+  bottom: 110px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -535,8 +535,8 @@
 }
 
 .howToPlayRuleButton {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -547,8 +547,8 @@
 }
 
 .howToPlayRuleIcon {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   display: block;
 }
 
@@ -561,6 +561,8 @@
   justify-content: center;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(10px);
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .howToPlayOverlayCard {
@@ -568,6 +570,7 @@
   width: min(92vw, 420px);
   height: min(86vh, 720px);
   z-index: 1;
+  cursor: default;
 }
 
 .howToPlayOverlayImage {
