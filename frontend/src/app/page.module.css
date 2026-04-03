@@ -521,9 +521,9 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 96px;
+  left: 56px;
+  transform: none;
+  bottom: 44px;
   display: flex;
   flex-direction: column;
   gap: 12px;
