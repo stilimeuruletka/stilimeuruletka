@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { RefObject } from "react";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
@@ -98,50 +99,88 @@ function SpinTimer() {
   );
 }
 
+function useAutoplayVideo(videoRef: RefObject<HTMLVideoElement | null>) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) {
+      return;
+    }
+
+    v.muted = true;
+    v.defaultMuted = true;
+    v.playsInline = true;
+
+    const markPlaying = () => setIsPlaying(!v.paused && !v.ended);
+    const markNotPlaying = () => setIsPlaying(false);
+
+    const tryPlay = () => {
+      v.play().then(markPlaying).catch(markNotPlaying);
+    };
+
+    const handleLoadedData = () => {
+      if (v.readyState >= 2) {
+        try {
+          if (v.currentTime === 0) {
+            v.currentTime = 0.001;
+          }
+        } catch {}
+      }
+
+      tryPlay();
+    };
+
+    v.addEventListener("playing", markPlaying);
+    v.addEventListener("pause", markNotPlaying);
+    v.addEventListener("ended", markNotPlaying);
+    v.addEventListener("loadeddata", handleLoadedData);
+    v.addEventListener("canplay", tryPlay);
+    v.addEventListener("canplaythrough", tryPlay);
+
+    const onVisibility = () => {
+      if (!document.hidden) {
+        tryPlay();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const timeoutId = window.setTimeout(() => {
+      v.load();
+      tryPlay();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", onVisibility);
+      v.removeEventListener("playing", markPlaying);
+      v.removeEventListener("pause", markNotPlaying);
+      v.removeEventListener("ended", markNotPlaying);
+      v.removeEventListener("loadeddata", handleLoadedData);
+      v.removeEventListener("canplay", tryPlay);
+      v.removeEventListener("canplaythrough", tryPlay);
+    };
+  }, [videoRef]);
+
+  const playFromUserGesture = () => {
+    const v = videoRef.current;
+    v?.play().catch(() => {});
+  };
+
+  return { isPlaying, playFromUserGesture };
+}
+
 export default function ProfilePage() {
   const { displayName, avatarSrc } = useTelegramProfile();
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [hasUserGesture, setHasUserGesture] = useState(false);
-  const hasUserGestureRef = useRef(false);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      v.play().catch(() => {});
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) {
-      return;
-    }
-
-    v.play().catch(() => {});
-  }, [hasUserGesture]);
-
-  const handleUserGesture = () => {
-    const v = videoRef.current;
-    v?.play().catch(() => {});
-
-    if (!hasUserGestureRef.current) {
-      hasUserGestureRef.current = true;
-      setHasUserGesture(true);
-    }
-  };
+  const { isPlaying, playFromUserGesture } = useAutoplayVideo(videoRef);
 
   return (
     <div
       className={styles.friendVideoScreen}
-      onPointerDown={handleUserGesture}
-      onTouchStart={handleUserGesture}
-      onClick={handleUserGesture}
+      onPointerDown={playFromUserGesture}
+      onTouchStart={playFromUserGesture}
+      onClick={playFromUserGesture}
     >
       <div className={styles.profileAvatarBlockOverlay}>
         <div
@@ -226,6 +265,10 @@ export default function ProfilePage() {
         playsInline
         preload="auto"
       />
+
+      {!isPlaying && (
+        <button type="button" className={styles.videoTapOverlay} onClick={playFromUserGesture} aria-label="Запустить анимацию" />
+      )}
     </div>
   );
 }

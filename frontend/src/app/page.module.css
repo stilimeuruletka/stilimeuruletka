@@ -751,6 +751,16 @@
   margin-top: 0;
 }
 
+.videoTapOverlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
 .friendVideoPlaceholder {
   width: 100%;
   max-width: 520px;
