@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -34,22 +34,6 @@ function formatRemaining(ms: number | null) {
   const seconds = String(totalSeconds % 60).padStart(2, "0");
 
   return `${hours}:${minutes}:${seconds}`;
-}
-
-function useTelegramProfile() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => {
-      const w = window as TelegramSdkWindow;
-      const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
-
-      return {
-        displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
-        avatarSrc: tgUser?.photo_url ?? null
-      };
-    },
-    () => ({ displayName: "@username", avatarSrc: null })
-  );
 }
 
 function SpinTimer() {
@@ -99,7 +83,19 @@ function SpinTimer() {
 }
 
 export default function ProfilePage() {
-  const { displayName, avatarSrc } = useTelegramProfile();
+  const [{ displayName, avatarSrc }] = useState(() => {
+    if (typeof window === "undefined") {
+      return { displayName: "@username", avatarSrc: null as string | null };
+    }
+
+    const w = window as TelegramSdkWindow;
+    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+
+    return {
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+      avatarSrc: tgUser?.photo_url ?? null
+    };
+  });
 
   return (
     <div className={styles.friendVideoScreen}>
