@@ -263,7 +263,8 @@ export default function ProfilePage() {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
+        controls={!isPlaying}
       />
 
       {!isPlaying && (
