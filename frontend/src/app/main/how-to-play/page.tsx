@@ -102,8 +102,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={18}
-              height={18}
+              width={24}
+              height={24}
               className={styles.howToPlayRuleIcon}
             />
           </button>
@@ -111,8 +111,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={18}
-              height={18}
+              width={24}
+              height={24}
               className={styles.howToPlayRuleIcon}
             />
           </button>
@@ -120,8 +120,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={18}
-              height={18}
+              width={24}
+              height={24}
               className={styles.howToPlayRuleIcon}
             />
           </button>
