@@ -751,6 +751,14 @@
   margin-top: 0;
 }
 
+.friendVideoPlaceholder {
+  width: 100%;
+  max-width: 520px;
+  height: 100vh;
+  max-height: 100vh;
+  background: #000;
+}
+
 .profileSubtext {
   margin: 4px 0 0;
   font-family: var(--font-uncage);

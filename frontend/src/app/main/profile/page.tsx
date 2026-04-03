@@ -98,8 +98,40 @@ function SpinTimer() {
   );
 }
 
+function useShouldLoadProfileVideo() {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const w = window;
+    const n = navigator as Navigator & {
+      connection?: {
+        saveData?: boolean;
+        effectiveType?: string;
+      };
+      deviceMemory?: number;
+      hardwareConcurrency?: number;
+    };
+
+    const saveData = Boolean(n.connection?.saveData);
+    const effectiveType = n.connection?.effectiveType ?? "";
+    const isSlow = effectiveType === "slow-2g" || effectiveType === "2g";
+    const isLowMemory = typeof n.deviceMemory === "number" && n.deviceMemory <= 2;
+    const isLowCpu = typeof n.hardwareConcurrency === "number" && n.hardwareConcurrency <= 4;
+
+    if (saveData || isSlow || isLowMemory || isLowCpu) {
+      return;
+    }
+
+    const timeoutId = w.setTimeout(() => setShouldLoad(true), 350);
+    return () => w.clearTimeout(timeoutId);
+  }, []);
+
+  return shouldLoad;
+}
+
 export default function ProfilePage() {
   const { displayName, avatarSrc } = useTelegramProfile();
+  const shouldLoadVideo = useShouldLoadProfileVideo();
 
   return (
     <div className={styles.friendVideoScreen}>
@@ -108,13 +140,8 @@ export default function ProfilePage() {
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
         >
           {avatarSrc && (
-            <Image
-              src={avatarSrc}
-              alt="Аватар"
-              width={88}
-              height={88}
-              className={styles.profileAvatarImage}
-            />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />
           )}
         </div>
         <div className={styles.profileUsername}>{displayName}</div>
@@ -184,15 +211,11 @@ export default function ProfilePage() {
         <SpinTimer />
       </div>
 
-      <video
-        className={styles.friendVideo}
-        src="/IMG_2304.MP4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      />
+      {shouldLoadVideo ? (
+        <video className={styles.friendVideo} src="/IMG_2304.MP4" autoPlay muted loop playsInline preload="metadata" />
+      ) : (
+        <div className={styles.friendVideoPlaceholder} />
+      )}
     </div>
   );
 }
