@@ -103,8 +103,20 @@ export default function HowToPlayPlaceholderPage() {
         </div>
 
         {overlaySrc && (
-          <div className={styles.howToPlayOverlay} onClick={closeOverlay} role="dialog" aria-modal="true">
-            <div className={styles.howToPlayOverlayCard} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.howToPlayOverlay}
+            onPointerDown={closeOverlay}
+            onTouchStart={closeOverlay}
+            onClick={closeOverlay}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className={styles.howToPlayOverlayCard}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
               <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
             </div>
           </div>
