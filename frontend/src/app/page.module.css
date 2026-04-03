@@ -582,12 +582,12 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 40px;
+  left: 64px;
   transform: none;
   bottom: 140px;
   display: flex;
   flex-direction: column;
-  gap: 0px;
+  gap: 8px;
   z-index: 10;
 }
 

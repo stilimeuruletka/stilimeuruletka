@@ -161,6 +161,8 @@ export default function HowToPlayPlaceholderPage() {
               width={24}
               height={24}
               className={styles.howToPlayRuleIcon}
+              sizes="24px"
+              quality={100}
             />
           </button>
           <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(1)} aria-label="Открыть описание 2">
@@ -170,6 +172,8 @@ export default function HowToPlayPlaceholderPage() {
               width={24}
               height={24}
               className={styles.howToPlayRuleIcon}
+              sizes="24px"
+              quality={100}
             />
           </button>
           <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(2)} aria-label="Открыть описание 3">
@@ -179,6 +183,8 @@ export default function HowToPlayPlaceholderPage() {
               width={24}
               height={24}
               className={styles.howToPlayRuleIcon}
+              sizes="24px"
+              quality={100}
             />
           </button>
         </div>

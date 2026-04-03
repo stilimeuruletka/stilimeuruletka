@@ -106,98 +106,100 @@ export default function ProfilePage() {
   });
 
   return (
-    <div className={styles.friendVideoScreen}>
-      <Image
-        src="/IMG_1294.PNG"
-        alt=""
-        fill
-        className={styles.profileStaticBackground}
-        priority
-        sizes="100vw"
-        quality={90}
-      />
-
-      <div className={styles.profileTopHeader} aria-hidden="true">
+    <div className={styles.placeholderPage}>
+      <div className={styles.placeholderFrame}>
         <Image
-          src="/главноеменюрулетка.png"
+          src="/IMG_1294.PNG"
           alt=""
-          width={4052}
-          height={1312}
-          className={styles.profileTopHeaderImage}
+          fill
+          className={styles.profileStaticBackground}
           priority
           sizes="(max-width: 520px) 100vw, 520px"
           quality={90}
         />
-        <div className={styles.profileTopHeaderUser}>
-          <div className={styles.profileTopHeaderAvatar}>
-            {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
-          </div>
-          <div className={styles.profileTopHeaderName}>{displayName}</div>
-        </div>
-      </div>
 
-      <Link href="/main" className={styles.profileArrowLeft} aria-label="Назад в меню">
-        <Image
-          src="/стрелканазад.PNG"
-          alt="Назад"
-          width={52}
-          height={26}
-          className={styles.profileArrow}
-        />
-      </Link>
-
-      <div className={styles.profileActionsOverlay}>
-        <div className={styles.profileQuickButtons}>
-          <div className={styles.profileQuickButtonsCenter}>
-            <Image
-              src="/telegram-cloud-document-2-5364327192501197087 1.png"
-              alt="История стильных спинов"
-              width={3882}
-              height={608}
-              className={styles.profileQuickButtonImg}
-            />
-          </div>
-
-          <div className={styles.profileQuickButtonsRow}>
-            <Link href="/main/friend" className={styles.profileQuickButtonLink}>
-              <Image
-                src="/telegram-cloud-document-2-5364327192501197088 1.png"
-                alt="Пригласить стильных друзей"
-                width={3882}
-                height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
-              />
-            </Link>
-            <Image
-              src="/telegram-cloud-document-2-5364327192501197089 1.png"
-              alt="Реклама и сотрудничество"
-              width={3882}
-              height={608}
-              className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
-            />
-          </div>
-
-          <div className={styles.profileQuickButtonsRow}>
-            <Image
-              src="/telegram-cloud-document-2-5364327192501197090 1.png"
-              alt="Канал сообщества"
-              width={3882}
-              height={608}
-              className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
-            />
-            <Link href="/main/about" className={styles.profileQuickButtonLink}>
-              <Image
-                src="/telegram-cloud-document-2-5364327192501197096 1.png"
-                alt="О бренде"
-                width={3882}
-                height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
-              />
-            </Link>
+        <div className={styles.profileTopHeader} aria-hidden="true">
+          <Image
+            src="/главноеменюрулетка.png"
+            alt=""
+            width={4052}
+            height={1312}
+            className={styles.profileTopHeaderImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={90}
+          />
+          <div className={styles.profileTopHeaderUser}>
+            <div className={styles.profileTopHeaderAvatar}>
+              {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
+            </div>
+            <div className={styles.profileTopHeaderName}>{displayName}</div>
           </div>
         </div>
 
-        <SpinTimer />
+        <Link href="/main" className={styles.profileArrowLeft} aria-label="Назад в меню">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Назад"
+            width={52}
+            height={26}
+            className={styles.profileArrow}
+          />
+        </Link>
+
+        <div className={styles.profileActionsOverlay}>
+          <div className={styles.profileQuickButtons}>
+            <div className={styles.profileQuickButtonsCenter}>
+              <Image
+                src="/telegram-cloud-document-2-5364327192501197087 1.png"
+                alt="История стильных спинов"
+                width={3882}
+                height={608}
+                className={styles.profileQuickButtonImg}
+              />
+            </div>
+
+            <div className={styles.profileQuickButtonsRow}>
+              <Link href="/main/friend" className={styles.profileQuickButtonLink}>
+                <Image
+                  src="/telegram-cloud-document-2-5364327192501197088 1.png"
+                  alt="Пригласить стильных друзей"
+                  width={3882}
+                  height={608}
+                  className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
+                />
+              </Link>
+              <Image
+                src="/telegram-cloud-document-2-5364327192501197089 1.png"
+                alt="Реклама и сотрудничество"
+                width={3882}
+                height={608}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+              />
+            </div>
+
+            <div className={styles.profileQuickButtonsRow}>
+              <Image
+                src="/telegram-cloud-document-2-5364327192501197090 1.png"
+                alt="Канал сообщества"
+                width={3882}
+                height={608}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+              />
+              <Link href="/main/about" className={styles.profileQuickButtonLink}>
+                <Image
+                  src="/telegram-cloud-document-2-5364327192501197096 1.png"
+                  alt="О бренде"
+                  width={3882}
+                  height={608}
+                  className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
+                />
+              </Link>
+            </div>
+          </div>
+
+          <SpinTimer />
+        </div>
       </div>
     </div>
   );
