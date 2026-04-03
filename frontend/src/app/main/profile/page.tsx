@@ -107,14 +107,33 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.friendVideoScreen}>
-      <div className={styles.profileAnimatedBackground} aria-hidden="true" />
-      <div className={styles.profileAvatarBlockOverlay}>
-        <div
-          className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
-        >
-          {avatarSrc && <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />}
+      <Image
+        src="/IMG_1294.PNG"
+        alt=""
+        fill
+        className={styles.profileStaticBackground}
+        priority
+        sizes="100vw"
+        quality={90}
+      />
+
+      <div className={styles.profileTopHeader} aria-hidden="true">
+        <Image
+          src="/главноеменюрулетка.png"
+          alt=""
+          width={4052}
+          height={1312}
+          className={styles.profileTopHeaderImage}
+          priority
+          sizes="(max-width: 520px) 100vw, 520px"
+          quality={90}
+        />
+        <div className={styles.profileTopHeaderUser}>
+          <div className={styles.profileTopHeaderAvatar}>
+            {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
+          </div>
+          <div className={styles.profileTopHeaderName}>{displayName}</div>
         </div>
-        <div className={styles.profileUsername}>{displayName}</div>
       </div>
 
       <Link href="/main" className={styles.profileArrowLeft} aria-label="Назад в меню">
