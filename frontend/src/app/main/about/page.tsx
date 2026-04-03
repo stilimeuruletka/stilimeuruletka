@@ -23,8 +23,23 @@ export default function AboutPage() {
       />
 
       <div className={styles.fullScreenFrame}>
-        <Image src={backgroundSrc} alt="О бренде" fill className={styles.fullScreenImage} priority />
-        <Image src={textSrc} alt="Текст" fill className={styles.fullScreenOverlayImage} priority />
+        <Image
+          src={backgroundSrc}
+          alt="О бренде"
+          fill
+          className={styles.fullScreenImage}
+          priority
+          sizes="(max-width: 520px) 100vw, 520px"
+          quality={70}
+        />
+        <Image
+          src={textSrc}
+          alt="Текст"
+          fill
+          className={styles.fullScreenOverlayImage}
+          sizes="(max-width: 520px) 100vw, 520px"
+          quality={70}
+        />
 
         <button
           type="button"
@@ -32,7 +47,7 @@ export default function AboutPage() {
           onClick={() => setIsAlt((v) => !v)}
           aria-label="Переключить"
         >
-          <Image src={buttonSrc} alt="" fill className={styles.fullScreenCenterButtonImage} priority />
+          <Image src={buttonSrc} alt="" fill className={styles.fullScreenCenterButtonImage} sizes="86px" quality={70} />
         </button>
       </div>
     </div>

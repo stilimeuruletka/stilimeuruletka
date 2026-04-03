@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -36,30 +36,28 @@ function formatRemaining(ms: number | null) {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-export default function ProfilePage() {
+function useTelegramProfile() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => {
+      const w = window as TelegramSdkWindow;
+      const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+
+      return {
+        displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+        avatarSrc: tgUser?.photo_url ?? null
+      };
+    },
+    () => ({ displayName: "@username", avatarSrc: null })
+  );
+}
+
+function SpinTimer() {
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
 
-  let displayName = "@username";
-  let avatarSrc: string | null = null;
-
-  if (typeof window !== "undefined") {
-    const w = window as TelegramSdkWindow;
-    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
-
-    if (tgUser?.username) {
-      displayName = `@${tgUser.username}`;
-    }
-
-    if (tgUser?.photo_url) {
-      avatarSrc = tgUser.photo_url;
-    }
-  }
+  const remainingText = useMemo(() => formatRemaining(remainingMs), [remainingMs]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     const storageKey = "spin_next_at";
     const stored = window.localStorage.getItem(storageKey);
     const now = Date.now();
@@ -75,12 +73,33 @@ export default function ProfilePage() {
       setRemainingMs(diff > 0 ? diff : 0);
     };
 
-    update();
-
+    const timeoutId = window.setTimeout(update, 0);
     const intervalId = window.setInterval(update, 1000);
-
-    return () => window.clearInterval(intervalId);
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.clearInterval(intervalId);
+    };
   }, []);
+
+  return (
+    <div className={styles.profileSpinTimer}>
+      <Image
+        src="/овальчик.png"
+        alt="До следующего спина"
+        width={720}
+        height={320}
+        className={styles.profileSpinTimerImage}
+      />
+      <div className={styles.profileSpinTimerText}>
+        <span>ДО СЛЕДУЮЩЕГО СПИНА</span>
+        <span className={styles.profileSpinTimerValue}>{remainingText}</span>
+      </div>
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  const { displayName, avatarSrc } = useTelegramProfile();
 
   return (
     <div className={styles.friendVideoScreen}>
@@ -108,7 +127,6 @@ export default function ProfilePage() {
           width={52}
           height={26}
           className={styles.profileArrow}
-          priority
         />
       </Link>
 
@@ -163,21 +181,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className={styles.profileSpinTimer}>
-          <Image
-            src="/овальчик.png"
-            alt="До следующего спина"
-            width={720}
-            height={320}
-            className={styles.profileSpinTimerImage}
-          />
-          <div className={styles.profileSpinTimerText}>
-            <span>ДО СЛЕДУЮЩЕГО СПИНА</span>
-            <span className={styles.profileSpinTimerValue}>
-              {formatRemaining(remainingMs)}
-            </span>
-          </div>
-        </div>
+        <SpinTimer />
       </div>
 
       <video
@@ -187,6 +191,7 @@ export default function ProfilePage() {
         muted
         loop
         playsInline
+        preload="metadata"
       />
     </div>
   );
