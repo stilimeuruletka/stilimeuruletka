@@ -101,30 +101,19 @@ function SpinTimer() {
 export default function ProfilePage() {
   const { displayName, avatarSrc } = useTelegramProfile();
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [hasUserGesture, setHasUserGesture] = useState(false);
 
   useEffect(() => {
-    let canceled = false;
-
-    const start = () => {
-      if (!canceled) {
-        setVideoSrc("/IMG_2304.MP4");
-      }
-    };
-
-    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
-
-    if (typeof w.requestIdleCallback === "function") {
-      w.requestIdleCallback(start, {
-        timeout: 1200
-      });
-    } else {
-      window.setTimeout(start, 350);
+    const v = videoRef.current;
+    if (!v) {
+      return;
     }
 
-    return () => {
-      canceled = true;
-    };
+    const timeoutId = window.setTimeout(() => {
+      v.play().catch(() => {});
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
@@ -134,10 +123,14 @@ export default function ProfilePage() {
     }
 
     v.play().catch(() => {});
-  }, [videoSrc]);
+  }, [hasUserGesture]);
+
+  const handleUserGesture = () => {
+    setHasUserGesture(true);
+  };
 
   return (
-    <div className={styles.friendVideoScreen}>
+    <div className={styles.friendVideoScreen} onPointerDown={handleUserGesture} onTouchStart={handleUserGesture}>
       <div className={styles.profileAvatarBlockOverlay}>
         <div
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
@@ -211,7 +204,16 @@ export default function ProfilePage() {
         <SpinTimer />
       </div>
 
-      <video ref={videoRef} className={styles.friendVideo} src={videoSrc ?? undefined} autoPlay muted loop playsInline preload="metadata" />
+      <video
+        ref={videoRef}
+        className={styles.friendVideo}
+        src="/IMG_2304.MP4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
     </div>
   );
 }
