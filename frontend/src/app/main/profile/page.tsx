@@ -99,6 +99,7 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.friendVideoScreen}>
+      <div className={styles.profileAnimatedBackground} aria-hidden="true" />
       <div className={styles.profileAvatarBlockOverlay}>
         <div
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
@@ -171,17 +172,6 @@ export default function ProfilePage() {
 
         <SpinTimer />
       </div>
-
-      <video
-        className={styles.friendVideo}
-        src="/IMG_2304.MP4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        controls
-      />
     </div>
   );
 }

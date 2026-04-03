@@ -691,6 +691,34 @@
   position: relative;
 }
 
+.profileAnimatedBackground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(1200px 700px at 20% 20%, rgba(255, 0, 0, 0.10), transparent 55%),
+    radial-gradient(900px 520px at 80% 30%, rgba(255, 255, 255, 0.65), transparent 60%),
+    radial-gradient(1000px 600px at 50% 85%, rgba(0, 0, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, #f1f9fc 0%, #ffffff 55%, #f1f9fc 100%);
+  filter: saturate(1.05);
+  animation: profileBgShift 10s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes profileBgShift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(0, -10px, 0) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profileAnimatedBackground {
+    animation: none;
+  }
+}
+
 .friendContainer {
   width: 100%;
   max-width: 520px;
