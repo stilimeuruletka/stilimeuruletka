@@ -43,13 +43,21 @@ function SpinTimer() {
 
   useEffect(() => {
     const storageKey = "spin_next_at";
-    const stored = window.localStorage.getItem(storageKey);
     const now = Date.now();
-    let nextAt = stored ? Number(stored) : Number.NaN;
+    let nextAt = Number.NaN;
+
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      nextAt = stored ? Number(stored) : Number.NaN;
+    } catch {
+      nextAt = Number.NaN;
+    }
 
     if (!nextAt || Number.isNaN(nextAt) || nextAt <= now) {
       nextAt = now + 24 * 60 * 60 * 1000;
-      window.localStorage.setItem(storageKey, String(nextAt));
+      try {
+        window.localStorage.setItem(storageKey, String(nextAt));
+      } catch {}
     }
 
     const update = () => {
