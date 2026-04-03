@@ -9,7 +9,7 @@ export default function HowToPlayPlaceholderPage() {
         <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
           <Image src="/стрелканазад.PNG" alt="Назад" width={52} height={26} className={styles.placeholderBackIcon} priority />
         </Link>
-        <Image src="/IMG_2350.PNG" alt="Как играть" fill className={styles.howToPlayCompositeImage} priority />
+        <Image src="/IMG_2381.PNG" alt="Как играть" fill className={styles.howToPlayCompositeImage} priority />
       </div>
     </div>
   );
