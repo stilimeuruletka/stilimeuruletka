@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { RefObject } from "react";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -99,89 +98,11 @@ function SpinTimer() {
   );
 }
 
-function useAutoplayVideo(videoRef: RefObject<HTMLVideoElement | null>) {
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) {
-      return;
-    }
-
-    v.muted = true;
-    v.defaultMuted = true;
-    v.playsInline = true;
-
-    const markPlaying = () => setIsPlaying(!v.paused && !v.ended);
-    const markNotPlaying = () => setIsPlaying(false);
-
-    const tryPlay = () => {
-      v.play().then(markPlaying).catch(markNotPlaying);
-    };
-
-    const handleLoadedData = () => {
-      if (v.readyState >= 2) {
-        try {
-          if (v.currentTime === 0) {
-            v.currentTime = 0.001;
-          }
-        } catch {}
-      }
-
-      tryPlay();
-    };
-
-    v.addEventListener("playing", markPlaying);
-    v.addEventListener("pause", markNotPlaying);
-    v.addEventListener("ended", markNotPlaying);
-    v.addEventListener("loadeddata", handleLoadedData);
-    v.addEventListener("canplay", tryPlay);
-    v.addEventListener("canplaythrough", tryPlay);
-
-    const onVisibility = () => {
-      if (!document.hidden) {
-        tryPlay();
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    const timeoutId = window.setTimeout(() => {
-      v.load();
-      tryPlay();
-    }, 0);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      document.removeEventListener("visibilitychange", onVisibility);
-      v.removeEventListener("playing", markPlaying);
-      v.removeEventListener("pause", markNotPlaying);
-      v.removeEventListener("ended", markNotPlaying);
-      v.removeEventListener("loadeddata", handleLoadedData);
-      v.removeEventListener("canplay", tryPlay);
-      v.removeEventListener("canplaythrough", tryPlay);
-    };
-  }, [videoRef]);
-
-  const playFromUserGesture = () => {
-    const v = videoRef.current;
-    v?.play().catch(() => {});
-  };
-
-  return { isPlaying, playFromUserGesture };
-}
-
 export default function ProfilePage() {
   const { displayName, avatarSrc } = useTelegramProfile();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const { isPlaying, playFromUserGesture } = useAutoplayVideo(videoRef);
 
   return (
-    <div
-      className={styles.friendVideoScreen}
-      onPointerDown={playFromUserGesture}
-      onTouchStart={playFromUserGesture}
-      onClick={playFromUserGesture}
-    >
+    <div className={styles.friendVideoScreen}>
       <div className={styles.profileAvatarBlockOverlay}>
         <div
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
@@ -256,7 +177,6 @@ export default function ProfilePage() {
       </div>
 
       <video
-        ref={videoRef}
         className={styles.friendVideo}
         src="/IMG_2304.MP4"
         autoPlay
@@ -264,12 +184,8 @@ export default function ProfilePage() {
         loop
         playsInline
         preload="metadata"
-        controls={!isPlaying}
+        controls
       />
-
-      {!isPlaying && (
-        <button type="button" className={styles.videoTapOverlay} onClick={playFromUserGesture} aria-label="Запустить анимацию" />
-      )}
     </div>
   );
 }

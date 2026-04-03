@@ -515,7 +515,8 @@
 }
 
 .howToPlayCompositeImage {
-  object-fit: cover;
+  object-fit: contain;
+  inset: 16px;
 }
 
 .profileQuickButtonImg {
