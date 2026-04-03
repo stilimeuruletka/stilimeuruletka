@@ -102,6 +102,7 @@ export default function ProfilePage() {
   const { displayName, avatarSrc } = useTelegramProfile();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [hasUserGesture, setHasUserGesture] = useState(false);
+  const hasUserGestureRef = useRef(false);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -126,11 +127,22 @@ export default function ProfilePage() {
   }, [hasUserGesture]);
 
   const handleUserGesture = () => {
-    setHasUserGesture(true);
+    const v = videoRef.current;
+    v?.play().catch(() => {});
+
+    if (!hasUserGestureRef.current) {
+      hasUserGestureRef.current = true;
+      setHasUserGesture(true);
+    }
   };
 
   return (
-    <div className={styles.friendVideoScreen} onPointerDown={handleUserGesture} onTouchStart={handleUserGesture}>
+    <div
+      className={styles.friendVideoScreen}
+      onPointerDown={handleUserGesture}
+      onTouchStart={handleUserGesture}
+      onClick={handleUserGesture}
+    >
       <div className={styles.profileAvatarBlockOverlay}>
         <div
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
