@@ -2,7 +2,48 @@ import { NextRequest, NextResponse } from "next/server";
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
-const PUBLIC_WEBAPP_URL = process.env.PUBLIC_WEBAPP_URL ?? "https://stilimeuruletka.vercel.app";
+const DEFAULT_WEBAPP_URL = "https://stilimeuruletka.vercel.app";
+
+function getSafeWebAppUrl(input: string | undefined) {
+  if (!input) {
+    return null;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(input);
+  } catch {
+    return null;
+  }
+
+  if (url.protocol !== "https:") {
+    return null;
+  }
+
+  const host = url.hostname.toLowerCase();
+  if (host === "localhost" || host.endsWith(".local")) {
+    return null;
+  }
+
+  const isIpv4 = /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+  if (isIpv4) {
+    const [a, b] = host.split(".").map((p) => Number(p));
+    const isPrivate =
+      a === 10 ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) ||
+      a === 127;
+    if (isPrivate) {
+      return null;
+    }
+  }
+
+  url.hash = "";
+  url.search = "";
+  return url.origin;
+}
+
+const PUBLIC_WEBAPP_URL = getSafeWebAppUrl(process.env.PUBLIC_WEBAPP_URL) ?? DEFAULT_WEBAPP_URL;
 
 type TelegramUser = {
   id: number;
