@@ -6,8 +6,29 @@ import { useMemo, useState } from "react";
 import styles from "../../page.module.css";
 
 export default function HowToPlayPlaceholderPage() {
+  const storageKey = "how_to_play_seen_v1";
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [seen, setSeen] = useState<[boolean, boolean, boolean]>([false, false, false]);
+  const [seen, setSeen] = useState<[boolean, boolean, boolean]>(() => {
+    if (typeof window === "undefined") {
+      return [false, false, false];
+    }
+
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) {
+        return [false, false, false];
+      }
+
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed) || parsed.length !== 3) {
+        return [false, false, false];
+      }
+
+      return [Boolean(parsed[0]), Boolean(parsed[1]), Boolean(parsed[2])];
+    } catch {
+      return [false, false, false];
+    }
+  });
 
   const overlaySrc = useMemo(() => {
     if (activeIndex === 0) {
@@ -30,6 +51,9 @@ export default function HowToPlayPlaceholderPage() {
     setSeen((prev) => {
       const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
       next[activeIndex] = true;
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {}
       return next;
     });
     setActiveIndex(null);
