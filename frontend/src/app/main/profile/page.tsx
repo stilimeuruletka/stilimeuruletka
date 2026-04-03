@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -98,40 +98,43 @@ function SpinTimer() {
   );
 }
 
-function useShouldLoadProfileVideo() {
-  const [shouldLoad, setShouldLoad] = useState(false);
+export default function ProfilePage() {
+  const { displayName, avatarSrc } = useTelegramProfile();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    const w = window;
-    const n = navigator as Navigator & {
-      connection?: {
-        saveData?: boolean;
-        effectiveType?: string;
-      };
-      deviceMemory?: number;
-      hardwareConcurrency?: number;
+    let canceled = false;
+
+    const start = () => {
+      if (!canceled) {
+        setVideoSrc("/IMG_2304.MP4");
+      }
     };
 
-    const saveData = Boolean(n.connection?.saveData);
-    const effectiveType = n.connection?.effectiveType ?? "";
-    const isSlow = effectiveType === "slow-2g" || effectiveType === "2g";
-    const isLowMemory = typeof n.deviceMemory === "number" && n.deviceMemory <= 2;
-    const isLowCpu = typeof n.hardwareConcurrency === "number" && n.hardwareConcurrency <= 4;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
 
-    if (saveData || isSlow || isLowMemory || isLowCpu) {
+    if (typeof w.requestIdleCallback === "function") {
+      w.requestIdleCallback(start, {
+        timeout: 1200
+      });
+    } else {
+      window.setTimeout(start, 350);
+    }
+
+    return () => {
+      canceled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) {
       return;
     }
 
-    const timeoutId = w.setTimeout(() => setShouldLoad(true), 350);
-    return () => w.clearTimeout(timeoutId);
-  }, []);
-
-  return shouldLoad;
-}
-
-export default function ProfilePage() {
-  const { displayName, avatarSrc } = useTelegramProfile();
-  const shouldLoadVideo = useShouldLoadProfileVideo();
+    v.play().catch(() => {});
+  }, [videoSrc]);
 
   return (
     <div className={styles.friendVideoScreen}>
@@ -139,10 +142,7 @@ export default function ProfilePage() {
         <div
           className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}
         >
-          {avatarSrc && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />
-          )}
+          {avatarSrc && <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />}
         </div>
         <div className={styles.profileUsername}>{displayName}</div>
       </div>
@@ -211,11 +211,7 @@ export default function ProfilePage() {
         <SpinTimer />
       </div>
 
-      {shouldLoadVideo ? (
-        <video className={styles.friendVideo} src="/IMG_2304.MP4" autoPlay muted loop playsInline preload="metadata" />
-      ) : (
-        <div className={styles.friendVideoPlaceholder} />
-      )}
+      <video ref={videoRef} className={styles.friendVideo} src={videoSrc ?? undefined} autoPlay muted loop playsInline preload="metadata" />
     </div>
   );
 }

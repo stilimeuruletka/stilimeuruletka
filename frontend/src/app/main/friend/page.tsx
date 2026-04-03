@@ -74,7 +74,6 @@ export default function FriendPage() {
         <div className={styles.profileAvatarBlockOverlay}>
           <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}>
             {avatarSrc && (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />
             )}
           </div>
