@@ -27,12 +27,12 @@ describe("Home", () => {
     expect((await screen.findAllByAltText("Девушка 5"))[0]).toBeInTheDocument();
     expect((await screen.findAllByAltText("Девушка 6"))[0]).toBeInTheDocument();
     expect((await screen.findAllByAltText("Низ"))[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Стильная рулетка" })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Профиль" })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Как играть" })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Пригласить друзей" })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Список призов" })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Поддержка" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Стильная рулетка" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Профиль" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Как играть" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Пригласить друзей" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Список призов" })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Поддержка" })[0]).toBeInTheDocument();
 
     await waitFor(() => {
       expect(window.Telegram?.WebApp?.ready).toHaveBeenCalled();

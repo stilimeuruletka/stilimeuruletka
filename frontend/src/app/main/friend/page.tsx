@@ -88,7 +88,7 @@ export default function FriendPage() {
             height={72}
             className={styles.profileInviteImageOverlay}
             sizes="240px"
-            quality={70}
+            quality={90}
           />
         </button>
 
@@ -138,7 +138,7 @@ export default function FriendPage() {
           height={1280}
           className={styles.profileOverlayImage}
           sizes="(max-width: 520px) 100vw, 520px"
-          quality={70}
+          quality={90}
         />
         <Image
           src="/IMG_2234.PNG"
@@ -148,7 +148,7 @@ export default function FriendPage() {
           className={styles.profileBottomImage}
           priority
           sizes="(max-width: 520px) 100vw, 520px"
-          quality={70}
+          quality={90}
         />
       </div>
     </div>

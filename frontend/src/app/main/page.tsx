@@ -19,6 +19,8 @@ export default function MainPage() {
               height={12}
               className={styles.topImage}
               priority
+              sizes="90px"
+              quality={90}
             />
           </a>
           <Image
@@ -36,18 +38,19 @@ export default function MainPage() {
           <section className={styles.slide}>
             <div className={styles.grid}>
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/1девушка.PNG"
-                    alt="Девушка 1"
-                    width={600}
-                    height={1100}
-                    className={styles.girl}
-                    priority
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/roulette" className={styles.imageButton} role="button">
+                <Link href="/main/roulette" className={styles.cardLink} aria-label="Стильная рулетка">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/1девушка.PNG"
+                      alt="Девушка 1"
+                      width={600}
+                      height={1100}
+                      className={styles.girl}
+                      priority
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/стильнаярулетка-trim.png"
                     alt="Стильная рулетка"
@@ -55,24 +58,25 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
 
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/2девушка.PNG"
-                    alt="Девушка 2"
-                    width={600}
-                    height={1100}
-                    className={styles.girl}
-                    priority
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/profile" className={styles.imageButton} role="button">
+                <Link href="/main/profile" className={styles.cardLink} aria-label="Профиль">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/2девушка.PNG"
+                      alt="Девушка 2"
+                      width={600}
+                      height={1100}
+                      className={styles.girl}
+                      priority
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/профиль-trim.png"
                     alt="Профиль"
@@ -80,24 +84,25 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
 
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/3девушка.jpg"
-                    alt="Девушка 3"
-                    width={600}
-                    height={1100}
-                    className={styles.girl}
-                    priority
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/how-to-play" className={styles.imageButton} role="button">
+                <Link href="/main/how-to-play" className={styles.cardLink} aria-label="Как играть">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/3девушка.jpg"
+                      alt="Девушка 3"
+                      width={600}
+                      height={1100}
+                      className={styles.girl}
+                      priority
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/какиграть-trim.png"
                     alt="Как играть"
@@ -105,7 +110,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
@@ -113,17 +118,18 @@ export default function MainPage() {
 
             <div className={styles.grid}>
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/4девушка.PNG"
-                    alt="Девушка 4"
-                    width={1340}
-                    height={2400}
-                    className={styles.girl}
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/invite" className={styles.imageButton} role="button">
+                <Link href="/main/invite" className={styles.cardLink} aria-label="Пригласить друзей">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/4девушка.PNG"
+                      alt="Девушка 4"
+                      width={1340}
+                      height={2400}
+                      className={styles.girl}
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/пригласитьдр-trim.png"
                     alt="Пригласить друзей"
@@ -131,23 +137,24 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
 
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/5девушка.PNG"
-                    alt="Девушка 5"
-                    width={1340}
-                    height={2400}
-                    className={styles.girl}
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/prizes" className={styles.imageButton} role="button">
+                <Link href="/main/prizes" className={styles.cardLink} aria-label="Список призов">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/5девушка.PNG"
+                      alt="Девушка 5"
+                      width={1340}
+                      height={2400}
+                      className={styles.girl}
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/списокпризов-trim.png"
                     alt="Список призов"
@@ -155,23 +162,24 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
 
               <div className={styles.card}>
-                <div className={styles.girlWrap}>
-                  <Image
-                    src="/6девушка.PNG"
-                    alt="Девушка 6"
-                    width={1340}
-                    height={2400}
-                    className={styles.girl}
-                    sizes="(max-width: 520px) 33vw, 170px"
-                  />
-                </div>
-                <Link href="/main/support" className={styles.imageButton} role="button">
+                <Link href="/main/support" className={styles.cardLink} aria-label="Поддержка">
+                  <div className={styles.girlWrap}>
+                    <Image
+                      src="/6девушка.PNG"
+                      alt="Девушка 6"
+                      width={1340}
+                      height={2400}
+                      className={styles.girl}
+                      sizes="(max-width: 520px) 33vw, 170px"
+                      quality={85}
+                    />
+                  </div>
                   <Image
                     src="/поддержка-trim.png"
                     alt="Поддержка"
@@ -179,7 +187,7 @@ export default function MainPage() {
                     height={608}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={70}
+                    quality={90}
                   />
                 </Link>
               </div>
@@ -203,7 +211,7 @@ export default function MainPage() {
               height={591}
               className={styles.bottomImage}
               sizes="(max-width: 520px) 100vw, 520px"
-              quality={70}
+              quality={90}
             />
           </section>
 

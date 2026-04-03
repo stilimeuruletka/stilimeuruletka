@@ -19,6 +19,8 @@ export default function Main2Page() {
               height={12}
               className={styles.topImage}
               priority
+              sizes="90px"
+              quality={90}
             />
           </a>
           <Image
@@ -34,18 +36,19 @@ export default function Main2Page() {
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/7девушка.PNG"
-                alt="Девушка 1"
-                width={600}
-                height={1100}
-                className={styles.girl}
-                priority
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/profile" className={styles.imageButton}>
+            <Link href="/main/profile" className={styles.cardLink} aria-label="Профиль подробный">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/7девушка.PNG"
+                  alt="Девушка 1"
+                  width={600}
+                  height={1100}
+                  className={styles.girl}
+                  priority
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/другоекнопка-trim.png"
                 alt="Профиль подробный"
@@ -53,24 +56,25 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
 
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/8девушка.PNG"
-                alt="Девушка 2"
-                width={600}
-                height={1100}
-                className={styles.girl}
-                priority
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/roulette" className={styles.imageButton} role="button">
+            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/8девушка.PNG"
+                  alt="Девушка 2"
+                  width={600}
+                  height={1100}
+                  className={styles.girl}
+                  priority
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/сомнгкнопка-trim.png"
                 alt="Страница в разработке"
@@ -78,24 +82,25 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
 
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/9девушка.PNG"
-                alt="Девушка 3"
-                width={600}
-                height={1100}
-                className={styles.girl}
-                priority
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/roulette" className={styles.imageButton} role="button">
+            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/9девушка.PNG"
+                  alt="Девушка 3"
+                  width={600}
+                  height={1100}
+                  className={styles.girl}
+                  priority
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/сомнгкнопка-trim.png"
                 alt="Страница в разработке"
@@ -103,7 +108,7 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
@@ -111,17 +116,18 @@ export default function Main2Page() {
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/10девушка.PNG"
-                alt="Девушка 4"
-                width={1340}
-                height={2400}
-                className={styles.girl}
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/roulette" className={styles.imageButton} role="button">
+            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/10девушка.PNG"
+                  alt="Девушка 4"
+                  width={1340}
+                  height={2400}
+                  className={styles.girl}
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/сомнгкнопка-trim.png"
                 alt="Страница в разработке"
@@ -129,23 +135,24 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
 
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/11девушка.PNG"
-                alt="Девушка 5"
-                width={1340}
-                height={2400}
-                className={styles.girl}
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/roulette" className={styles.imageButton} role="button">
+            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/11девушка.PNG"
+                  alt="Девушка 5"
+                  width={1340}
+                  height={2400}
+                  className={styles.girl}
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/сомнгкнопка-trim.png"
                 alt="Страница в разработке"
@@ -153,23 +160,24 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
 
           <div className={styles.card}>
-            <div className={styles.girlWrap}>
-              <Image
-                src="/12девушка.PNG"
-                alt="Девушка 6"
-                width={1340}
-                height={2400}
-                className={styles.girl}
-                sizes="(max-width: 520px) 33vw, 170px"
-              />
-            </div>
-            <Link href="/main/roulette" className={styles.imageButton} role="button">
+            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+              <div className={styles.girlWrap}>
+                <Image
+                  src="/12девушка.PNG"
+                  alt="Девушка 6"
+                  width={1340}
+                  height={2400}
+                  className={styles.girl}
+                  sizes="(max-width: 520px) 33vw, 170px"
+                  quality={85}
+                />
+              </div>
               <Image
                 src="/сомнгкнопка-trim.png"
                 alt="Страница в разработке"
@@ -177,7 +185,7 @@ export default function Main2Page() {
                 height={608}
                 className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={70}
+                quality={90}
               />
             </Link>
           </div>
@@ -201,7 +209,7 @@ export default function Main2Page() {
           height={591}
           className={styles.bottomImage}
           sizes="(max-width: 520px) 100vw, 520px"
-          quality={70}
+          quality={90}
         />
       </main>
     </div>

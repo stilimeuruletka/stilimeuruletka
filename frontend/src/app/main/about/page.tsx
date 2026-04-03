@@ -30,7 +30,7 @@ export default function AboutPage() {
           className={styles.fullScreenImage}
           priority
           sizes="(max-width: 520px) 100vw, 520px"
-          quality={70}
+          quality={90}
         />
         <Image
           src={textSrc}
@@ -38,7 +38,7 @@ export default function AboutPage() {
           fill
           className={styles.fullScreenOverlayImage}
           sizes="(max-width: 520px) 100vw, 520px"
-          quality={70}
+          quality={90}
         />
 
         <button
@@ -47,7 +47,7 @@ export default function AboutPage() {
           onClick={() => setIsAlt((v) => !v)}
           aria-label="Переключить"
         >
-          <Image src={buttonSrc} alt="" fill className={styles.fullScreenCenterButtonImage} sizes="86px" quality={70} />
+          <Image src={buttonSrc} alt="" fill className={styles.fullScreenCenterButtonImage} sizes="86px" quality={90} />
         </button>
       </div>
     </div>
