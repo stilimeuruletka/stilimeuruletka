@@ -1,20 +1,90 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import styles from "../../page.module.css";
 
 export default function HowToPlayPlaceholderPage() {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [seen, setSeen] = useState<[boolean, boolean, boolean]>([false, false, false]);
+
+  const overlaySrc = useMemo(() => {
+    if (activeIndex === 0) {
+      return "/блюр1.jpg";
+    }
+    if (activeIndex === 1) {
+      return "/IMG_2086.PNG";
+    }
+    if (activeIndex === 2) {
+      return "/IMG_2105.PNG";
+    }
+    return null;
+  }, [activeIndex]);
+
+  const closeOverlay = () => {
+    if (activeIndex == null) {
+      return;
+    }
+
+    setSeen((prev) => {
+      const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
+      next[activeIndex] = true;
+      return next;
+    });
+    setActiveIndex(null);
+  };
+
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
         <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
           <Image src="/стрелканазад.PNG" alt="Назад" width={52} height={26} className={styles.placeholderBackIcon} priority />
         </Link>
-        <Image src="/IMG_2381.PNG" alt="Как играть" fill className={styles.howToPlayCompositeImage} priority />
+        <Image
+          src="/IMG_2381.PNG"
+          alt="Как играть"
+          fill
+          className={`${styles.howToPlayCompositeImage} ${activeIndex == null ? "" : styles.howToPlayCompositeImageBlur}`}
+          priority
+        />
         <div className={styles.howToPlayRulesRow}>
-          <Image src="/правилакруг.png" alt="" width={14} height={14} className={styles.howToPlayRuleIcon} />
-          <Image src="/правилакруг.png" alt="" width={14} height={14} className={styles.howToPlayRuleIcon} />
-          <Image src="/правилакруг.png" alt="" width={14} height={14} className={styles.howToPlayRuleIcon} />
+          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(0)} aria-label="Открыть описание 1">
+            <Image
+              src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              alt=""
+              width={14}
+              height={14}
+              className={styles.howToPlayRuleIcon}
+            />
+          </button>
+          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(1)} aria-label="Открыть описание 2">
+            <Image
+              src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              alt=""
+              width={14}
+              height={14}
+              className={styles.howToPlayRuleIcon}
+            />
+          </button>
+          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(2)} aria-label="Открыть описание 3">
+            <Image
+              src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              alt=""
+              width={14}
+              height={14}
+              className={styles.howToPlayRuleIcon}
+            />
+          </button>
         </div>
+
+        {overlaySrc && (
+          <div className={styles.howToPlayOverlay} onClick={closeOverlay} role="dialog" aria-modal="true">
+            <div className={styles.howToPlayOverlayCard} onClick={(e) => e.stopPropagation()}>
+              <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
