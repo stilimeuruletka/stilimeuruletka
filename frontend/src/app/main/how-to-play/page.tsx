@@ -65,13 +65,7 @@ export default function HowToPlayPlaceholderPage() {
       return;
     }
 
-    const handlePointerDown = (e: PointerEvent) => {
-      const card = overlayCardRef.current;
-      const target = e.target as Node | null;
-      if (card && target && card.contains(target)) {
-        return;
-      }
-
+    const handlePointerDown = () => {
       closeOverlay();
     };
 
