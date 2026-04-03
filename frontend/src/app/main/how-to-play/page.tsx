@@ -137,7 +137,14 @@ export default function HowToPlayPlaceholderPage() {
           </div>
         </div>
         <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
-          <Image src="/стрелканадпись.png" alt="Назад" width={3340} height={1472} className={styles.placeholderBackIcon} priority />
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Назад"
+            width={52}
+            height={26}
+            className={`${styles.placeholderBackIcon} ${styles.placeholderBackIconSmall}`}
+            priority
+          />
         </Link>
         <Image
           src="/IMG_2381.PNG"

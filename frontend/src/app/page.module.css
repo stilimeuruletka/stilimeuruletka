@@ -514,6 +514,10 @@
   display: block;
 }
 
+.placeholderBackIconSmall {
+  width: 52px;
+}
+
 .howToPlayCompositeImage {
   object-fit: contain;
   inset: 16px;
