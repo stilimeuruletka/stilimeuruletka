@@ -81,6 +81,8 @@ function SpinTimer() {
         width={720}
         height={320}
         className={styles.profileSpinTimerImage}
+        sizes="320px"
+        quality={90}
       />
       <div className={styles.profileSpinTimerText}>
         <span>ДО СЛЕДУЮЩЕГО СПИНА</span>
@@ -156,6 +158,8 @@ export default function ProfilePage() {
                 width={3882}
                 height={608}
                 className={styles.profileQuickButtonImg}
+                sizes="(max-width: 520px) 44vw, 180px"
+                quality={90}
               />
             </div>
 
@@ -167,6 +171,8 @@ export default function ProfilePage() {
                   width={3882}
                   height={608}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
+                  sizes="(max-width: 520px) 46vw, 186px"
+                  quality={90}
                 />
               </Link>
               <Image
@@ -175,6 +181,8 @@ export default function ProfilePage() {
                 width={3882}
                 height={608}
                 className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+                sizes="(max-width: 520px) 44vw, 180px"
+                quality={90}
               />
             </div>
 
@@ -185,6 +193,8 @@ export default function ProfilePage() {
                 width={3882}
                 height={608}
                 className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+                sizes="(max-width: 520px) 44vw, 180px"
+                quality={90}
               />
               <Link href="/main/about" className={styles.profileQuickButtonLink}>
                 <Image
@@ -193,6 +203,8 @@ export default function ProfilePage() {
                   width={3882}
                   height={608}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
+                  sizes="(max-width: 520px) 46vw, 186px"
+                  quality={90}
                 />
               </Link>
             </div>
