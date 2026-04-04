@@ -110,15 +110,17 @@ export default function ProfilePage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        <Image
-          src="/IMG_1294.PNG"
-          alt=""
-          fill
-          className={styles.profileStaticBackground}
-          priority
-          sizes="(max-width: 520px) 100vw, 520px"
-          quality={90}
-        />
+        <div className={styles.profileBackgroundLayer} aria-hidden="true">
+          <Image
+            src="/IMG_1294.PNG"
+            alt=""
+            fill
+            className={styles.profileBackgroundLayerImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={90}
+          />
+        </div>
 
         <div className={styles.profileTopHeader} aria-hidden="true">
           <Image

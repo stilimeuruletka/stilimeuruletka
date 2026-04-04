@@ -759,9 +759,14 @@
   position: relative;
 }
 
-.profileStaticBackground {
-  object-fit: cover;
+.profileBackgroundLayer {
+  position: absolute;
+  inset: 0;
   z-index: 0;
+}
+
+.profileBackgroundLayerImage {
+  object-fit: cover;
 }
 
 .profileTopHeader {
@@ -769,7 +774,7 @@
   top: 16px;
   left: 16px;
   right: 16px;
-  z-index: 2;
+  z-index: 5;
   pointer-events: none;
 }
 
