@@ -136,13 +136,23 @@ export default function HowToPlayPlaceholderPage() {
             <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
         </div>
-        <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
+        <Link href="/main" className={`${styles.placeholderBackLink} ${styles.howToPlayNavLeft}`} aria-label="Назад в меню">
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"
             width={52}
             height={26}
             className={`${styles.placeholderBackIcon} ${styles.placeholderBackIconSmall}`}
+            priority
+          />
+        </Link>
+        <Link href="/main/profile" className={`${styles.placeholderBackLink} ${styles.howToPlayNavRight}`} aria-label="Вперёд">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Вперёд"
+            width={52}
+            height={26}
+            className={`${styles.placeholderBackIcon} ${styles.placeholderBackIconSmall} ${styles.howToPlayNavRightIcon}`}
             priority
           />
         </Link>

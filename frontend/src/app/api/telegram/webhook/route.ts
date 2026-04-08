@@ -9,17 +9,21 @@ const rateMap = new Map<number, number>();
 
 type TgPayload = Record<string, unknown>;
 
-async function tg(method: string, body: TgPayload) {
+type TgApiResponse<T> = {
+  ok: boolean;
+  result?: T;
+  description?: string;
+  error_code?: number;
+};
+
+async function tg<T>(method: string, body: TgPayload): Promise<TgApiResponse<T>> {
   const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body)
   });
-  const json = await res.json().catch(() => null);
-  if (!json?.ok) {
-    // swallow to avoid retries by Telegram
-  }
-  return json?.result;
+  const json = (await res.json().catch(() => null)) as TgApiResponse<T> | null;
+  return json ?? { ok: false, description: "Invalid Telegram response" };
 }
 
 async function sendWelcome(chatId: number | string) {
@@ -53,9 +57,22 @@ async function sendSubscribedMenu(chatId: number | string) {
 }
 
 async function checkSubscription(userId: number) {
-  const res = await tg("getChatMember", { chat_id: CHANNEL_ID, user_id: userId });
-  const status = res?.status as string | undefined;
-  return status && status !== "left" && status !== "kicked";
+  const res = await tg<{ status: string; is_member?: boolean }>("getChatMember", { chat_id: CHANNEL_ID, user_id: userId });
+  if (!res.ok) {
+    console.warn("telegram_getChatMember_failed", { userId, channelId: CHANNEL_ID, error_code: res.error_code, description: res.description });
+    return false;
+  }
+
+  const status = res.result?.status;
+  const isMemberFlag = res.result?.is_member;
+  const ok =
+    status === "member" ||
+    status === "administrator" ||
+    status === "creator" ||
+    (status === "restricted" && isMemberFlag === true);
+
+  console.info("telegram_getChatMember", { userId, channelId: CHANNEL_ID, status, is_member: isMemberFlag, ok });
+  return ok;
 }
 
 export async function POST(req: NextRequest) {

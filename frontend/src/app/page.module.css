@@ -613,6 +613,21 @@
   width: 46px;
 }
 
+.howToPlayNavLeft {
+  left: 26px;
+  top: 86px;
+}
+
+.howToPlayNavRight {
+  left: auto;
+  right: 26px;
+  top: 86px;
+}
+
+.howToPlayNavRightIcon {
+  transform: scaleX(-1);
+}
+
 .commonTopHeader {
   position: absolute;
   top: 94px;
@@ -643,8 +658,8 @@
 }
 
 .commonTopHeaderAvatar {
-  width: 44px;
-  height: 44px;
+  width: 88px;
+  height: 88px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
@@ -659,7 +674,7 @@
 
 .commonTopHeaderName {
   font-family: var(--font-uncage);
-  font-size: 15px;
+  font-size: 12px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-align: center;
