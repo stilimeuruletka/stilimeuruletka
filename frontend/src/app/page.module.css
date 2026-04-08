@@ -191,8 +191,8 @@
 
 .profileArrow {
   position: absolute;
-  top: 90px;
-  width: 28px;
+  top: 118px;
+  width: 40px;
   height: auto;
   z-index: 2;
 }
@@ -216,7 +216,7 @@
 }
 
 .profileArrowLeft {
-  left: 20px;
+  left: 44px;
 }
 
 .profileArrowRight {
@@ -256,7 +256,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 16%;
+  top: 18%;
 }
 
 .friendProfileStack .profileCenterIcons {
@@ -264,13 +264,37 @@
   left: 58%;
 }
 
+.friendProfileStack .profileCenterIconLeft {
+  top: 44px;
+}
+
+.friendProfileStack .profileCenterIconRight {
+  top: -20px;
+}
+
 .friendProfileStack .profileArrow {
   top: 40px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: -22px;
-  top: 20px;
+  right: -56px;
+  top: -6px;
+}
+
+.friendProfileStack .profileArrowRight .profileArrow {
+  width: 52px;
+}
+
+.friendProfileStack .profileInviteImageOverlay {
+  width: 240px;
+}
+
+.friendProfileStack .commonTopHeaderUser {
+  top: 28%;
+}
+
+.friendProfileStack .profileOverlayImage {
+  top: -220px;
 }
 
 .profileCard {
@@ -865,34 +889,6 @@
   display: block;
   object-fit: contain;
   transform: translateX(4%);
-}
-
-.aboutTopLeftHeader {
-  position: absolute;
-  top: 120px;
-  left: 16px;
-  right: 16px;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.aboutTopLeftHeaderImage {
-  width: 62%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  margin-left: auto;
-}
-
-.aboutTopLeftHeaderUser {
-  position: absolute;
-  left: 70%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
 }
 
 .profileTopHeaderUser {

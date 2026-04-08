@@ -54,18 +54,18 @@ export default function AboutPage() {
       />
 
       <div className={styles.fullScreenFrame}>
-        <div className={styles.aboutTopLeftHeader} aria-hidden="true">
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/белоеглавноеменюрулетка.png"
             alt=""
             width={4052}
             height={1312}
-            className={styles.aboutTopLeftHeaderImage}
+            className={styles.commonTopHeaderImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
             quality={90}
           />
-          <div className={styles.aboutTopLeftHeaderUser}>
+          <div className={styles.commonTopHeaderUser}>
             <div className={styles.commonTopHeaderAvatar}>
               {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
             </div>
