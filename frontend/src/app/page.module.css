@@ -190,10 +190,9 @@
 }
 
 .profileArrow {
-  position: absolute;
-  top: 118px;
   width: 40px;
   height: auto;
+  display: block;
   z-index: 2;
 }
 
@@ -216,21 +215,32 @@
 }
 
 .profileArrowLeft {
+  position: absolute;
   left: 44px;
+  top: 118px;
+  z-index: 2;
 }
 
 .profileArrowRight {
+  position: absolute;
   right: -40px;
   top: 12px;
   transform: scaleX(-1);
+  z-index: 2;
 }
 
 .profileArrowLeftProfile {
-  left: 124px;
+  left: 220px;
+  top: 86px;
 }
 
-.profileArrowProfile {
+.profileArrowRightProfile {
+  right: 220px;
   top: 86px;
+}
+
+.profileTopHeader {
+  top: 70px;
 }
 
 .profileCenterIcons {
@@ -277,12 +287,12 @@
 }
 
 .friendProfileStack .profileArrow {
-  top: 54px;
   width: 28px;
 }
 
 .friendProfileStack .profileArrowLeft {
   left: 20px;
+  top: 54px;
 }
 
 .friendProfileStack .profileArrowRight {
@@ -566,11 +576,11 @@
 }
 
 .aboutHeaderImage {
-  width: 124%;
+  width: 150%;
 }
 
 .aboutTopHeader {
-  top: 140px;
+  top: 170px;
 }
 
 .placeholderPage {
@@ -598,7 +608,7 @@
 .placeholderBackLink {
   position: absolute;
   top: 92px;
-  left: 14px;
+  left: 8px;
   z-index: 2;
   display: inline-flex;
 }
@@ -821,7 +831,7 @@
 
 .profileQuickButtonImgLarge {
   width: min(186px, 46vw);
-  height: 45px;
+  height: 44px;
 }
 
 
@@ -863,7 +873,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translateY(6px);
+  transform: translate(-6px, 6px);
   font-family: var(--font-uncage);
   font-size: 14px;
   letter-spacing: 0.06em;
@@ -1284,7 +1294,7 @@
 }
 
 .btnImgCatalogLower {
-  margin-top: 6px;
+  margin-top: 10px;
 }
 
 .imageButton:active {

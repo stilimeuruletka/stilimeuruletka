@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -93,19 +93,24 @@ function SpinTimer() {
 }
 
 export default function ProfilePage() {
-  const [{ displayName, avatarSrc }] = useState(() => {
-    if (typeof window === "undefined") {
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const { displayName, avatarSrc } = useMemo(() => {
+    if (!isClient) {
       return { displayName: "@username", avatarSrc: null as string | null };
     }
 
     const w = window as TelegramSdkWindow;
     const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
-
     return {
       displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
       avatarSrc: tgUser?.photo_url ?? null
     };
-  });
+  }, [isClient]);
 
   return (
     <div className={styles.placeholderPage}>
@@ -122,7 +127,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className={styles.commonTopHeader} aria-hidden="true">
+        <div className={`${styles.commonTopHeader} ${styles.profileTopHeader}`} aria-hidden="true">
           <Image
             src="/главноеменюрулеткакрасный.png"
             alt=""
@@ -147,7 +152,16 @@ export default function ProfilePage() {
             alt="Назад"
             width={52}
             height={26}
-            className={`${styles.profileArrow} ${styles.profileArrowProfile}`}
+            className={styles.profileArrow}
+          />
+        </Link>
+        <Link href="/main/how-to-play" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Вперёд"
+            width={52}
+            height={26}
+            className={styles.profileArrow}
           />
         </Link>
 
