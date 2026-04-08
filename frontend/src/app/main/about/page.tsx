@@ -32,7 +32,7 @@ export default function AboutPage() {
         >
           <Image src="/стрелканазад.PNG" alt="" width={52} height={26} className={styles.aboutNavArrowImage} priority />
         </button>
-        <div className={styles.commonTopHeader} aria-hidden="true">
+        <div className={`${styles.commonTopHeader} ${styles.aboutTopHeader}`} aria-hidden="true">
           <Image
             src="/белоеглавноеменюрулетка.png"
             alt=""

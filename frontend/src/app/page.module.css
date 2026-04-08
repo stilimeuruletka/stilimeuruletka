@@ -264,11 +264,15 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 13%;
+  top: 15%;
+}
+
+.friendProfileStack .profileInviteImageOverlay {
+  width: 220px;
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 28%;
+  top: 32%;
   left: 58%;
 }
 
@@ -282,8 +286,21 @@
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 16px;
-  top: 54px;
+  right: -14px;
+  top: 40px;
+}
+
+.friendProfileStack .profileArrowRight .profileArrow {
+  width: 40px;
+}
+
+.friendProfileStack .commonTopHeader {
+  top: 18px;
+}
+
+.friendProfileStack .commonTopHeaderUser {
+  top: 0;
+  transform: translate(-50%, 0);
 }
 
 .profileCard {
@@ -552,6 +569,10 @@
   width: 124%;
 }
 
+.aboutTopHeader {
+  top: 140px;
+}
+
 .placeholderPage {
   width: 100%;
   min-height: 100vh;
@@ -576,8 +597,8 @@
 
 .placeholderBackLink {
   position: absolute;
-  top: 90px;
-  left: 16px;
+  top: 98px;
+  left: 20px;
   z-index: 2;
   display: inline-flex;
 }
@@ -1202,6 +1223,10 @@
   cursor: pointer;
 }
 
+.cardLinkLower {
+  margin-top: 14px;
+}
+
 .cardLink:active {
   transform: translateY(1px);
 }
@@ -1235,6 +1260,10 @@
   width: 100%;
   height: auto;
   display: block;
+}
+
+.btnImgLower {
+  margin-top: 8px;
 }
 
 .imageButton:active {

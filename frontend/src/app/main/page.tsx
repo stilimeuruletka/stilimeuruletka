@@ -143,7 +143,7 @@ export default function MainPage() {
               </div>
 
               <div className={styles.card}>
-                <Link href="/main/prizes" className={styles.cardLink} aria-label="Список призов">
+                <a href="https://t.me/stilimeuruletka/6" target="_blank" rel="noreferrer" className={styles.cardLink} aria-label="Список призов">
                   <div className={styles.girlWrap}>
                     <Image
                       src="/5девушка.PNG"
@@ -164,11 +164,11 @@ export default function MainPage() {
                     sizes="(max-width: 520px) 33vw, 170px"
                     quality={90}
                   />
-                </Link>
+                </a>
               </div>
 
               <div className={styles.card}>
-                <Link href="/main/support" className={styles.cardLink} aria-label="Поддержка">
+                <a href="https://t.me/stilimeuruletkasos" target="_blank" rel="noreferrer" className={styles.cardLink} aria-label="Поддержка">
                   <div className={styles.girlWrap}>
                     <Image
                       src="/6девушка.PNG"
@@ -189,7 +189,7 @@ export default function MainPage() {
                     sizes="(max-width: 520px) 33vw, 170px"
                     quality={90}
                   />
-                </Link>
+                </a>
               </div>
             </div>
 
