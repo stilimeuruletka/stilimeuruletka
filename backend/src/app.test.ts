@@ -551,7 +551,7 @@ describe("buildApp", () => {
       }
     });
     expect(res2.statusCode).toBe(200);
-    expect(baseDb.grantSubscriptionTicket).toHaveBeenCalled();
+    expect(baseDb.grantSubscriptionTicket).not.toHaveBeenCalled();
 
     await app1.close();
     await app2.close();
@@ -667,7 +667,7 @@ describe("buildApp", () => {
       payload: { update_id: 31, callback_query: { id: "c2", from: { id: 42 }, data: "check_sub" } }
     });
     expect(check.statusCode).toBe(200);
-    expect(db.grantSubscriptionTicket).toHaveBeenCalled();
+    expect(db.grantSubscriptionTicket).not.toHaveBeenCalled();
 
     await app.close();
   });

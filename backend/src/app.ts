@@ -13,6 +13,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Env } from "./env.js";
 import { createSupabase } from "./supabase.js";
 import { createTelegramApi, TelegramError } from "./telegram/telegramApi.js";
+import { checkChannelSubscription } from "./telegram/subscription.js";
 import { verifyTelegramWebAppInitData, TelegramWebAppAuthError } from "./auth/telegramWebApp.js";
 import { getReferralCode, getTicketBalance, grantSubscriptionTicket, handleStart, spinWheel, writeAuditEvent } from "./db.js";
 
@@ -80,6 +81,11 @@ export function buildApp(
     ttl: 60_000
   });
 
+  const subscriptionClickCache = new LRUCache<number, number>({
+    max: 50_000,
+    ttl: 60_000
+  });
+
   const app = Fastify({
     logger: {
       level: env.NODE_ENV === "production" ? "info" : "debug",
@@ -126,6 +132,38 @@ export function buildApp(
 
     const update = parsed.data;
 
+    const buildWebAppUrl = (path?: string) => {
+      if (!path) return env.PUBLIC_WEBAPP_URL;
+      return new URL(path, env.PUBLIC_WEBAPP_URL.endsWith("/") ? env.PUBLIC_WEBAPP_URL : `${env.PUBLIC_WEBAPP_URL}/`).toString();
+    };
+
+    const welcomeText =
+      "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
+
+    const sendWelcome = async (chatId: number | string) => {
+      await telegram.sendMessage(chatId, welcomeText, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
+            [{ text: "Проверить подписку", callback_data: "check_sub" }]
+          ]
+        }
+      });
+    };
+
+    const sendSubscribedMenu = async (chatId: number | string) => {
+      await telegram.sendMessage(chatId, "Подписка подтверждена. Выберите действие:", {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: buildWebAppUrl() } }],
+            [{ text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" }],
+            [{ text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }],
+            [{ text: "Как играть", web_app: { url: buildWebAppUrl("main/how-to-play") } }]
+          ]
+        }
+      });
+    };
+
     const handleStartCommand = async (chatId: number, userId: number, username?: string, payload?: string) => {
       const refCode = payload?.startsWith("ref_") ? payload.slice(4) : null;
       const result = await db
@@ -147,16 +185,7 @@ export function buildApp(
         })
         .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
 
-      const lines: string[] = [];
-      lines.push("Приглашайте друзей и получайте дополнительные билеты для прокрутов в игре.");
-
-      await telegram.sendMessage(chatId, lines.join("\n"), {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: env.PUBLIC_WEBAPP_URL } }]
-          ]
-        }
-      });
+      await sendWelcome(chatId);
     };
 
     const checkSubscription = async (userId: number) => {
@@ -165,10 +194,12 @@ export function buildApp(
       if (cached !== undefined) return cached;
 
       try {
-        const member = (await telegram.getChatMember(env.TELEGRAM_CHANNEL_ID, userId)) as {
-          status: string;
-        };
-        const ok = member.status !== "left" && member.status !== "kicked";
+        const { ok } = await checkChannelSubscription({
+          telegram: telegram as unknown as { getChatMember: (chatId: number | string, userId: number) => Promise<{ status: string }> },
+          channelId: env.TELEGRAM_CHANNEL_ID,
+          userId,
+          log: req.log
+        });
         membershipCache.set(cacheKey, ok);
         return ok;
       } catch (e) {
@@ -191,6 +222,15 @@ export function buildApp(
       }
 
       if (data === "check_sub") {
+        const lastClick = subscriptionClickCache.get(userId);
+        const now = Date.now();
+        if (lastClick !== undefined && now - lastClick < 2000) {
+          req.log.info({ userId }, "subscription_check_rate_limited");
+          await telegram.sendMessage(chatId, "Подождите 2 секунды и попробуйте ещё раз.");
+          return;
+        }
+        subscriptionClickCache.set(userId, now);
+
         const isSubscribed = await checkSubscription(userId);
         await db
           .writeAuditEvent({ tg_user_id: userId, event_type: "subscription_check", payload: { ok: isSubscribed } })
@@ -198,19 +238,19 @@ export function buildApp(
         if (!isSubscribed) {
           await telegram.sendMessage(
             chatId,
-            "Подписка не подтверждена. Подпишитесь на канал и повторите проверку."
+            "Face control не пройден…💔\n\nПроверьте подписку на наше сообщество и попробуйте нажать на кнопку ещё раз.",
+            {
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
+                  [{ text: "Проверить подписку", callback_data: "check_sub" }]
+                ]
+              }
+            }
           );
           return;
         }
-
-        const balance = await db.grantSubscriptionTicket(userId, env.TELEGRAM_CHANNEL_ID).catch((e) => {
-          req.log.error({ err: e }, "grant_subscription_ticket_failed");
-          throw e;
-        });
-        await db
-          .writeAuditEvent({ tg_user_id: userId, event_type: "subscription_ticket_granted", payload: { balance: balance.balance } })
-          .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
-        await telegram.sendMessage(chatId, `Подписка подтверждена. Баланс: ${balance.balance} билет(ов).`);
+        await sendSubscribedMenu(chatId);
         return;
       }
 
@@ -290,6 +330,15 @@ export function buildApp(
         await telegram.sendMessage(chatId, text);
       }
       if (update.message.text === "/check_sub") {
+        const lastClick = subscriptionClickCache.get(userId);
+        const now = Date.now();
+        if (lastClick !== undefined && now - lastClick < 2000) {
+          req.log.info({ userId }, "subscription_check_rate_limited");
+          await telegram.sendMessage(chatId, "Подождите 2 секунды и попробуйте ещё раз.");
+          return;
+        }
+        subscriptionClickCache.set(userId, now);
+
         const isSubscribed = await checkSubscription(userId);
         await db
           .writeAuditEvent({ tg_user_id: userId, event_type: "subscription_check", payload: { ok: isSubscribed } })
@@ -297,21 +346,18 @@ export function buildApp(
         if (!isSubscribed) {
           await telegram.sendMessage(
             chatId,
-            "Подписка не подтверждена. Подпишитесь на канал и повторите проверку."
+            "Face control не пройден…💔\n\nПроверьте подписку на наше сообщество и попробуйте нажать на кнопку ещё раз.",
+            {
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
+                  [{ text: "Проверить подписку", callback_data: "check_sub" }]
+                ]
+              }
+            }
           );
         } else {
-          const balance = await db.grantSubscriptionTicket(userId, env.TELEGRAM_CHANNEL_ID).catch((e) => {
-            req.log.error({ err: e }, "grant_subscription_ticket_failed");
-            throw e;
-          });
-          await db
-            .writeAuditEvent({
-            tg_user_id: userId,
-            event_type: "subscription_ticket_granted",
-            payload: { balance: balance.balance }
-            })
-            .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
-          await telegram.sendMessage(chatId, `Подписка подтверждена. Баланс: ${balance.balance} билет(ов).`);
+          await sendSubscribedMenu(chatId);
         }
       }
     }
