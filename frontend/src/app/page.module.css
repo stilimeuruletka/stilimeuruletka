@@ -638,12 +638,12 @@
 }
 
 .commonTopHeaderImage {
-  width: 62%;
+  width: 70%;
   max-width: none;
   height: auto;
   display: block;
   object-fit: contain;
-  margin: 0 auto;
+  margin: 0 0 0 12px;
 }
 
 .commonTopHeaderUser {
@@ -749,9 +749,9 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 64px;
+  left: 72px;
   transform: none;
-  bottom: 140px;
+  bottom: 152px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1251,6 +1251,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  height: 320px;
 }
 
 .girl {
@@ -1273,12 +1274,17 @@
 
 .btnImg {
   width: 100%;
-  height: auto;
+  height: 46px;
+  object-fit: contain;
   display: block;
 }
 
 .btnImgLower {
   margin-top: 8px;
+}
+
+.btnImgCatalogLower {
+  margin-top: 6px;
 }
 
 .imageButton:active {
@@ -1306,6 +1312,10 @@
 
   .girl {
     max-height: 250px;
+  }
+
+  .girlWrap {
+    height: 250px;
   }
 }
 
