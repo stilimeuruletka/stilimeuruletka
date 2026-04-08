@@ -122,22 +122,22 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className={styles.profileTopHeader} aria-hidden="true">
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/главноеменюрулеткакрасный.png"
             alt=""
             width={4052}
             height={1312}
-            className={styles.profileTopHeaderImage}
+            className={styles.commonTopHeaderImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
             quality={90}
           />
-          <div className={styles.profileTopHeaderUser}>
-            <div className={styles.profileTopHeaderAvatar}>
+          <div className={styles.commonTopHeaderUser}>
+            <div className={styles.commonTopHeaderAvatar}>
               {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
             </div>
-            <div className={styles.profileTopHeaderName}>{displayName}</div>
+            <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
         </div>
 

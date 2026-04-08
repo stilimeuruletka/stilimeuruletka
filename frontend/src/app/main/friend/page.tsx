@@ -71,13 +71,23 @@ export default function FriendPage() {
   return (
     <div className={styles.profileScreen}>
       <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
-        <div className={styles.profileAvatarBlockOverlay}>
-          <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}>
-            {avatarSrc && (
-              <img src={avatarSrc} alt="Аватар" width={88} height={88} className={styles.profileAvatarImage} loading="lazy" />
-            )}
+        <div className={styles.commonTopHeader} aria-hidden="true">
+          <Image
+            src="/главноеменюрулеткакрасный.png"
+            alt=""
+            width={4052}
+            height={1312}
+            className={styles.commonTopHeaderImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={90}
+          />
+          <div className={styles.commonTopHeaderUser}>
+            <div className={styles.commonTopHeaderAvatar}>
+              {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
+            </div>
+            <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
-          <div className={styles.profileUsername}>{displayName}</div>
         </div>
 
         <button type="button" className={styles.profileInviteButtonOverlay}>

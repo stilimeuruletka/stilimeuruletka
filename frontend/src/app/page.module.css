@@ -252,25 +252,25 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 30px;
+  top: 10px;
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 13%;
+  top: 16%;
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 28%;
+  top: 31%;
   left: 58%;
 }
 
 .friendProfileStack .profileArrow {
-  top: 54px;
+  top: 40px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 16px;
-  top: 54px;
+  right: -22px;
+  top: 20px;
 }
 
 .profileCard {
@@ -369,12 +369,12 @@
 
 .profileUsername {
   font-family: var(--font-uncage);
-  font-size: 10px;
+  font-size: 15px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-align: center;
   color: #000;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .profileActionsOverlay {
@@ -540,6 +540,60 @@
   width: 46px;
 }
 
+.commonTopHeader {
+  position: absolute;
+  top: 94px;
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.commonTopHeaderImage {
+  width: 62%;
+  max-width: none;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.commonTopHeaderUser {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.commonTopHeaderAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.commonTopHeaderAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.commonTopHeaderName {
+  font-family: var(--font-uncage);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #000;
+  font-weight: 800;
+}
+
 .howToPlayCompositeImage {
   object-fit: contain;
   inset: 16px;
@@ -647,8 +701,9 @@
   inset: 0;
   z-index: 20;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding: 0;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(10px);
   cursor: pointer;
@@ -657,8 +712,8 @@
 
 .howToPlayOverlayCard {
   position: relative;
-  width: min(92vw, 420px);
-  height: min(86vh, 720px);
+  width: min(100%, 520px);
+  height: 100%;
   z-index: 1;
   cursor: default;
 }
@@ -814,17 +869,30 @@
 
 .aboutTopLeftHeader {
   position: absolute;
-  top: 16px;
+  top: 120px;
   left: 16px;
+  right: 16px;
   z-index: 3;
   pointer-events: none;
 }
 
 .aboutTopLeftHeaderImage {
-  width: min(240px, 48vw);
+  width: 62%;
   height: auto;
   display: block;
   object-fit: contain;
+  margin-left: auto;
+}
+
+.aboutTopLeftHeaderUser {
+  position: absolute;
+  left: 70%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .profileTopHeaderUser {

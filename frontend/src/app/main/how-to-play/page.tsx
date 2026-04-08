@@ -118,22 +118,22 @@ export default function HowToPlayPlaceholderPage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        <div className={styles.howToPlayTopHeader} aria-hidden="true">
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/главноеменюрулеткакрасный.png"
             alt=""
             width={4052}
             height={1312}
-            className={styles.howToPlayTopHeaderImage}
+            className={styles.commonTopHeaderImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
             quality={90}
           />
-          <div className={styles.howToPlayTopHeaderUser}>
-            <div className={styles.howToPlayTopHeaderAvatar}>
+          <div className={styles.commonTopHeaderUser}>
+            <div className={styles.commonTopHeaderAvatar}>
               {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
             </div>
-            <div className={styles.howToPlayTopHeaderName}>{displayName}</div>
+            <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
         </div>
         <Link href="/main" className={styles.placeholderBackLink} aria-label="Назад в меню">
