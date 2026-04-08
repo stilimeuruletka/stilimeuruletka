@@ -141,13 +141,13 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <Link href="/main" className={styles.profileArrowLeft} aria-label="Назад в меню">
+        <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"
             width={52}
             height={26}
-            className={styles.profileArrow}
+            className={`${styles.profileArrow} ${styles.profileArrowProfile}`}
           />
         </Link>
 
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 alt="Реклама и сотрудничество"
                 width={3882}
                 height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgAdTweak}`}
                 sizes="(max-width: 520px) 44vw, 180px"
                 quality={90}
               />
@@ -194,7 +194,7 @@ export default function ProfilePage() {
                 alt="Канал сообщества"
                 width={3882}
                 height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift}`}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgChannelTweak}`}
                 sizes="(max-width: 520px) 44vw, 180px"
                 quality={90}
               />

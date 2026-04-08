@@ -225,6 +225,14 @@
   transform: scaleX(-1);
 }
 
+.profileArrowLeftProfile {
+  left: 124px;
+}
+
+.profileArrowProfile {
+  top: 86px;
+}
+
 .profileCenterIcons {
   position: absolute;
   top: 36%;
@@ -256,45 +264,26 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 18%;
+  top: 13%;
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 31%;
+  top: 28%;
   left: 58%;
 }
 
-.friendProfileStack .profileCenterIconLeft {
-  top: 44px;
-}
-
-.friendProfileStack .profileCenterIconRight {
-  top: -20px;
-}
-
 .friendProfileStack .profileArrow {
-  top: 40px;
+  top: 54px;
+  width: 28px;
+}
+
+.friendProfileStack .profileArrowLeft {
+  left: 20px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: -56px;
-  top: -6px;
-}
-
-.friendProfileStack .profileArrowRight .profileArrow {
-  width: 52px;
-}
-
-.friendProfileStack .profileInviteImageOverlay {
-  width: 240px;
-}
-
-.friendProfileStack .commonTopHeaderUser {
-  top: 28%;
-}
-
-.friendProfileStack .profileOverlayImage {
-  top: -220px;
+  right: 16px;
+  top: 54px;
 }
 
 .profileCard {
@@ -469,6 +458,14 @@
   transform: translateY(-6px);
 }
 
+.profileQuickButtonImgAdTweak {
+  transform: translate(-2px, -3px);
+}
+
+.profileQuickButtonImgChannelTweak {
+  transform: translate(2px, -6px);
+}
+
 .fullScreenPage {
   width: 100%;
   min-height: 100vh;
@@ -522,6 +519,37 @@
 
 .fullScreenCenterButtonImage {
   object-fit: contain;
+}
+
+.aboutNavArrowLeft,
+.aboutNavArrowRight {
+  position: absolute;
+  top: 118px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 12;
+}
+
+.aboutNavArrowLeft {
+  left: 18px;
+}
+
+.aboutNavArrowRight {
+  right: 18px;
+  transform: scaleX(-1);
+}
+
+.aboutNavArrowImage {
+  width: 40px;
+  height: auto;
+  display: block;
+  filter: invert(1) brightness(1.6);
+}
+
+.aboutHeaderImage {
+  width: 124%;
 }
 
 .placeholderPage {
