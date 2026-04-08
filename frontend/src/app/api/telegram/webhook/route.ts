@@ -31,9 +31,12 @@ type ChannelId = number | string;
 const channelResolveCache = new Map<string, number>();
 
 function normalizeChannelId(raw: string): ChannelId {
-  const v = raw.trim();
+  let v = raw.trim();
+  v = v.replace(/^https?:\/\/t\.me\//, "").replace(/^t\.me\//, "");
+  v = (v.split("?")[0]?.split("#")[0] ?? v).replace(/\/+$/, "");
   if (/^-?\d+$/.test(v)) return Number(v);
-  if (v.startsWith("@")) return v;
+  v = v.startsWith("@") ? v.slice(1) : v;
+  if (!v) return "@stilimeuruletka";
   return `@${v}`;
 }
 
