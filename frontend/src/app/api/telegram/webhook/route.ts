@@ -26,6 +26,32 @@ async function tg<T>(method: string, body: TgPayload): Promise<TgApiResponse<T>>
   return json ?? { ok: false, description: "Invalid Telegram response" };
 }
 
+type ChannelId = number | string;
+
+const channelResolveCache = new Map<string, number>();
+
+function normalizeChannelId(raw: string): ChannelId {
+  const v = raw.trim();
+  if (/^-?\d+$/.test(v)) return Number(v);
+  if (v.startsWith("@")) return v;
+  return `@${v}`;
+}
+
+async function resolveChannelId(channelId: ChannelId): Promise<number | null> {
+  if (typeof channelId === "number") return channelId;
+  const cached = channelResolveCache.get(channelId);
+  if (cached !== undefined) return cached;
+
+  const res = await tg<{ id: number }>("getChat", { chat_id: channelId });
+  if (!res.ok || typeof res.result?.id !== "number") {
+    console.warn("telegram_getChat_failed", { channelId, error_code: res.error_code, description: res.description });
+    return null;
+  }
+
+  channelResolveCache.set(channelId, res.result.id);
+  return res.result.id;
+}
+
 async function sendWelcome(chatId: number | string) {
   const text =
     "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
@@ -57,9 +83,30 @@ async function sendSubscribedMenu(chatId: number | string) {
 }
 
 async function checkSubscription(userId: number) {
-  const res = await tg<{ status: string; is_member?: boolean }>("getChatMember", { chat_id: CHANNEL_ID, user_id: userId });
+  const normalized = normalizeChannelId(CHANNEL_ID);
+  const tryCheck = async (chatId: ChannelId) =>
+    tg<{ status: string; is_member?: boolean }>("getChatMember", { chat_id: chatId, user_id: userId });
+
+  let res = await tryCheck(normalized);
   if (!res.ok) {
-    console.warn("telegram_getChatMember_failed", { userId, channelId: CHANNEL_ID, error_code: res.error_code, description: res.description });
+    const desc = res.description ?? "";
+    const isChatNotFound = desc.toLowerCase().includes("chat not found");
+    if (isChatNotFound || desc.toLowerCase().includes("bad request")) {
+      const resolved = await resolveChannelId(normalized);
+      if (resolved !== null) {
+        res = await tryCheck(resolved);
+      }
+    }
+  }
+
+  if (!res.ok) {
+    console.warn("telegram_getChatMember_failed", {
+      userId,
+      channelId: CHANNEL_ID,
+      normalizedChannelId: normalized,
+      error_code: res.error_code,
+      description: res.description
+    });
     return false;
   }
 
