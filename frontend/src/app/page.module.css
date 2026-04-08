@@ -547,7 +547,7 @@
 
 .howToPlayTopHeader {
   position: absolute;
-  top: 16px;
+  top: 94px;
   left: 16px;
   right: 16px;
   z-index: 3;
@@ -555,12 +555,13 @@
 }
 
 .howToPlayTopHeaderImage {
-  width: 112%;
+  width: 62%;
   max-width: none;
   height: auto;
   display: block;
   object-fit: contain;
-  transform: translateX(4%);
+  margin: 0 auto;
+  transform: none;
 }
 
 .howToPlayTopHeaderUser {
