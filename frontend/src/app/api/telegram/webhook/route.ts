@@ -71,15 +71,18 @@ async function sendWelcome(chatId: number | string) {
 }
 
 async function sendSubscribedMenu(chatId: number | string) {
-  await tg("sendMessage", {
+  const base = (PUBLIC_WEBAPP_URL || "https://stilimeuruletka.vercel.app").replace(/\/+$/, "");
+  await tg("sendPhoto", {
     chat_id: chatId,
-    text: "Подписка подтверждена. Выберите действие:",
+    photo: `${base}/пример.jpg`,
     reply_markup: {
       inline_keyboard: [
-        [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: PUBLIC_WEBAPP_URL || "https://stilimeuruletka.vercel.app" } }],
-        [{ text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" }],
-        [{ text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }],
-        [{ text: "Как играть", web_app: { url: `${(PUBLIC_WEBAPP_URL || "https://stilimeuruletka.vercel.app").replace(/\/+$/, "")}/main/how-to-play` } }]
+        [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: base } }],
+        [
+          { text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" },
+          { text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }
+        ],
+        [{ text: "Как играть", web_app: { url: `${base}/main/how-to-play` } }, { text: " ", callback_data: "noop" }]
       ]
     }
   });
@@ -201,6 +204,8 @@ export async function POST(req: NextRequest) {
       }
     } else if (data === "balance") {
       await tg("sendMessage", { chat_id: chatId, text: "Баланс: 0 билет(ов)." });
+    } else if (data === "noop") {
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
   }
 
