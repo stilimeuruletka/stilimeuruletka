@@ -120,7 +120,7 @@ export default function HowToPlayPlaceholderPage() {
       <div className={styles.placeholderFrame}>
         <div className={styles.howToPlayTopHeader} aria-hidden="true">
           <Image
-            src="/главноеменюрулетка.png"
+            src="/главноеменюрулеткакрасный.png"
             alt=""
             width={4052}
             height={1312}
@@ -158,8 +158,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={24}
-              height={24}
+              width={22}
+              height={22}
               className={styles.howToPlayRuleIcon}
               sizes="24px"
               quality={100}
@@ -169,8 +169,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={24}
-              height={24}
+              width={22}
+              height={22}
               className={styles.howToPlayRuleIcon}
               sizes="24px"
               quality={100}
@@ -180,8 +180,8 @@ export default function HowToPlayPlaceholderPage() {
             <Image
               src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
-              width={24}
-              height={24}
+              width={22}
+              height={22}
               className={styles.howToPlayRuleIcon}
               sizes="24px"
               quality={100}

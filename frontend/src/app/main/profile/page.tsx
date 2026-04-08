@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
         <div className={styles.profileTopHeader} aria-hidden="true">
           <Image
-            src="/главноеменюрулетка.png"
+            src="/главноеменюрулеткакрасный.png"
             alt=""
             width={4052}
             height={1312}

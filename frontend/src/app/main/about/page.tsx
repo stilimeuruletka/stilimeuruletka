@@ -23,6 +23,18 @@ export default function AboutPage() {
       />
 
       <div className={styles.fullScreenFrame}>
+        <div className={styles.aboutTopLeftHeader} aria-hidden="true">
+          <Image
+            src="/белоеглавноеменюрулетка.png"
+            alt=""
+            width={4052}
+            height={1312}
+            className={styles.aboutTopLeftHeaderImage}
+            priority
+            sizes="(max-width: 520px) 48vw, 240px"
+            quality={90}
+          />
+        </div>
         <Image
           src={backgroundSrc}
           alt="О бренде"

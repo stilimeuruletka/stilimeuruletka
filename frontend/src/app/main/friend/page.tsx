@@ -70,7 +70,7 @@ export default function FriendPage() {
 
   return (
     <div className={styles.profileScreen}>
-      <div className={styles.profileStack}>
+      <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
         <div className={styles.profileAvatarBlockOverlay}>
           <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}>
             {avatarSrc && (

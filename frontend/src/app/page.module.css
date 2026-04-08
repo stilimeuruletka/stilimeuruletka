@@ -192,7 +192,7 @@
 .profileArrow {
   position: absolute;
   top: 90px;
-  width: 32px;
+  width: 28px;
   height: auto;
   z-index: 2;
 }
@@ -249,6 +249,28 @@
 .profileCenterIconRight {
   right: -20px;
   top: -40px;
+}
+
+.friendProfileStack .profileAvatarBlockOverlay {
+  top: 30px;
+}
+
+.friendProfileStack .profileInviteButtonOverlay {
+  top: 13%;
+}
+
+.friendProfileStack .profileCenterIcons {
+  top: 28%;
+  left: 58%;
+}
+
+.friendProfileStack .profileArrow {
+  top: 54px;
+}
+
+.friendProfileStack .profileArrowRight {
+  right: 16px;
+  top: 54px;
 }
 
 .profileCard {
@@ -515,7 +537,7 @@
 }
 
 .placeholderBackIconSmall {
-  width: 52px;
+  width: 46px;
 }
 
 .howToPlayCompositeImage {
@@ -533,10 +555,12 @@
 }
 
 .howToPlayTopHeaderImage {
-  width: 100%;
+  width: 112%;
+  max-width: none;
   height: auto;
   display: block;
   object-fit: contain;
+  transform: translateX(4%);
 }
 
 .howToPlayTopHeaderUser {
@@ -587,13 +611,13 @@
   bottom: 140px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
   z-index: 10;
 }
 
 .howToPlayRuleButton {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -611,8 +635,8 @@
 }
 
 .howToPlayRuleIcon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: block;
 }
 
@@ -779,7 +803,24 @@
 }
 
 .profileTopHeaderImage {
-  width: 100%;
+  width: 112%;
+  max-width: none;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  transform: translateX(4%);
+}
+
+.aboutTopLeftHeader {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.aboutTopLeftHeaderImage {
+  width: min(240px, 48vw);
   height: auto;
   display: block;
   object-fit: contain;
