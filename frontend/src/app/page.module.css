@@ -638,12 +638,12 @@
 }
 
 .commonTopHeaderImage {
-  width: 70%;
+  width: 68%;
   max-width: none;
   height: auto;
   display: block;
   object-fit: contain;
-  margin: 0 0 0 12px;
+  margin: 0 auto;
 }
 
 .commonTopHeaderUser {
@@ -749,8 +749,8 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 72px;
-  transform: none;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 152px;
   display: flex;
   flex-direction: column;

@@ -75,21 +75,31 @@ export default function HowToPlayPlaceholderPage() {
     return null;
   }, [activeIndex]);
 
+  const markSeen = useCallback(
+    (index: number) => {
+      setSeen((prev) => {
+        if (prev[index]) {
+          return prev;
+        }
+        const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
+        next[index] = true;
+        try {
+          window.localStorage.setItem(storageKey, JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+    },
+    [storageKey]
+  );
+
   const closeOverlay = useCallback(() => {
     if (activeIndex == null) {
       return;
     }
 
-    setSeen((prev) => {
-      const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
-      next[activeIndex] = true;
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+    markSeen(activeIndex);
     setActiveIndex(null);
-  }, [activeIndex]);
+  }, [activeIndex, markSeen]);
 
   useEffect(() => {
     if (activeIndex == null) {
@@ -164,7 +174,15 @@ export default function HowToPlayPlaceholderPage() {
           priority
         />
         <div className={styles.howToPlayRulesRow}>
-          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(0)} aria-label="Открыть описание 1">
+          <button
+            type="button"
+            className={styles.howToPlayRuleButton}
+            onClick={() => {
+              markSeen(0);
+              setActiveIndex(0);
+            }}
+            aria-label="Открыть описание 1"
+          >
             <Image
               src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
@@ -175,7 +193,15 @@ export default function HowToPlayPlaceholderPage() {
               quality={100}
             />
           </button>
-          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(1)} aria-label="Открыть описание 2">
+          <button
+            type="button"
+            className={styles.howToPlayRuleButton}
+            onClick={() => {
+              markSeen(1);
+              setActiveIndex(1);
+            }}
+            aria-label="Открыть описание 2"
+          >
             <Image
               src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
@@ -186,7 +212,15 @@ export default function HowToPlayPlaceholderPage() {
               quality={100}
             />
           </button>
-          <button type="button" className={styles.howToPlayRuleButton} onClick={() => setActiveIndex(2)} aria-label="Открыть описание 3">
+          <button
+            type="button"
+            className={styles.howToPlayRuleButton}
+            onClick={() => {
+              markSeen(2);
+              setActiveIndex(2);
+            }}
+            aria-label="Открыть описание 3"
+          >
             <Image
               src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
               alt=""
