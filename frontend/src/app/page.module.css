@@ -162,7 +162,7 @@
 }
 
 .friendProfileStack {
-  transform: translateY(120px);
+  transform: translateY(50px);
 }
 
 .profileOverlayImage {
@@ -237,12 +237,12 @@
 
 .profileArrowLeftProfile {
   left: 32px;
-  top: 128px;
+  top: 110px;
 }
 
 .profileArrowRightProfile {
   right: 32px;
-  top: 128px;
+  top: 110px;
 }
 
 .profileCenterIcons {
@@ -544,7 +544,7 @@
 .aboutNavArrowLeft,
 .aboutNavArrowRight {
   position: absolute;
-  top: 104px;
+  top: 92px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -752,7 +752,7 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 56px;
+  left: 64px;
   transform: none;
   bottom: 138px;
   display: flex;
