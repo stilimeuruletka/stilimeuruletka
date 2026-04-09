@@ -960,6 +960,12 @@
   z-index: 10;
 }
 
+@media (min-width: 421px) and (max-width: 460px) {
+  .howToPlayRulesRow {
+    bottom: 158px;
+  }
+}
+
 .howToPlayRuleButton {
   width: 22px;
   height: 22px;
