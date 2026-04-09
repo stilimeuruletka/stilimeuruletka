@@ -231,13 +231,13 @@
 }
 
 .profileArrowLeftProfile {
-  left: 120px;
-  top: 100px;
+  left: 8px;
+  top: 118px;
 }
 
 .profileArrowRightProfile {
-  right: 120px;
-  top: 100px;
+  right: 8px;
+  top: 118px;
 }
 
 .profileTopHeader {
@@ -669,8 +669,8 @@
 }
 
 .commonTopHeaderAvatar {
-  width: 80px;
-  height: 80px;
+  width: 66px;
+  height: 66px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
@@ -760,8 +760,8 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 40px;
+  transform: none;
   bottom: 152px;
   display: flex;
   flex-direction: column;
