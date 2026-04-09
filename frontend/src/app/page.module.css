@@ -189,7 +189,7 @@
 }
 
 .profileInviteImageOverlay {
-  width: 260px;
+  width: 220px;
   height: auto;
   display: block;
 }
@@ -276,7 +276,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 14%;
+  top: 16%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -545,7 +545,7 @@
 .aboutNavArrowLeft,
 .aboutNavArrowRight {
   position: absolute;
-  top: 92px;
+  top: 114px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1015,8 +1015,8 @@
 
 .howToPlayOverlayClose {
   position: absolute;
-  left: 58px;
-  bottom: 160px;
+  left: 120px;
+  bottom: 230px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1026,7 +1026,7 @@
 
 .howToPlayOverlayCloseIcon {
   display: block;
-  width: 40px;
+  width: 80px;
   height: auto;
   transform: none;
   filter: none;
@@ -1034,10 +1034,10 @@
 
 @media (max-width: 520px) {
   .howToPlayOverlayClose {
-    left: 58px;
+    left: 120px;
     right: auto;
     top: auto;
-    bottom: 170px;
+    bottom: 250px;
   }
 }
 
