@@ -146,20 +146,20 @@ export default function HowToPlayPlaceholderPage() {
             <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
         </div>
-        <Link href="/main/how-to-play" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Вперёд">
+        <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
           <Image
             src="/стрелканазад.PNG"
-            alt="Вперёд"
+            alt="Назад"
             width={52}
             height={26}
             className={styles.profileArrow}
             priority
           />
         </Link>
-        <Link href="/main" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Назад в меню">
+        <Link href="/main/profile" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
-            alt="Назад"
+            alt="Вперёд"
             width={52}
             height={26}
             className={styles.profileArrow}

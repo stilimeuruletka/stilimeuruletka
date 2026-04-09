@@ -219,25 +219,25 @@
   left: 44px;
   top: 118px;
   z-index: 2;
-  transform: scaleX(-1);
+  transform: none;
 }
 
 .profileArrowRight {
   position: absolute;
   right: -40px;
   top: 12px;
-  transform: none;
+  transform: scaleX(-1);
   z-index: 2;
 }
 
 .profileArrowLeftProfile {
-  left: 220px;
-  top: 86px;
+  left: 120px;
+  top: 100px;
 }
 
 .profileArrowRightProfile {
-  right: 220px;
-  top: 86px;
+  right: 120px;
+  top: 100px;
 }
 
 .profileTopHeader {
@@ -275,7 +275,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 15%;
+  top: 18%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -669,8 +669,8 @@
 }
 
 .commonTopHeaderAvatar {
-  width: 88px;
-  height: 88px;
+  width: 80px;
+  height: 80px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
@@ -1359,8 +1359,8 @@
   }
 
   .howToPlayRulesRow {
-    left: 96px;
-    bottom: 110px;
+    left: 40px;
+    bottom: 70px;
     transform: none;
   }
 }
