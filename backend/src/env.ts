@@ -13,7 +13,8 @@ const EnvSchema = z.object({
   TELEGRAM_BOT_USERNAME: z.string().min(3),
   TELEGRAM_CHANNEL_ID: z.string().min(3),
 
-  PUBLIC_WEBAPP_URL: z.string().url()
+  PUBLIC_WEBAPP_URL: z.string().url(),
+  CRON_SECRET: z.string().min(10).optional()
 });
 
 export type Env = z.infer<typeof EnvSchema>;

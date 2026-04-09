@@ -76,7 +76,7 @@ export default function Main2Page() {
                 />
               </div>
               <Image
-                src="/каталогкнопка.png"
+                src="/каталогплашка.png"
                 alt="Страница в разработке"
                 width={3882}
                 height={608}

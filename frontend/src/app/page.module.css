@@ -457,6 +457,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 16px;
   flex-wrap: nowrap;
 }
@@ -471,19 +472,19 @@
 }
 
 .profileQuickButtonImgBrandShiftLeft {
-  transform: translateX(-6px);
+  margin-left: 0;
 }
 
 .profileQuickButtonImgLift {
-  transform: translateY(-6px);
+  margin-top: -6px;
 }
 
 .profileQuickButtonImgAdTweak {
-  transform: translate(-2px, -3px);
+  margin-left: 0;
 }
 
 .profileQuickButtonImgChannelTweak {
-  transform: translate(2px, -6px);
+  margin-left: 0;
 }
 
 .fullScreenPage {
@@ -614,6 +615,52 @@
 
 .placeholderBackIconSmall {
   width: 46px;
+}
+
+.rouletteOverlay {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.rouletteInfo {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.rouletteMessage {
+  margin-top: 6px;
+  color: #950911;
+}
+
+.rouletteSpinButton {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #950911;
+  color: #fff;
+  font-family: var(--font-uncage);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rouletteSpinButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .howToPlayNavLeft {
@@ -869,7 +916,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(-2px, 6px);
+  transform: translate(-2px, 12px);
   font-family: var(--font-uncage);
   font-size: 14px;
   letter-spacing: 0.06em;
@@ -1226,6 +1273,7 @@
   width: 100%;
   height: auto;
   display: block;
+  margin-top: 6px;
 }
 
 .gridFixed .girlWrap {

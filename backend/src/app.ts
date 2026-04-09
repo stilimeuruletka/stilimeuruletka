@@ -15,7 +15,19 @@ import { createSupabase } from "./supabase.js";
 import { createTelegramApi, TelegramError } from "./telegram/telegramApi.js";
 import { checkChannelSubscription } from "./telegram/subscription.js";
 import { verifyTelegramWebAppInitData, TelegramWebAppAuthError } from "./auth/telegramWebApp.js";
-import { getReferralCode, getTicketBalance, grantSubscriptionTicket, handleStart, spinWheel, writeAuditEvent } from "./db.js";
+import {
+  ensureFreeSpin,
+  getReferralCode,
+  getTicketBalance,
+  grantSubscriptionTicket,
+  handleStart,
+  listDueSpinUsers,
+  setNextSpinAfterSpin,
+  setNextSpinAfterSpinMidnight,
+  setUserTzOffset,
+  spinWheel,
+  writeAuditEvent
+} from "./db.js";
 
 const TelegramWebhookSchema = z.object({
   update_id: z.number(),
@@ -39,6 +51,15 @@ const TelegramWebhookSchema = z.object({
 
 type TelegramApi = ReturnType<typeof createTelegramApi>;
 
+function getTzOffsetMinutesFromQuery(req: FastifyRequest) {
+  const query = req.query as unknown;
+  if (!query || typeof query !== "object") return null;
+  const tz = (query as Record<string, unknown>).tz_offset;
+  if (typeof tz !== "string") return null;
+  const n = Number(tz);
+  return Number.isFinite(n) ? n : null;
+}
+
 type DbApi = {
   handleStart: (input: { tg_user_id: number; username?: string; ref_code?: string | null }) => Promise<{
     is_new_user: boolean;
@@ -55,6 +76,11 @@ type DbApi = {
     win: boolean;
     balance_after: number;
   }>;
+  ensureFreeSpin: (tgUserId: number) => Promise<{ balance: number; can_spin: boolean; next_spin_at: string | null; granted: boolean }>;
+  setUserTzOffset: (tgUserId: number, tzOffsetMinutes: number) => Promise<void>;
+  setNextSpinAfterSpin: (tgUserId: number, nextSpinAtIso: string) => Promise<{ next_spin_at: string }>;
+  setNextSpinAfterSpinMidnight: (tgUserId: number) => Promise<{ next_spin_at: string }>;
+  listDueSpinUsers: (nowIso: string) => Promise<number[]>;
   writeAuditEvent: (event: { tg_user_id: number; event_type: string; payload?: Record<string, unknown> }) => Promise<void>;
   getReferralCode: (tgUserId: number) => Promise<string>;
 };
@@ -72,6 +98,11 @@ export function buildApp(
       getTicketBalance: (tgUserId) => getTicketBalance(supabase, tgUserId),
       grantSubscriptionTicket: (tgUserId, channelId) => grantSubscriptionTicket(supabase, tgUserId, channelId),
       spinWheel: (tgUserId) => spinWheel(supabase, tgUserId),
+      ensureFreeSpin: (tgUserId) => ensureFreeSpin(supabase, tgUserId),
+      setUserTzOffset: (tgUserId, tzOffsetMinutes) => setUserTzOffset(supabase, tgUserId, tzOffsetMinutes),
+      setNextSpinAfterSpin: (tgUserId, nextSpinAtIso) => setNextSpinAfterSpin(supabase, tgUserId, nextSpinAtIso),
+      setNextSpinAfterSpinMidnight: (tgUserId) => setNextSpinAfterSpinMidnight(supabase, tgUserId),
+      listDueSpinUsers: (nowIso) => listDueSpinUsers(supabase, nowIso),
       writeAuditEvent: (event) => writeAuditEvent(supabase, event),
       getReferralCode: (tgUserId) => getReferralCode(supabase, tgUserId)
     } satisfies DbApi);
@@ -396,18 +427,78 @@ export function buildApp(
 
   app.get("/api/me", async (req: FastifyRequest) => {
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
-    const balance = await db.getTicketBalance(auth.tgUserId);
-    return { tg_user_id: auth.tgUserId, balance: balance.balance };
+    const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
+    if (tzOffsetMinutes !== null) {
+      await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
+    }
+    const state = await db.ensureFreeSpin(auth.tgUserId);
+    return {
+      tg_user_id: auth.tgUserId,
+      balance: state.balance,
+      can_spin: state.can_spin,
+      next_spin_at: state.next_spin_at
+    };
   });
 
   app.post("/api/spin", async (req: FastifyRequest) => {
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
     try {
-      return await db.spinWheel(auth.tgUserId);
+      const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
+      if (tzOffsetMinutes !== null) {
+        await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
+      }
+
+      const state = await db.ensureFreeSpin(auth.tgUserId);
+      if (!state.can_spin) {
+        throw app.httpErrors.badRequest("Spin not available yet");
+      }
+
+      const result = await db.spinWheel(auth.tgUserId);
+      const next = await db.setNextSpinAfterSpinMidnight(auth.tgUserId);
+
+      return { ...result, next_spin_at: next.next_spin_at };
     } catch (e) {
       req.log.warn({ err: e }, "api_spin_failed");
+      if (typeof e === "object" && e && "statusCode" in e) {
+        throw e;
+      }
       throw app.httpErrors.badRequest("Spin failed");
     }
+  });
+
+  app.post("/cron/spin-reminder", async (req: FastifyRequest, reply) => {
+    if (!env.CRON_SECRET) {
+      throw app.httpErrors.internalServerError("Cron secret is not configured");
+    }
+    const secret = req.headers["x-cron-secret"];
+    if (typeof secret !== "string" || secret !== env.CRON_SECRET) {
+      throw app.httpErrors.unauthorized("Unauthorized");
+    }
+
+    const nowIso = new Date().toISOString();
+    const users = await db.listDueSpinUsers(nowIso);
+    let notified = 0;
+
+    for (const tgUserId of users) {
+      try {
+        const state = await db.ensureFreeSpin(tgUserId);
+        if (!state.granted) continue;
+        notified += 1;
+        await telegram.sendMessage(
+          tgUserId,
+          "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
+          {
+            reply_markup: {
+              inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+            }
+          }
+        );
+      } catch (e) {
+        req.log.warn({ err: e, tgUserId }, "cron_spin_notify_failed");
+      }
+    }
+
+    return reply.send({ ok: true, processed: users.length, notified });
   });
 
   app.get("/api/referral/link", async (req: FastifyRequest) => {

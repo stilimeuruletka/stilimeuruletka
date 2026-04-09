@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -19,7 +19,7 @@ type TelegramWebApp = {
 
 type TelegramSdkWindow = Window & {
   Telegram?: {
-    WebApp?: TelegramWebApp;
+    WebApp?: TelegramWebApp & { initData?: string };
   };
 };
 
@@ -36,33 +36,62 @@ function formatRemaining(ms: number | null) {
   return `${hours}:${minutes}:${seconds}`;
 }
 
+function getBackendBase() {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
+  return raw ? raw.replace(/\/+$/, "") : "";
+}
+
+function getInitData() {
+  const w = window as TelegramSdkWindow;
+  const initData = w.Telegram?.WebApp?.initData;
+  return typeof initData === "string" && initData.length > 10 ? initData : null;
+}
+
 function SpinTimer() {
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
+  const [canSpin, setCanSpin] = useState<boolean>(false);
+  const [nextSpinAtMs, setNextSpinAtMs] = useState<number | null>(null);
 
   const remainingText = useMemo(() => formatRemaining(remainingMs), [remainingMs]);
 
+  const refresh = useCallback(async () => {
+    const initData = getInitData();
+    if (!initData) return;
+
+    const base = getBackendBase();
+    const tzOffset = new Date().getTimezoneOffset();
+    const res = await fetch(`${base}/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+      headers: { "x-telegram-init-data": initData }
+    });
+    if (!res.ok) return;
+    const json = (await res.json().catch(() => null)) as
+      | { can_spin: boolean; next_spin_at: string | null }
+      | null;
+    if (!json) return;
+    setCanSpin(Boolean(json.can_spin));
+    setNextSpinAtMs(json.next_spin_at ? Date.parse(json.next_spin_at) : null);
+  }, []);
+
   useEffect(() => {
-    const storageKey = "spin_next_at";
-    const now = Date.now();
-    let nextAt = Number.NaN;
+    const id = window.setTimeout(() => {
+      void refresh();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [refresh]);
 
-    try {
-      const stored = window.localStorage.getItem(storageKey);
-      nextAt = stored ? Number(stored) : Number.NaN;
-    } catch {
-      nextAt = Number.NaN;
-    }
-
-    if (!nextAt || Number.isNaN(nextAt) || nextAt <= now) {
-      nextAt = now + 24 * 60 * 60 * 1000;
-      try {
-        window.localStorage.setItem(storageKey, String(nextAt));
-      } catch {}
-    }
-
+  useEffect(() => {
     const update = () => {
-      const diff = nextAt - Date.now();
-      setRemainingMs(diff > 0 ? diff : 0);
+      if (canSpin || !nextSpinAtMs) {
+        setRemainingMs(0);
+        return;
+      }
+      const diff = nextSpinAtMs - Date.now();
+      if (diff <= 0) {
+        setRemainingMs(0);
+        void refresh();
+        return;
+      }
+      setRemainingMs(diff);
     };
 
     const timeoutId = window.setTimeout(update, 0);
@@ -71,7 +100,7 @@ function SpinTimer() {
       window.clearTimeout(timeoutId);
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [canSpin, nextSpinAtMs, refresh]);
 
   return (
     <div className={styles.profileSpinTimer}>
@@ -85,7 +114,7 @@ function SpinTimer() {
         quality={90}
       />
       <div className={styles.profileSpinTimerText}>
-        <span>ДО СЛЕДУЮЩЕГО СПИНА</span>
+        <span>{canSpin ? "МОЖНО КРУТИТЬ" : "ДО СЛЕДУЮЩЕГО СПИНА"}</span>
         <span className={styles.profileSpinTimerValue}>{remainingText}</span>
       </div>
     </div>
@@ -169,10 +198,10 @@ export default function ProfilePage() {
           <div className={styles.profileQuickButtons}>
             <div className={styles.profileQuickButtonsCenter}>
               <Image
-                src="/telegram-cloud-document-2-5364327192501197087 1.png"
+                src="/историястильныхпинов.png"
                 alt="История стильных спинов"
-                width={3882}
-                height={608}
+                width={10324}
+                height={1720}
                 className={styles.profileQuickButtonImg}
                 sizes="(max-width: 520px) 44vw, 180px"
                 quality={90}
@@ -182,42 +211,50 @@ export default function ProfilePage() {
             <div className={styles.profileQuickButtonsRow}>
               <Link href="/main/friend" className={styles.profileQuickButtonLink}>
                 <Image
-                  src="/telegram-cloud-document-2-5364327192501197088 1.png"
+                  src="/пригласитьстильныхдрузей2.png"
                   alt="Пригласить стильных друзей"
-                  width={3882}
-                  height={608}
+                  width={10296}
+                  height={1732}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
                   sizes="(max-width: 520px) 46vw, 186px"
                   quality={90}
                 />
               </Link>
               <Image
-                src="/telegram-cloud-document-2-5364327192501197089 1.png"
+                src="/рекламаисотрудничество.png"
                 alt="Реклама и сотрудничество"
-                width={3882}
-                height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgAdTweak}`}
+                width={10260}
+                height={1700}
+                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgAdTweak}`}
                 sizes="(max-width: 520px) 44vw, 180px"
                 quality={90}
               />
             </div>
 
             <div className={styles.profileQuickButtonsRow}>
-              <Image
-                src="/telegram-cloud-document-2-5364327192501197090 1.png"
-                alt="Канал сообщества"
-                width={3882}
-                height={608}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgChannelTweak}`}
-                sizes="(max-width: 520px) 44vw, 180px"
-                quality={90}
-              />
+              <a
+                href="https://t.me/stilimeuruletka"
+                target="_blank"
+                rel="noreferrer"
+                className={styles.profileQuickButtonLink}
+                aria-label="Канал сообщества"
+              >
+                <Image
+                  src="/каналсообщество.png"
+                  alt="Канал сообщества"
+                  width={10252}
+                  height={1692}
+                  className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgChannelTweak}`}
+                  sizes="(max-width: 520px) 44vw, 180px"
+                  quality={90}
+                />
+              </a>
               <Link href="/main/about" className={styles.profileQuickButtonLink}>
                 <Image
-                  src="/telegram-cloud-document-2-5364327192501197096 1.png"
+                  src="/обренда.png"
                   alt="О бренде"
-                  width={3882}
-                  height={608}
+                  width={10216}
+                  height={1664}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
                   sizes="(max-width: 520px) 46vw, 186px"
                   quality={90}

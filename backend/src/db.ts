@@ -20,7 +20,15 @@ const SpinResultSchema = z.object({
   balance_after: z.number().int().min(0)
 });
 
+const FreeSpinStateSchema = z.object({
+  balance: z.number().int().min(0),
+  can_spin: z.boolean(),
+  next_spin_at: z.string().nullable(),
+  granted: z.boolean()
+});
+
 export type SpinResult = z.infer<typeof SpinResultSchema>;
+export type FreeSpinState = z.infer<typeof FreeSpinStateSchema>;
 
 async function rpc<T>(supabase: SupabaseClient, fn: string, args: Record<string, unknown>) {
   const { data, error } = await supabase.rpc(fn, args);
@@ -53,6 +61,33 @@ export async function grantSubscriptionTicket(supabase: SupabaseClient, tgUserId
 export async function spinWheel(supabase: SupabaseClient, tgUserId: number) {
   const data = await rpc<unknown>(supabase, "spin_wheel", { p_tg_user_id: tgUserId });
   return SpinResultSchema.parse(data);
+}
+
+export async function ensureFreeSpin(supabase: SupabaseClient, tgUserId: number) {
+  const data = await rpc<unknown>(supabase, "ensure_free_spin", { p_tg_user_id: tgUserId });
+  return FreeSpinStateSchema.parse(data);
+}
+
+export async function setUserTzOffset(supabase: SupabaseClient, tgUserId: number, tzOffsetMinutes: number) {
+  await rpc<unknown>(supabase, "set_user_tz_offset", { p_tg_user_id: tgUserId, p_tz_offset_minutes: tzOffsetMinutes });
+}
+
+export async function setNextSpinAfterSpin(supabase: SupabaseClient, tgUserId: number, nextSpinAtIso: string) {
+  const data = await rpc<unknown>(supabase, "set_next_spin_after_spin", {
+    p_tg_user_id: tgUserId,
+    p_next_spin_at: nextSpinAtIso
+  });
+  return z.object({ next_spin_at: z.string() }).parse(data);
+}
+
+export async function setNextSpinAfterSpinMidnight(supabase: SupabaseClient, tgUserId: number) {
+  const data = await rpc<unknown>(supabase, "set_next_spin_after_spin_midnight", { p_tg_user_id: tgUserId });
+  return z.object({ next_spin_at: z.string() }).parse(data);
+}
+
+export async function listDueSpinUsers(supabase: SupabaseClient, nowIso: string) {
+  const data = await rpc<unknown>(supabase, "list_due_spin_users", { p_now: nowIso });
+  return z.array(z.object({ tg_user_id: z.number().int().positive() })).parse(data).map((r) => r.tg_user_id);
 }
 
 export async function writeAuditEvent(

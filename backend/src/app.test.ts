@@ -118,7 +118,7 @@ describe("buildApp", () => {
     const app = buildApp(env, {
       db: {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
-        getTicketBalance: vi.fn(async () => ({ balance: 7 })),
+        ensureFreeSpin: vi.fn(async () => ({ balance: 7, can_spin: false, next_spin_at: "2026-01-01T00:00:00.000Z", granted: false })),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => ({
           spin_id: "00000000-0000-0000-0000-000000000000",
@@ -128,6 +128,9 @@ describe("buildApp", () => {
           win: false,
           balance_after: 0
         })),
+        setNextSpinAfterSpin: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        listDueSpinUsers: vi.fn(async () => []),
+        getTicketBalance: vi.fn(async () => ({ balance: 7 })),
         writeAuditEvent: vi.fn(async () => {}),
         getReferralCode: vi.fn(async () => "refcode")
       } as any
@@ -139,7 +142,12 @@ describe("buildApp", () => {
       headers: { "x-telegram-init-data": initData }
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ tg_user_id: 42, balance: 7 });
+    expect(res.json()).toEqual({
+      tg_user_id: 42,
+      balance: 7,
+      can_spin: false,
+      next_spin_at: "2026-01-01T00:00:00.000Z"
+    });
     await app.close();
   });
 
@@ -406,12 +414,19 @@ describe("buildApp", () => {
       balance_after: 0
     };
 
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+
     const app = buildApp(env, {
       db: {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
-        getTicketBalance: vi.fn(async () => ({ balance: 0 })),
+        ensureFreeSpin: vi.fn(async () => ({ balance: 1, can_spin: true, next_spin_at: null, granted: false })),
+        setUserTzOffset: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => spinOk),
+        setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        listDueSpinUsers: vi.fn(async () => []),
+        getTicketBalance: vi.fn(async () => ({ balance: 0 })),
         writeAuditEvent: vi.fn(async () => {}),
         getReferralCode: vi.fn(async () => "refcode")
       } as any
@@ -419,16 +434,20 @@ describe("buildApp", () => {
 
     const ok = await app.inject({ method: "POST", url: "/api/spin", headers: { "x-telegram-init-data": initData } });
     expect(ok.statusCode).toBe(200);
-    expect(ok.json()).toEqual(spinOk);
+    expect(ok.json()).toEqual({ ...spinOk, next_spin_at: "2026-01-02T00:00:00.000Z" });
 
     const app2 = buildApp(env, {
       db: {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
-        getTicketBalance: vi.fn(async () => ({ balance: 0 })),
+        ensureFreeSpin: vi.fn(async () => ({ balance: 1, can_spin: true, next_spin_at: null, granted: false })),
+        setUserTzOffset: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => {
           throw new Error("no tickets");
         }),
+        setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        listDueSpinUsers: vi.fn(async () => []),
+        getTicketBalance: vi.fn(async () => ({ balance: 0 })),
         writeAuditEvent: vi.fn(async () => {}),
         getReferralCode: vi.fn(async () => "refcode")
       } as any
@@ -437,6 +456,7 @@ describe("buildApp", () => {
     const bad = await app2.inject({ method: "POST", url: "/api/spin", headers: { "x-telegram-init-data": initData } });
     expect(bad.statusCode).toBe(400);
 
+    vi.useRealTimers();
     await app.close();
     await app2.close();
   });
@@ -731,7 +751,8 @@ describe("buildApp", () => {
       TELEGRAM_WEBHOOK_SECRET: "secret-token",
       TELEGRAM_BOT_USERNAME: "my_bot",
       TELEGRAM_CHANNEL_ID: "@my_channel",
-      PUBLIC_WEBAPP_URL: "https://example.com"
+      PUBLIC_WEBAPP_URL: "https://example.com",
+      CRON_SECRET: "cron-secret-123"
     } as const;
 
     const rpc = vi.fn(async (fn: string) => {
@@ -740,6 +761,15 @@ describe("buildApp", () => {
       }
       if (fn === "get_ticket_balance") {
         return { data: { balance: 5 }, error: null };
+      }
+      if (fn === "ensure_free_spin") {
+        return { data: { balance: 5, can_spin: true, next_spin_at: null, granted: true }, error: null };
+      }
+      if (fn === "set_next_spin_after_spin_midnight") {
+        return { data: { next_spin_at: "2026-01-02T00:00:00.000Z" }, error: null };
+      }
+      if (fn === "list_due_spin_users") {
+        return { data: [{ tg_user_id: 42 }], error: null };
       }
       if (fn === "spin_wheel") {
         return {
@@ -791,12 +821,23 @@ describe("buildApp", () => {
     const me = await app.inject({ method: "GET", url: "/api/me", headers: { "x-telegram-init-data": initData } });
     expect(me.statusCode).toBe(200);
 
+    const spin = await app.inject({ method: "POST", url: "/api/spin", headers: { "x-telegram-init-data": initData } });
+    expect(spin.statusCode).toBe(200);
+
     const ref = await app.inject({
       method: "GET",
       url: "/api/referral/link",
       headers: { "x-telegram-init-data": initData }
     });
     expect(ref.statusCode).toBe(200);
+
+    const cron = await app.inject({
+      method: "POST",
+      url: "/cron/spin-reminder",
+      headers: { "x-cron-secret": env.CRON_SECRET }
+    });
+    expect(cron.statusCode).toBe(200);
+    expect(telegram.sendMessage).toHaveBeenCalled();
 
     const start = await app.inject({
       method: "POST",
