@@ -162,12 +162,12 @@
 }
 
 .friendProfileStack {
-  transform: translateY(50px);
+  transform: translateY(20px);
 }
 
 .profileOverlayImage {
   position: absolute;
-  top: 40px;
+  top: 30px;
   left: 0;
   right: 0;
   width: 100%;
@@ -617,6 +617,158 @@
   width: 46px;
 }
 
+.friendsListPage {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.friendsListPage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/IMG_2234.PNG");
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px) brightness(1.5) saturate(0.8);
+  transform: scale(1.06);
+  z-index: 0;
+}
+
+.friendsListPage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 0;
+}
+
+.friendsListFrame {
+  width: min(520px, calc(100vh * 9 / 16));
+  height: 100vh;
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.friendsListBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.friendsListBackgroundImage {
+  object-fit: cover;
+  filter: blur(14px) brightness(1.5) saturate(0.8);
+  transform: scale(1.05);
+}
+
+.friendsListHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 160px;
+  z-index: 2;
+}
+
+.friendsListHeaderImage {
+  object-fit: contain;
+  object-position: top center;
+}
+
+.friendsListBackButton {
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.friendsListBackIcon {
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
+.friendsListCount {
+  position: absolute;
+  top: 76px;
+  right: 54px;
+  font-family: var(--font-uncage);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #000;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+.friendsListScroll {
+  position: absolute;
+  inset: 0;
+  padding: 160px 16px 22px;
+  overflow-y: auto;
+  z-index: 1;
+}
+
+.friendsListCard {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 14px;
+  aspect-ratio: 1248 / 674;
+}
+
+.friendsListCardImage {
+  object-fit: contain;
+}
+
+.friendsListCardName {
+  position: absolute;
+  left: 10%;
+  top: 32%;
+  width: 54%;
+  font-family: var(--font-uncage);
+  font-size: clamp(4px, 0.9vw, 6px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000;
+  font-weight: 800;
+  z-index: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friendsListCardAvatar {
+  position: absolute;
+  right: 16%;
+  top: 22%;
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.35);
+  z-index: 2;
+}
+
+.friendsListCardAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .rouletteOverlay {
   position: absolute;
   left: 16px;
@@ -794,7 +946,7 @@
 }
 
 .howToPlayCompositeImageBlur {
-  filter: blur(8px);
+  filter: blur(4px);
 }
 
 .howToPlayRulesRow {
@@ -843,7 +995,7 @@
   justify-content: center;
   padding: 0;
   background: rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(2px);
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -853,11 +1005,31 @@
   width: min(100%, 520px);
   height: 100%;
   z-index: 1;
+  transform: translateY(-16px);
   cursor: default;
 }
 
 .howToPlayOverlayImage {
   object-fit: contain;
+}
+
+.howToPlayOverlayClose {
+  position: absolute;
+  left: 52px;
+  bottom: 92px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.howToPlayOverlayCloseIcon {
+  display: block;
+  width: 40px;
+  height: auto;
+  transform: none;
+  filter: none;
 }
 
 
@@ -916,7 +1088,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(-2px, 12px);
+  transform: translate(-2px, 18px);
   font-family: var(--font-uncage);
   font-size: 14px;
   letter-spacing: 0.06em;
@@ -987,6 +1159,14 @@
 }
 
 .profileBackgroundLayerImage {
+  object-fit: cover;
+}
+
+.profileBackgroundLayerVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 

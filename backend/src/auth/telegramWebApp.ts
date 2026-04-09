@@ -4,6 +4,7 @@ import { z } from "zod";
 const TelegramUserSchema = z.object({
   id: z.number().int().positive(),
   username: z.string().min(1).optional(),
+  photo_url: z.string().optional(),
   first_name: z.string().min(1),
   last_name: z.string().min(1).optional()
 });
@@ -60,4 +61,3 @@ export function verifyTelegramWebAppInitData(initData: string, botToken: string)
 
   return { user: userParsed.data, authDate };
 }
-

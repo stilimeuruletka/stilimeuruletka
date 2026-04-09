@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -128,6 +128,8 @@ export default function ProfilePage() {
     () => false
   );
 
+  const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
+
   const { displayName, avatarSrc } = useMemo(() => {
     if (!isClient) {
       return { displayName: "@username", avatarSrc: null as string | null };
@@ -141,19 +143,41 @@ export default function ProfilePage() {
     };
   }, [isClient]);
 
+  useEffect(() => {
+    const v = backgroundVideoRef.current;
+    if (!v) return;
+
+    const sync = () => {
+      if (document.visibilityState === "hidden") {
+        v.pause();
+        return;
+      }
+      void v.play().catch(() => {});
+    };
+
+    document.addEventListener("visibilitychange", sync);
+    sync();
+    return () => document.removeEventListener("visibilitychange", sync);
+  }, []);
+
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
         <div className={styles.profileBackgroundLayer} aria-hidden="true">
-          <Image
-            src="/IMG_1294.PNG"
-            alt=""
-            fill
-            className={styles.profileBackgroundLayerImage}
-            priority
-            sizes="(max-width: 520px) 100vw, 520px"
-            quality={90}
-          />
+          <video
+            ref={backgroundVideoRef}
+            className={styles.profileBackgroundLayerVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/IMG_1294.PNG"
+            disablePictureInPicture
+            disableRemotePlayback
+          >
+            <source src="/IMG_2304.MP4" type="video/mp4" />
+          </video>
         </div>
 
         <div className={styles.commonTopHeader} aria-hidden="true">

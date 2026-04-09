@@ -22,9 +22,11 @@ import {
   grantSubscriptionTicket,
   handleStart,
   listDueSpinUsers,
+  listReferrals,
   setNextSpinAfterSpin,
   setNextSpinAfterSpinMidnight,
   setUserTzOffset,
+  upsertUserProfile,
   spinWheel,
   writeAuditEvent
 } from "./db.js";
@@ -78,9 +80,11 @@ type DbApi = {
   }>;
   ensureFreeSpin: (tgUserId: number) => Promise<{ balance: number; can_spin: boolean; next_spin_at: string | null; granted: boolean }>;
   setUserTzOffset: (tgUserId: number, tzOffsetMinutes: number) => Promise<void>;
+  upsertUserProfile: (tgUserId: number, input: { username?: string; photo_url?: string | null }) => Promise<void>;
   setNextSpinAfterSpin: (tgUserId: number, nextSpinAtIso: string) => Promise<{ next_spin_at: string }>;
   setNextSpinAfterSpinMidnight: (tgUserId: number) => Promise<{ next_spin_at: string }>;
   listDueSpinUsers: (nowIso: string) => Promise<number[]>;
+  listReferrals: (tgUserId: number) => Promise<Array<{ tg_user_id: number; username: string | null; photo_url: string | null; created_at: string }>>;
   writeAuditEvent: (event: { tg_user_id: number; event_type: string; payload?: Record<string, unknown> }) => Promise<void>;
   getReferralCode: (tgUserId: number) => Promise<string>;
 };
@@ -100,9 +104,11 @@ export function buildApp(
       spinWheel: (tgUserId) => spinWheel(supabase, tgUserId),
       ensureFreeSpin: (tgUserId) => ensureFreeSpin(supabase, tgUserId),
       setUserTzOffset: (tgUserId, tzOffsetMinutes) => setUserTzOffset(supabase, tgUserId, tzOffsetMinutes),
+      upsertUserProfile: (tgUserId, input) => upsertUserProfile(supabase, tgUserId, input),
       setNextSpinAfterSpin: (tgUserId, nextSpinAtIso) => setNextSpinAfterSpin(supabase, tgUserId, nextSpinAtIso),
       setNextSpinAfterSpinMidnight: (tgUserId) => setNextSpinAfterSpinMidnight(supabase, tgUserId),
       listDueSpinUsers: (nowIso) => listDueSpinUsers(supabase, nowIso),
+      listReferrals: (tgUserId) => listReferrals(supabase, tgUserId),
       writeAuditEvent: (event) => writeAuditEvent(supabase, event),
       getReferralCode: (tgUserId) => getReferralCode(supabase, tgUserId)
     } satisfies DbApi);
@@ -412,9 +418,10 @@ export function buildApp(
       }
       try {
         const auth = verifyTelegramWebAppInitData(initData, env.TELEGRAM_BOT_TOKEN);
-        (req as unknown as { auth: { tgUserId: number; username?: string } }).auth = {
+        (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth = {
           tgUserId: auth.user.id,
-          ...(auth.user.username ? { username: auth.user.username } : {})
+          ...(auth.user.username ? { username: auth.user.username } : {}),
+          ...(auth.user.photo_url ? { photoUrl: auth.user.photo_url } : {})
         };
       } catch (e) {
         if (e instanceof TelegramWebAppAuthError) {
@@ -426,11 +433,15 @@ export function buildApp(
   });
 
   app.get("/api/me", async (req: FastifyRequest) => {
-    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth;
     const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
     if (tzOffsetMinutes !== null) {
       await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
     }
+    await db.upsertUserProfile(auth.tgUserId, {
+      ...(auth.username ? { username: auth.username } : {}),
+      ...(auth.photoUrl ? { photo_url: auth.photoUrl } : {})
+    });
     const state = await db.ensureFreeSpin(auth.tgUserId);
     return {
       tg_user_id: auth.tgUserId,
@@ -441,12 +452,16 @@ export function buildApp(
   });
 
   app.post("/api/spin", async (req: FastifyRequest) => {
-    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth;
     try {
       const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
       if (tzOffsetMinutes !== null) {
         await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
       }
+      await db.upsertUserProfile(auth.tgUserId, {
+        ...(auth.username ? { username: auth.username } : {}),
+        ...(auth.photoUrl ? { photo_url: auth.photoUrl } : {})
+      });
 
       const state = await db.ensureFreeSpin(auth.tgUserId);
       if (!state.can_spin) {
@@ -478,6 +493,15 @@ export function buildApp(
       }
     );
     return { ok: true };
+  });
+
+  app.get("/api/referrals", async (req: FastifyRequest) => {
+    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    const referrals = await db.listReferrals(auth.tgUserId);
+    return {
+      count: referrals.length,
+      friends: referrals
+    };
   });
 
   app.post("/cron/spin-reminder", async (req: FastifyRequest, reply) => {

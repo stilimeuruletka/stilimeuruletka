@@ -68,6 +68,18 @@ export async function ensureFreeSpin(supabase: SupabaseClient, tgUserId: number)
   return FreeSpinStateSchema.parse(data);
 }
 
+export async function upsertUserProfile(
+  supabase: SupabaseClient,
+  tgUserId: number,
+  input: { username?: string; photo_url?: string | null }
+) {
+  await rpc<unknown>(supabase, "upsert_user_profile", {
+    p_tg_user_id: tgUserId,
+    p_username: input.username ?? null,
+    p_photo_url: input.photo_url ?? null
+  });
+}
+
 export async function setUserTzOffset(supabase: SupabaseClient, tgUserId: number, tzOffsetMinutes: number) {
   await rpc<unknown>(supabase, "set_user_tz_offset", { p_tg_user_id: tgUserId, p_tz_offset_minutes: tzOffsetMinutes });
 }
@@ -88,6 +100,20 @@ export async function setNextSpinAfterSpinMidnight(supabase: SupabaseClient, tgU
 export async function listDueSpinUsers(supabase: SupabaseClient, nowIso: string) {
   const data = await rpc<unknown>(supabase, "list_due_spin_users", { p_now: nowIso });
   return z.array(z.object({ tg_user_id: z.number().int().positive() })).parse(data).map((r) => r.tg_user_id);
+}
+
+export async function listReferrals(supabase: SupabaseClient, tgUserId: number) {
+  const data = await rpc<unknown>(supabase, "list_referrals", { p_tg_user_id: tgUserId });
+  return z
+    .array(
+      z.object({
+        tg_user_id: z.number().int().positive(),
+        username: z.string().nullable(),
+        photo_url: z.string().nullable(),
+        created_at: z.string()
+      })
+    )
+    .parse(data);
 }
 
 export async function writeAuditEvent(

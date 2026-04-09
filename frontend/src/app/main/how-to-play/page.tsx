@@ -102,6 +102,14 @@ export default function HowToPlayPlaceholderPage() {
   }, [activeIndex, markSeen]);
 
   useEffect(() => {
+    return () => {
+      try {
+        window.localStorage.removeItem(storageKey);
+      } catch {}
+    };
+  }, [storageKey]);
+
+  useEffect(() => {
     if (activeIndex == null) {
       return;
     }
@@ -240,6 +248,17 @@ export default function HowToPlayPlaceholderPage() {
               ref={overlayCardRef}
             >
               <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
+              <button
+                type="button"
+                className={styles.howToPlayOverlayClose}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeOverlay();
+                }}
+                aria-label="Закрыть карточку"
+              >
+                <Image src="/стрелканазад.PNG" alt="" width={52} height={26} className={styles.howToPlayOverlayCloseIcon} priority />
+              </button>
             </div>
           </div>
         )}

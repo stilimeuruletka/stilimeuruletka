@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -20,37 +21,54 @@ type TelegramWebApp = {
 type TelegramSdkWindow = Window & {
   Telegram?: {
     WebApp?: TelegramWebApp & {
+      initData?: string;
       showAlert?: (message: string) => void;
     };
   };
 };
 
+function getBackendBase() {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
+  return raw ? raw.replace(/\/+$/, "") : "";
+}
+
 export default function FriendPage() {
   const router = useRouter();
 
-  let displayName = "@username";
-  let avatarSrc: string | null = null;
-  let referralLink = "";
+  const [referralLink, setReferralLink] = useState("");
 
-  if (typeof window !== "undefined") {
+  const { displayName, avatarSrc, initData } = useMemo(() => {
+    if (typeof window === "undefined") {
+      return { displayName: "@username", avatarSrc: null as string | null, initData: null as string | null };
+    }
     const w = window as TelegramSdkWindow;
     const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+    const initDataRaw = w.Telegram?.WebApp?.initData;
+    return {
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+      avatarSrc: tgUser?.photo_url ?? null,
+      initData: typeof initDataRaw === "string" && initDataRaw.length > 10 ? initDataRaw : null
+    };
+  }, []);
 
-    if (tgUser?.username) {
-      displayName = `@${tgUser.username}`;
-    }
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      if (!initData) return;
+      const base = getBackendBase();
+      void fetch(`${base}/api/referral/link`, { headers: { "x-telegram-init-data": initData } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((json) => {
+          const link = (json as { link?: string } | null)?.link;
+          if (typeof link === "string" && link.length > 0) {
+            setReferralLink(link);
+          }
+        })
+        .catch(() => {});
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [initData]);
 
-    if (tgUser?.photo_url) {
-      avatarSrc = tgUser.photo_url;
-    }
-
-    const userIdPart = tgUser?.id ? String(tgUser.id) : tgUser?.username ?? "";
-    if (userIdPart) {
-      referralLink = `${window.location.origin}/?ref=${encodeURIComponent(userIdPart)}`;
-    }
-  }
-
-  const handleCopyReferral = async () => {
+  const handleCopyReferral = useCallback(async () => {
     if (!referralLink || typeof window === "undefined") {
       return;
     }
@@ -66,7 +84,7 @@ export default function FriendPage() {
       const w = window as TelegramSdkWindow;
       w.Telegram?.WebApp?.showAlert?.("Не удалось скопировать ссылку");
     }
-  };
+  }, [referralLink]);
 
   return (
     <div className={styles.profileScreen}>
@@ -126,7 +144,7 @@ export default function FriendPage() {
             width={72}
             height={72}
             className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
-            onClick={() => router.push("/main/friend")}
+            onClick={() => router.push("/main/friends")}
           />
         </div>
 

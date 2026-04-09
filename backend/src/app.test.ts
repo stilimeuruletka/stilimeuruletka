@@ -119,6 +119,7 @@ describe("buildApp", () => {
       db: {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
         ensureFreeSpin: vi.fn(async () => ({ balance: 7, can_spin: false, next_spin_at: "2026-01-01T00:00:00.000Z", granted: false })),
+        upsertUserProfile: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => ({
           spin_id: "00000000-0000-0000-0000-000000000000",
@@ -177,6 +178,7 @@ describe("buildApp", () => {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
         ensureFreeSpin: vi.fn(async () => ({ balance: 7, can_spin: false, next_spin_at: "2026-01-01T00:00:00.000Z", granted: false })),
         setUserTzOffset: vi.fn(async () => {}),
+        upsertUserProfile: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => ({
           spin_id: "00000000-0000-0000-0000-000000000000",
@@ -480,6 +482,7 @@ describe("buildApp", () => {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
         ensureFreeSpin: vi.fn(async () => ({ balance: 1, can_spin: true, next_spin_at: null, granted: false })),
         setUserTzOffset: vi.fn(async () => {}),
+        upsertUserProfile: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => spinOk),
         setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
@@ -499,6 +502,7 @@ describe("buildApp", () => {
         handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
         ensureFreeSpin: vi.fn(async () => ({ balance: 1, can_spin: true, next_spin_at: null, granted: false })),
         setUserTzOffset: vi.fn(async () => {}),
+        upsertUserProfile: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => {
           throw new Error("no tickets");
@@ -823,11 +827,17 @@ describe("buildApp", () => {
       if (fn === "ensure_free_spin") {
         return { data: { balance: 5, can_spin: true, next_spin_at: null, granted: true }, error: null };
       }
+      if (fn === "upsert_user_profile") {
+        return { data: null, error: null };
+      }
       if (fn === "set_next_spin_after_spin_midnight") {
         return { data: { next_spin_at: "2026-01-02T00:00:00.000Z" }, error: null };
       }
       if (fn === "list_due_spin_users") {
         return { data: [{ tg_user_id: 42 }], error: null };
+      }
+      if (fn === "list_referrals") {
+        return { data: [{ tg_user_id: 11, username: "alice", photo_url: null, created_at: "2026-01-01T00:00:00.000Z" }], error: null };
       }
       if (fn === "spin_wheel") {
         return {
@@ -903,6 +913,13 @@ describe("buildApp", () => {
       headers: { "x-telegram-init-data": initData }
     });
     expect(testReminder.statusCode).toBe(200);
+
+    const referrals = await app.inject({
+      method: "GET",
+      url: "/api/referrals",
+      headers: { "x-telegram-init-data": initData }
+    });
+    expect(referrals.statusCode).toBe(200);
 
     const start = await app.inject({
       method: "POST",
