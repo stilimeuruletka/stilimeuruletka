@@ -466,6 +466,20 @@ export function buildApp(
     }
   });
 
+  app.post("/api/test/spin-reminder", async (req: FastifyRequest) => {
+    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    await telegram.sendMessage(
+      auth.tgUserId,
+      "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
+      {
+        reply_markup: {
+          inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+        }
+      }
+    );
+    return { ok: true };
+  });
+
   app.post("/cron/spin-reminder", async (req: FastifyRequest, reply) => {
     if (!env.CRON_SECRET) {
       throw app.httpErrors.internalServerError("Cron secret is not configured");

@@ -151,6 +151,64 @@ describe("buildApp", () => {
     await app.close();
   });
 
+  it("sends test spin reminder to authenticated user", async () => {
+    const env = {
+      NODE_ENV: "test",
+      PORT: 0,
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "x".repeat(40),
+      TELEGRAM_BOT_TOKEN: "1234567890:abcdefghijklmnopqrstuvwxyz",
+      TELEGRAM_WEBHOOK_SECRET: "secret-token",
+      TELEGRAM_BOT_USERNAME: "my_bot",
+      TELEGRAM_CHANNEL_ID: "@my_channel",
+      PUBLIC_WEBAPP_URL: "https://example.com"
+    } as const;
+
+    const initData = createInitData(env.TELEGRAM_BOT_TOKEN, { id: 42, first_name: "A", username: "u" });
+
+    const telegram = {
+      sendMessage: vi.fn(async () => ({})),
+      answerCallbackQuery: vi.fn(async () => ({})),
+      getChatMember: vi.fn(async () => ({ status: "member" }))
+    };
+
+    const app = buildApp(env, {
+      db: {
+        handleStart: vi.fn(async () => ({ is_new_user: true, referral_processed: false, inviter_user_id: null })),
+        ensureFreeSpin: vi.fn(async () => ({ balance: 7, can_spin: false, next_spin_at: "2026-01-01T00:00:00.000Z", granted: false })),
+        setUserTzOffset: vi.fn(async () => {}),
+        grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
+        spinWheel: vi.fn(async () => ({
+          spin_id: "00000000-0000-0000-0000-000000000000",
+          prize_id: null,
+          prize_title: "Ничего",
+          prize_value: 0,
+          win: false,
+          balance_after: 0
+        })),
+        setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        listDueSpinUsers: vi.fn(async () => []),
+        getTicketBalance: vi.fn(async () => ({ balance: 7 })),
+        writeAuditEvent: vi.fn(async () => {}),
+        getReferralCode: vi.fn(async () => "refcode")
+      } as any,
+      telegram: telegram as any
+    });
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/test/spin-reminder",
+      headers: { "x-telegram-init-data": initData }
+    });
+    expect(res.statusCode).toBe(200);
+    expect(telegram.sendMessage).toHaveBeenCalledWith(
+      42,
+      expect.stringContaining("It’s time to spin & win!"),
+      expect.any(Object)
+    );
+    await app.close();
+  });
+
   it("serves /api/referral/link with valid initData", async () => {
     const env = {
       NODE_ENV: "test",
@@ -838,6 +896,13 @@ describe("buildApp", () => {
     });
     expect(cron.statusCode).toBe(200);
     expect(telegram.sendMessage).toHaveBeenCalled();
+
+    const testReminder = await app.inject({
+      method: "POST",
+      url: "/api/test/spin-reminder",
+      headers: { "x-telegram-init-data": initData }
+    });
+    expect(testReminder.statusCode).toBe(200);
 
     const start = await app.inject({
       method: "POST",
