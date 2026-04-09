@@ -162,12 +162,12 @@
 }
 
 .friendProfileStack {
-  transform: translateY(20px);
+  transform: translateY(8px);
 }
 
 .profileOverlayImage {
   position: absolute;
-  top: 30px;
+  top: 24px;
   left: 0;
   right: 0;
   width: 100%;
@@ -263,12 +263,12 @@
 
 .profileCenterIconLeft {
   left: -52px;
-  top: 24px;
+  top: 14px;
 }
 
 .profileCenterIconRight {
   right: -20px;
-  top: -40px;
+  top: -30px;
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
@@ -276,7 +276,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 18%;
+  top: 16%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -574,7 +574,7 @@
 }
 
 .aboutTopHeader {
-  top: 170px;
+  top: 154px;
 }
 
 .placeholderPage {
@@ -1032,6 +1032,15 @@
   filter: none;
 }
 
+@media (max-width: 520px) {
+  .howToPlayOverlayClose {
+    left: auto;
+    right: 26px;
+    bottom: auto;
+    top: 56px;
+  }
+}
+
 
 .profileQuickButtonImg {
   width: min(180px, 44vw);
@@ -1071,7 +1080,7 @@
   position: relative;
   width: 100%;
   max-width: 320px;
-  margin-top: -40px;
+  margin-top: -20px;
 }
 
 .profileSpinTimerImage {
