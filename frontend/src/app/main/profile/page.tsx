@@ -127,7 +127,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className={`${styles.commonTopHeader} ${styles.profileTopHeader}`} aria-hidden="true">
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/главноеменюрулеткакрасный.png"
             alt=""

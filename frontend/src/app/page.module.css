@@ -130,6 +130,7 @@
   align-items: center;
   background: linear-gradient(180deg, #f1f1f1 0%, #e8eae9 33%, #f3f5f4 66%, #e9ebea 100%);
   overflow: hidden;
+  position: relative;
 }
 
 .profileImageFull {
@@ -162,7 +163,7 @@
 
 .profileOverlayImage {
   position: absolute;
-  top: -56px;
+  top: 40px;
   left: 0;
   right: 0;
   width: 100%;
@@ -231,17 +232,13 @@
 }
 
 .profileArrowLeftProfile {
-  left: 8px;
-  top: 118px;
+  left: 32px;
+  top: 128px;
 }
 
 .profileArrowRightProfile {
-  right: 8px;
-  top: 118px;
-}
-
-.profileTopHeader {
-  top: 94px;
+  right: 32px;
+  top: 128px;
 }
 
 .profileCenterIcons {
@@ -303,15 +300,6 @@
 
 .friendProfileStack .profileArrowRight .profileArrow {
   width: 40px;
-}
-
-.friendProfileStack .commonTopHeader {
-  top: 94px;
-}
-
-.friendProfileStack .commonTopHeaderUser {
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .profileCard {
@@ -552,7 +540,7 @@
 .aboutNavArrowLeft,
 .aboutNavArrowRight {
   position: absolute;
-  top: 118px;
+  top: 104px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -561,11 +549,11 @@
 }
 
 .aboutNavArrowLeft {
-  left: 18px;
+  left: 42px;
 }
 
 .aboutNavArrowRight {
-  right: 18px;
+  right: 42px;
   transform: scaleX(-1);
 }
 
@@ -661,7 +649,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateX(6px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -760,9 +748,9 @@
 
 .howToPlayRulesRow {
   position: absolute;
-  left: 40px;
+  left: 56px;
   transform: none;
-  bottom: 152px;
+  bottom: 138px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -949,61 +937,6 @@
 
 .profileBackgroundLayerImage {
   object-fit: cover;
-}
-
-.profileTopHeader {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.profileTopHeaderImage {
-  width: 112%;
-  max-width: none;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  transform: translateX(4%);
-}
-
-.profileTopHeaderUser {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.profileTopHeaderAvatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.profileTopHeaderAvatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.profileTopHeaderName {
-  font-family: var(--font-uncage);
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 .profileAnimatedBackground {
