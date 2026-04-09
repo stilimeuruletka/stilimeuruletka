@@ -219,13 +219,14 @@
   left: 44px;
   top: 118px;
   z-index: 2;
+  transform: scaleX(-1);
 }
 
 .profileArrowRight {
   position: absolute;
   right: -40px;
   top: 12px;
-  transform: scaleX(-1);
+  transform: none;
   z-index: 2;
 }
 
@@ -240,7 +241,7 @@
 }
 
 .profileTopHeader {
-  top: 70px;
+  top: 94px;
 }
 
 .profileCenterIcons {
@@ -305,12 +306,12 @@
 }
 
 .friendProfileStack .commonTopHeader {
-  top: 18px;
+  top: 94px;
 }
 
 .friendProfileStack .commonTopHeaderUser {
-  top: 0;
-  transform: translate(-50%, 0);
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .profileCard {
@@ -825,13 +826,16 @@
   width: min(180px, 44vw);
   height: 44px;
   object-fit: contain;
+  object-position: center;
   display: block;
   flex: 0 0 auto;
 }
 
 .profileQuickButtonImgLarge {
-  width: min(186px, 46vw);
+  width: min(180px, 44vw);
   height: 44px;
+  object-fit: contain;
+  object-position: center;
 }
 
 
@@ -873,7 +877,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(-6px, 6px);
+  transform: translate(-2px, 6px);
   font-family: var(--font-uncage);
   font-size: 14px;
   letter-spacing: 0.06em;
@@ -1261,7 +1265,6 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  height: 320px;
 }
 
 .girl {
@@ -1284,9 +1287,17 @@
 
 .btnImg {
   width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gridFixed .girlWrap {
+  height: 320px;
+}
+
+.gridFixed .btnImg {
   height: 46px;
   object-fit: contain;
-  display: block;
 }
 
 .btnImgLower {
@@ -1323,8 +1334,10 @@
   .girl {
     max-height: 250px;
   }
+}
 
-  .girlWrap {
+@media (max-width: 420px) {
+  .gridFixed .girlWrap {
     height: 250px;
   }
 }
@@ -1343,5 +1356,11 @@
 
   .topImage {
     width: 90px;
+  }
+
+  .howToPlayRulesRow {
+    left: 96px;
+    bottom: 110px;
+    transform: none;
   }
 }

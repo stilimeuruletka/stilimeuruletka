@@ -146,19 +146,19 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
+        <Link href="/main/how-to-play" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
-            alt="Назад"
+            alt="Вперёд"
             width={52}
             height={26}
             className={styles.profileArrow}
           />
         </Link>
-        <Link href="/main/how-to-play" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+        <Link href="/main" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Назад в меню">
           <Image
             src="/стрелканазад.PNG"
-            alt="Вперёд"
+            alt="Назад"
             width={52}
             height={26}
             className={styles.profileArrow}

@@ -111,20 +111,20 @@ export default function FriendPage() {
           />
         </div>
 
-        <Link href="/main" className={styles.profileArrowLeft}>
+        <Link href="/main/profile" className={styles.profileArrowLeft}>
           <Image
             src="/стрелканазад.PNG"
-            alt="Назад"
+            alt="Вперёд"
             width={52}
             height={26}
             className={styles.profileArrow}
           />
         </Link>
 
-        <Link href="/main/profile" className={styles.profileArrowRight}>
+        <Link href="/main" className={styles.profileArrowRight}>
           <Image
             src="/стрелканазад.PNG"
-            alt="Вперёд"
+            alt="Назад"
             width={52}
             height={26}
             className={styles.profileArrow}

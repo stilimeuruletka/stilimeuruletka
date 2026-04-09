@@ -82,7 +82,10 @@ async function sendSubscribedMenu(chatId: number | string) {
           { text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" },
           { text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }
         ],
-        [{ text: "Как играть", web_app: { url: `${base}/main/how-to-play` } }, { text: " ", callback_data: "noop" }]
+        [
+          { text: "Список призов", url: "https://t.me/stilimeuruletka/6" },
+          { text: "Как играть", web_app: { url: `${base}/main/how-to-play` } }
+        ]
       ]
     }
   });
@@ -204,8 +207,6 @@ export async function POST(req: NextRequest) {
       }
     } else if (data === "balance") {
       await tg("sendMessage", { chat_id: chatId, text: "Баланс: 0 билет(ов)." });
-    } else if (data === "noop") {
-      return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
   }
 
