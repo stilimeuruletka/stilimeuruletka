@@ -80,7 +80,7 @@ export default function Main2Page() {
                 alt="Страница в разработке"
                 width={3882}
                 height={608}
-                className={styles.btnImg}
+                className={`${styles.btnImg} ${styles.btnImgCatalogLower}`}
                 sizes="(max-width: 520px) 33vw, 170px"
                 quality={90}
               />

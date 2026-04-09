@@ -244,15 +244,23 @@ export default function ProfilePage() {
                   quality={90}
                 />
               </Link>
-              <Image
-                src="/рекламаисотрудничество.png"
-                alt="Реклама и сотрудничество"
-                width={10260}
-                height={1700}
-                className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgAdTweak}`}
-                sizes="(max-width: 520px) 44vw, 180px"
-                quality={90}
-              />
+              <a
+                href="https://t.me/stilimeuruletkamanager"
+                target="_blank"
+                rel="noreferrer"
+                className={styles.profileQuickButtonLink}
+                aria-label="@stilimeuruletkamanager"
+              >
+                <Image
+                  src="/рекламаисотрудничество.png"
+                  alt="Реклама и сотрудничество"
+                  width={10260}
+                  height={1700}
+                  className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgAdTweak}`}
+                  sizes="(max-width: 520px) 44vw, 180px"
+                  quality={90}
+                />
+              </a>
             </div>
 
             <div className={styles.profileQuickButtonsRow}>
