@@ -161,6 +161,10 @@
   max-width: 520px;
 }
 
+.friendProfileStack {
+  transform: translateY(120px);
+}
+
 .profileOverlayImage {
   position: absolute;
   top: 40px;
@@ -1289,6 +1293,19 @@
 
   .topImage {
     width: 90px;
+  }
+
+  .commonTopHeader {
+    top: 10px;
+  }
+
+  .commonTopHeaderUser {
+    transform: translate(-50%, -50%) translateX(6px) translateY(-18px);
+  }
+
+  .profileArrowLeftProfile,
+  .profileArrowRightProfile {
+    top: 72px;
   }
 
   .howToPlayRulesRow {
