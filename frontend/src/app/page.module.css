@@ -545,7 +545,7 @@
 .aboutNavArrowLeft,
 .aboutNavArrowRight {
   position: absolute;
-  top: 114px;
+  top: 96px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1015,8 +1015,8 @@
 
 .howToPlayOverlayClose {
   position: absolute;
-  left: 120px;
-  bottom: 230px;
+  left: 94px;
+  bottom: 190px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1026,7 +1026,7 @@
 
 .howToPlayOverlayCloseIcon {
   display: block;
-  width: 80px;
+  width: 64px;
   height: auto;
   transform: none;
   filter: none;
@@ -1034,10 +1034,10 @@
 
 @media (max-width: 520px) {
   .howToPlayOverlayClose {
-    left: 120px;
+    left: 94px;
     right: auto;
     top: auto;
-    bottom: 250px;
+    bottom: 210px;
   }
 }
 
