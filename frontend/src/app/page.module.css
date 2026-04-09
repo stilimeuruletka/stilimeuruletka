@@ -263,12 +263,12 @@
 
 .profileCenterIconLeft {
   left: -52px;
-  top: 14px;
+  top: 8px;
 }
 
 .profileCenterIconRight {
   right: -20px;
-  top: -30px;
+  top: -36px;
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
@@ -276,7 +276,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 16%;
+  top: 14%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -674,7 +674,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 160px;
+  height: 200px;
   z-index: 2;
 }
 
@@ -685,7 +685,7 @@
 
 .friendsListBackButton {
   position: absolute;
-  top: 24px;
+  top: 58px;
   left: 30px;
   border: 0;
   background: transparent;
@@ -716,7 +716,7 @@
 .friendsListScroll {
   position: absolute;
   inset: 0;
-  padding: 160px 16px 22px;
+  padding: 200px 16px 22px;
   overflow-y: auto;
   z-index: 1;
 }
@@ -1015,8 +1015,8 @@
 
 .howToPlayOverlayClose {
   position: absolute;
-  left: 52px;
-  bottom: 92px;
+  left: 58px;
+  bottom: 160px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1034,10 +1034,10 @@
 
 @media (max-width: 520px) {
   .howToPlayOverlayClose {
-    left: auto;
-    right: 26px;
-    bottom: auto;
-    top: 56px;
+    left: 58px;
+    right: auto;
+    top: auto;
+    bottom: 170px;
   }
 }
 
