@@ -1,11 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import styles from "./admin.module.css";
 
 export default function AdminLoginPage() {
+  return (
+    <Suspense>
+      <AdminLoginInner />
+    </Suspense>
+  );
+}
+
+function AdminLoginInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = useMemo(() => searchParams.get("next") || "/admin/prizes", [searchParams]);
@@ -84,4 +92,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-
