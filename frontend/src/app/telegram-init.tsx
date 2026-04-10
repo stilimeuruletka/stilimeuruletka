@@ -11,13 +11,21 @@ export default function TelegramInit() {
             ready?: () => void;
             expand?: () => void;
             requestFullscreen?: () => Promise<void>;
+            setHeaderColor?: (color: string) => void;
+            setBackgroundColor?: (color: string) => void;
+            setBottomBarColor?: (color: string) => void;
+            disableVerticalSwipes?: () => void;
           };
         };
       };
       const webApp = w.Telegram?.WebApp;
       if (!webApp) return;
 
+      webApp.setBackgroundColor?.("#ffffff");
+      webApp.setHeaderColor?.("#ffffff");
+      webApp.setBottomBarColor?.("#ffffff");
       webApp.expand?.();
+      webApp.disableVerticalSwipes?.();
       webApp.ready?.();
 
       if (typeof webApp.requestFullscreen === "function") {
@@ -30,4 +38,3 @@ export default function TelegramInit() {
 
   return null;
 }
-
