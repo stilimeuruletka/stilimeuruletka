@@ -192,7 +192,7 @@ export default function HowToPlayPlaceholderPage() {
             aria-label="Открыть описание 1"
           >
             <Image
-              src={seen[0] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              src={seen[0] ? "/галочкакрасная.svg" : "/правилакруг.png"}
               alt=""
               width={22}
               height={22}
@@ -211,7 +211,7 @@ export default function HowToPlayPlaceholderPage() {
             aria-label="Открыть описание 2"
           >
             <Image
-              src={seen[1] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              src={seen[1] ? "/галочкакрасная.svg" : "/правилакруг.png"}
               alt=""
               width={22}
               height={22}
@@ -230,7 +230,7 @@ export default function HowToPlayPlaceholderPage() {
             aria-label="Открыть описание 3"
           >
             <Image
-              src={seen[2] ? "/telegram-cloud-document-2-5355247322399807662 1.svg" : "/правилакруг.png"}
+              src={seen[2] ? "/галочкакрасная.svg" : "/правилакруг.png"}
               alt=""
               width={22}
               height={22}
@@ -248,17 +248,6 @@ export default function HowToPlayPlaceholderPage() {
               ref={overlayCardRef}
             >
               <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
-              <button
-                type="button"
-                className={styles.howToPlayOverlayClose}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeOverlay();
-                }}
-                aria-label="Закрыть карточку"
-              >
-                <Image src="/стрелканазад.PNG" alt="" width={52} height={26} className={styles.howToPlayOverlayCloseIcon} priority />
-              </button>
             </div>
           </div>
         )}

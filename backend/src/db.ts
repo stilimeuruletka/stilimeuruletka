@@ -102,6 +102,17 @@ export async function listDueSpinUsers(supabase: SupabaseClient, nowIso: string)
   return z.array(z.object({ tg_user_id: z.number().int().positive() })).parse(data).map((r) => r.tg_user_id);
 }
 
+export async function trackBloggerClick(
+  supabase: SupabaseClient,
+  input: { tg_user_id: number; blogger_code: string; meta?: Record<string, unknown> }
+) {
+  await rpc<unknown>(supabase, "track_blogger_click", {
+    p_tg_user_id: input.tg_user_id,
+    p_blogger_code: input.blogger_code,
+    p_meta: input.meta ?? {}
+  });
+}
+
 export async function listReferrals(supabase: SupabaseClient, tgUserId: number) {
   const data = await rpc<unknown>(supabase, "list_referrals", { p_tg_user_id: tgUserId });
   return z

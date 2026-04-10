@@ -28,6 +28,7 @@ import {
   setUserTzOffset,
   upsertUserProfile,
   spinWheel,
+  trackBloggerClick,
   writeAuditEvent
 } from "./db.js";
 
@@ -68,6 +69,7 @@ type DbApi = {
     referral_processed: boolean;
     inviter_user_id: number | null;
   }>;
+  trackBloggerClick: (input: { tg_user_id: number; blogger_code: string; meta?: Record<string, unknown> }) => Promise<void>;
   getTicketBalance: (tgUserId: number) => Promise<{ balance: number }>;
   grantSubscriptionTicket: (tgUserId: number, channelId: string) => Promise<{ balance: number }>;
   spinWheel: (tgUserId: number) => Promise<{
@@ -99,6 +101,7 @@ export function buildApp(
     overrides?.db ??
     ({
       handleStart: (input) => handleStart(supabase, input),
+      trackBloggerClick: (input) => trackBloggerClick(supabase, input),
       getTicketBalance: (tgUserId) => getTicketBalance(supabase, tgUserId),
       grantSubscriptionTicket: (tgUserId, channelId) => grantSubscriptionTicket(supabase, tgUserId, channelId),
       spinWheel: (tgUserId) => spinWheel(supabase, tgUserId),
@@ -453,11 +456,16 @@ export function buildApp(
     if (tzOffsetMinutes !== null) {
       await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
     }
-    if (auth.startParam?.startsWith("ref_")) {
-      await db.handleStart({
+    const startRes = await db.handleStart({
+      tg_user_id: auth.tgUserId,
+      ...(auth.username ? { username: auth.username } : {}),
+      ref_code: auth.startParam?.startsWith("ref_") ? auth.startParam.slice(4) : null
+    });
+    if (auth.startParam?.startsWith("blog_")) {
+      await db.trackBloggerClick({
         tg_user_id: auth.tgUserId,
-        ...(auth.username ? { username: auth.username } : {}),
-        ref_code: auth.startParam.slice(4)
+        blogger_code: auth.startParam.slice(5),
+        meta: { via: "start_param" }
       });
     }
     await db.upsertUserProfile(auth.tgUserId, {
@@ -465,6 +473,21 @@ export function buildApp(
       ...(auth.photoUrl ? { photo_url: auth.photoUrl } : {})
     });
     const state = await db.ensureFreeSpin(auth.tgUserId);
+    if (!startRes.is_new_user && state.granted) {
+      try {
+        await telegram.sendMessage(
+          auth.tgUserId,
+          "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
+          {
+            reply_markup: {
+              inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+            }
+          }
+        );
+      } catch (e) {
+        req.log.warn({ err: e }, "daily_spin_notify_failed");
+      }
+    }
     return {
       tg_user_id: auth.tgUserId,
       balance: state.balance,
@@ -480,11 +503,16 @@ export function buildApp(
       if (tzOffsetMinutes !== null) {
         await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
       }
-      if (auth.startParam?.startsWith("ref_")) {
-        await db.handleStart({
+      await db.handleStart({
+        tg_user_id: auth.tgUserId,
+        ...(auth.username ? { username: auth.username } : {}),
+        ref_code: auth.startParam?.startsWith("ref_") ? auth.startParam.slice(4) : null
+      });
+      if (auth.startParam?.startsWith("blog_")) {
+        await db.trackBloggerClick({
           tg_user_id: auth.tgUserId,
-          ...(auth.username ? { username: auth.username } : {}),
-          ref_code: auth.startParam.slice(4)
+          blogger_code: auth.startParam.slice(5),
+          meta: { via: "start_param" }
         });
       }
       await db.upsertUserProfile(auth.tgUserId, {
@@ -533,12 +561,17 @@ export function buildApp(
     };
   });
 
-  app.post("/cron/spin-reminder", async (req: FastifyRequest, reply) => {
+  const handleSpinReminderCron = async (req: FastifyRequest, reply: FastifyReply) => {
     if (!env.CRON_SECRET) {
       throw app.httpErrors.internalServerError("Cron secret is not configured");
     }
-    const secret = req.headers["x-cron-secret"];
-    if (typeof secret !== "string" || secret !== env.CRON_SECRET) {
+    const headerSecret = req.headers["x-cron-secret"];
+    const query = req.query as unknown;
+    const querySecret =
+      query && typeof query === "object" ? (query as Record<string, unknown>).secret : undefined;
+    const secret =
+      typeof headerSecret === "string" ? headerSecret : typeof querySecret === "string" ? querySecret : null;
+    if (!secret || secret !== env.CRON_SECRET) {
       throw app.httpErrors.unauthorized("Unauthorized");
     }
 
@@ -566,7 +599,10 @@ export function buildApp(
     }
 
     return reply.send({ ok: true, processed: users.length, notified });
-  });
+  };
+
+  app.post("/cron/spin-reminder", handleSpinReminderCron);
+  app.get("/cron/spin-reminder", handleSpinReminderCron);
 
   app.get("/api/referral/link", async (req: FastifyRequest) => {
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;

@@ -56,7 +56,12 @@ function SpinTimer() {
 
   const refresh = useCallback(async () => {
     const initData = getInitData();
-    if (!initData) return;
+    if (!initData) {
+      setRemainingMs(null);
+      setCanSpin(false);
+      setNextSpinAtMs(null);
+      return;
+    }
 
     const base = getBackendBase();
     const tzOffset = new Date().getTimezoneOffset();
@@ -77,6 +82,13 @@ function SpinTimer() {
       void refresh();
     }, 0);
     return () => window.clearTimeout(id);
+  }, [refresh]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      void refresh();
+    }, 30_000);
+    return () => window.clearInterval(intervalId);
   }, [refresh]);
 
   useEffect(() => {
