@@ -105,7 +105,7 @@ function SpinTimer() {
   return (
     <div className={styles.profileSpinTimer}>
       <Image
-        src="/овальчик.png"
+          src="/круг4к.PNG"
         alt="До следующего спина"
         width={720}
         height={320}
