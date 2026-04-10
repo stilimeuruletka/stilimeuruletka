@@ -418,10 +418,11 @@ export function buildApp(
       }
       try {
         const auth = verifyTelegramWebAppInitData(initData, env.TELEGRAM_BOT_TOKEN);
-        (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth = {
+        (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string; startParam?: string } }).auth = {
           tgUserId: auth.user.id,
           ...(auth.user.username ? { username: auth.user.username } : {}),
-          ...(auth.user.photo_url ? { photoUrl: auth.user.photo_url } : {})
+          ...(auth.user.photo_url ? { photoUrl: auth.user.photo_url } : {}),
+          ...(auth.startParam ? { startParam: auth.startParam } : {})
         };
       } catch (e) {
         if (e instanceof TelegramWebAppAuthError) {
@@ -433,10 +434,17 @@ export function buildApp(
   });
 
   app.get("/api/me", async (req: FastifyRequest) => {
-    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth;
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string; startParam?: string } }).auth;
     const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
     if (tzOffsetMinutes !== null) {
       await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
+    }
+    if (auth.startParam?.startsWith("ref_")) {
+      await db.handleStart({
+        tg_user_id: auth.tgUserId,
+        ...(auth.username ? { username: auth.username } : {}),
+        ref_code: auth.startParam.slice(4)
+      });
     }
     await db.upsertUserProfile(auth.tgUserId, {
       ...(auth.username ? { username: auth.username } : {}),
@@ -452,11 +460,18 @@ export function buildApp(
   });
 
   app.post("/api/spin", async (req: FastifyRequest) => {
-    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string } }).auth;
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string; startParam?: string } }).auth;
     try {
       const tzOffsetMinutes = getTzOffsetMinutesFromQuery(req);
       if (tzOffsetMinutes !== null) {
         await db.setUserTzOffset(auth.tgUserId, tzOffsetMinutes);
+      }
+      if (auth.startParam?.startsWith("ref_")) {
+        await db.handleStart({
+          tg_user_id: auth.tgUserId,
+          ...(auth.username ? { username: auth.username } : {}),
+          ref_code: auth.startParam.slice(4)
+        });
       }
       await db.upsertUserProfile(auth.tgUserId, {
         ...(auth.username ? { username: auth.username } : {}),
@@ -543,7 +558,7 @@ export function buildApp(
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
     const botUsername = env.TELEGRAM_BOT_USERNAME.replace("@", "");
     const refCode = await db.getReferralCode(auth.tgUserId);
-    const link = `https://t.me/${botUsername}?start=ref_${refCode}`;
+    const link = `https://t.me/${botUsername}?startapp=ref_${refCode}`;
     return { link };
   });
 

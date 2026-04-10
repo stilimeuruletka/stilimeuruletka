@@ -3,12 +3,17 @@ import { describe, expect, it, vi } from "vitest";
 import { buildApp } from "./app.js";
 import { TelegramError } from "./telegram/telegramApi.js";
 
-function createInitData(botToken: string, user: { id: number; first_name: string; username?: string }) {
+function createInitData(
+  botToken: string,
+  user: { id: number; first_name: string; username?: string },
+  startParam?: string
+) {
   const authDate = Math.floor(Date.now() / 1000);
   const params = new URLSearchParams();
   params.set("auth_date", String(authDate));
   params.set("query_id", "AAHb3QAAAAAA");
   params.set("user", JSON.stringify(user));
+  if (startParam) params.set("start_param", startParam);
 
   const pairs: string[] = [];
   for (const [k, v] of params.entries()) pairs.push(`${k}=${v}`);
@@ -250,7 +255,7 @@ describe("buildApp", () => {
       headers: { "x-telegram-init-data": initData }
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ link: "https://t.me/my_bot?start=ref_abc123" });
+    expect(res.json()).toEqual({ link: "https://t.me/my_bot?startapp=ref_abc123" });
     await app.close();
   });
 

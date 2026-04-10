@@ -12,6 +12,7 @@ const TelegramUserSchema = z.object({
 export type TelegramWebAppAuth = {
   user: z.infer<typeof TelegramUserSchema>;
   authDate: number;
+  startParam?: string;
 };
 
 export class TelegramWebAppAuthError extends Error {}
@@ -59,5 +60,6 @@ export function verifyTelegramWebAppInitData(initData: string, botToken: string)
     throw new TelegramWebAppAuthError("Invalid user payload");
   }
 
-  return { user: userParsed.data, authDate };
+  const startParam = params.get("start_param") || undefined;
+  return { user: userParsed.data, authDate, ...(startParam ? { startParam } : {}) };
 }

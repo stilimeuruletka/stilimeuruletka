@@ -21,6 +21,27 @@ body {
   touch-action: pan-x pan-y;
 }
 
+.appViewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+}
+
+.appCanvas {
+  position: relative;
+  width: min(390px, 100vw, calc(100dvh * 390 / 844));
+  aspect-ratio: 390 / 844;
+  overflow: hidden;
+  background: #000;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: pan-x pan-y;
+}
+
 body {
   min-height: 100%;
   display: flex;
