@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
+import TelegramInit from "./telegram-init";
 
 const uncage = localFont({
   src: "../../UNCAGE-Regular.ttf",
@@ -35,6 +36,7 @@ export default function RootLayout({
     <html lang="ru" className={`${uncage.variable} ${uncageSemiBold.variable}`} suppressHydrationWarning>
       <body>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        <TelegramInit />
         {children}
       </body>
     </html>

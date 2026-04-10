@@ -14,7 +14,8 @@ const EnvSchema = z.object({
   TELEGRAM_CHANNEL_ID: z.string().min(3),
 
   PUBLIC_WEBAPP_URL: z.string().url(),
-  CRON_SECRET: z.string().min(10).optional()
+  CRON_SECRET: z.string().min(10).optional(),
+  TELEGRAM_APP_SLUG: z.string().min(1).optional()
 });
 
 export type Env = z.infer<typeof EnvSchema>;

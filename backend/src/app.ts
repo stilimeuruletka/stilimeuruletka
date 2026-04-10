@@ -173,6 +173,14 @@ export function buildApp(
       if (!path) return env.PUBLIC_WEBAPP_URL;
       return new URL(path, env.PUBLIC_WEBAPP_URL.endsWith("/") ? env.PUBLIC_WEBAPP_URL : `${env.PUBLIC_WEBAPP_URL}/`).toString();
     };
+    const buildTmeAppUrl = (startapp?: string) => {
+      if (!env.TELEGRAM_BOT_USERNAME || !env.TELEGRAM_APP_SLUG) return null;
+      const bot = env.TELEGRAM_BOT_USERNAME.replace(/^@/, "");
+      const u = new URL(`https://t.me/${bot}/${env.TELEGRAM_APP_SLUG}`);
+      if (startapp) u.searchParams.set("startapp", startapp);
+      u.searchParams.set("mode", "fullscreen");
+      return u.toString();
+    };
 
     const welcomeText =
       "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
@@ -192,10 +200,16 @@ export function buildApp(
       await telegram.sendMessage(chatId, "Подписка подтверждена. Выберите действие:", {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: buildWebAppUrl() } }],
+            (() => {
+              const tme = buildTmeAppUrl();
+              return [{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ (FULLSCREEN)", ...(tme ? { url: tme } : { web_app: { url: buildWebAppUrl() } }) }];
+            })(),
             [{ text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" }],
             [{ text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }],
-            [{ text: "Как играть", web_app: { url: buildWebAppUrl("main/how-to-play") } }]
+            (() => {
+              const tme = buildTmeAppUrl();
+              return [{ text: "Как играть", ...(tme ? { url: tme } : { web_app: { url: buildWebAppUrl("main/how-to-play") } }) }];
+            })()
           ]
         }
       });
@@ -558,7 +572,9 @@ export function buildApp(
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
     const botUsername = env.TELEGRAM_BOT_USERNAME.replace("@", "");
     const refCode = await db.getReferralCode(auth.tgUserId);
-    const link = `https://t.me/${botUsername}?startapp=ref_${refCode}`;
+    const link = env.TELEGRAM_APP_SLUG
+      ? `https://t.me/${botUsername}/${env.TELEGRAM_APP_SLUG}?startapp=ref_${refCode}&mode=fullscreen`
+      : `https://t.me/${botUsername}?startapp=ref_${refCode}`;
     return { link };
   });
 
