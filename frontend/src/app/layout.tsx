@@ -35,9 +35,7 @@ export default function RootLayout({
     <html lang="ru" className={`${uncage.variable} ${uncageSemiBold.variable}`} suppressHydrationWarning>
       <body>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
-        <div className="appViewport">
-          <div className="appCanvas">{children}</div>
-        </div>
+        {children}
       </body>
     </html>
   );
