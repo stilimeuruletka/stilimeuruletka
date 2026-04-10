@@ -8,6 +8,8 @@ export async function middleware(req: NextRequest) {
 
   if (!pathname.startsWith("/admin")) return NextResponse.next();
 
+  if (process.env.ADMIN_AUTH_DISABLED === "1") return NextResponse.next();
+
   const isLoginPage = pathname === "/admin" || pathname === "/admin/";
   const isLoginApi = pathname === "/admin/api/login";
   if (isLoginPage || isLoginApi) return NextResponse.next();
@@ -27,4 +29,3 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ["/admin/:path*"]
 };
-

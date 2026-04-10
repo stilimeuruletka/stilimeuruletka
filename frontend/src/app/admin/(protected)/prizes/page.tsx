@@ -13,6 +13,16 @@ type Prize = {
   created_at: string;
 };
 
+function demoPrizes(): Prize[] {
+  const now = new Date().toISOString();
+  return [
+    { id: "demo-1", title: "Ничего", weight: 7000, value: 0, active: true, created_at: now },
+    { id: "demo-2", title: "Малый приз", weight: 2500, value: 10, active: true, created_at: now },
+    { id: "demo-3", title: "Средний приз", weight: 450, value: 50, active: true, created_at: now },
+    { id: "demo-4", title: "Большой приз", weight: 50, value: 500, active: true, created_at: now }
+  ];
+}
+
 export default function AdminPrizesPage() {
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +39,8 @@ export default function AdminPrizesPage() {
     const res = await fetch("/admin/api/prizes", { cache: "no-store" }).catch(() => null);
     if (!res || !res.ok) {
       const msg = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(msg?.error || "Не удалось загрузить призы");
+      setError(msg?.error || "Демо-режим: нет доступа к API призов");
+      setPrizes(demoPrizes());
       setLoading(false);
       return;
     }

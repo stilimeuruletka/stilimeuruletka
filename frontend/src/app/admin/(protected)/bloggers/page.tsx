@@ -13,6 +13,14 @@ type BloggerStat = {
   spins: number;
 };
 
+function demoStats(): BloggerStat[] {
+  return [
+    { blogger_id: "demo-1", code: "blog_anna", name: "Анна", clicks: 120, registrations: 38, spins: 44 },
+    { blogger_id: "demo-2", code: "blog_kate", name: "Катя", clicks: 76, registrations: 21, spins: 19 },
+    { blogger_id: "demo-3", code: "blog_masha", name: "Маша", clicks: 34, registrations: 8, spins: 5 }
+  ];
+}
+
 function yyyyMmDd(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -58,7 +66,8 @@ export default function AdminBloggersPage() {
     const res = await fetch(`/admin/api/bloggers/stats?${qs.toString()}`, { cache: "no-store" }).catch(() => null);
     if (!res || !res.ok) {
       const msg = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(msg?.error || "Не удалось загрузить статистику");
+      setError(msg?.error || "Демо-режим: нет доступа к API аналитики");
+      setStats(demoStats());
       setLoading(false);
       return;
     }
