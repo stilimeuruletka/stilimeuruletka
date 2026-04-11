@@ -141,6 +141,7 @@ export default function ProfilePage() {
   );
 
   const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const { displayName, avatarSrc } = useMemo(() => {
     if (!isClient) {
@@ -220,28 +221,35 @@ export default function ProfilePage() {
             className={styles.profileArrow}
           />
         </Link>
-        <Link href="/main/how-to-play" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+        <Link href="/main/how-to-play" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
             width={52}
             height={26}
-            className={styles.profileArrow}
+            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
           />
         </Link>
 
         <div className={styles.profileActionsOverlay}>
           <div className={styles.profileQuickButtons}>
             <div className={styles.profileQuickButtonsCenter}>
-              <Image
-                src="/историястильныхпинов.png"
-                alt="История стильных спинов"
-                width={10324}
-                height={1720}
-                className={styles.profileQuickButtonImg}
-                sizes="(max-width: 520px) 44vw, 180px"
-                quality={90}
-              />
+              <button
+                type="button"
+                className={`${styles.profileQuickButtonLink} ${styles.profileQuickButtonButton}`}
+                aria-label="История стильных спинов"
+                onClick={() => setHistoryOpen(true)}
+              >
+                <Image
+                  src="/историястильныхпинов.png"
+                  alt="История стильных спинов"
+                  width={10324}
+                  height={1720}
+                  className={styles.profileQuickButtonImg}
+                  sizes="(max-width: 520px) 44vw, 180px"
+                  quality={90}
+                />
+              </button>
             </div>
 
             <div className={styles.profileQuickButtonsRow}>
@@ -309,6 +317,17 @@ export default function ProfilePage() {
 
           <SpinTimer />
         </div>
+
+        {historyOpen && (
+          <div className={styles.profileHistoryOverlay} role="dialog" aria-modal="true" onClick={() => setHistoryOpen(false)}>
+            <div className={styles.profileHistoryFrame} onClick={(e) => e.stopPropagation()}>
+              <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} priority />
+              <button type="button" className={styles.profileHistoryCloseButton} onClick={() => setHistoryOpen(false)} aria-label="Закрыть">
+                <Image src="/стрелканазад.PNG" alt="Назад" width={52} height={26} className={styles.profileHistoryCloseIcon} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

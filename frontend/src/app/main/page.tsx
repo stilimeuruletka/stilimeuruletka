@@ -1,10 +1,80 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import styles from "../page.module.css";
 import { TelegramInit } from "./TelegramInit";
 import { SwipeNavigation } from "./SwipeNavigation";
 
+type TelegramWebAppUser = {
+  id?: number;
+  username?: string;
+  photo_url?: string;
+};
+
+type TelegramWebApp = {
+  initDataUnsafe?: {
+    user?: TelegramWebAppUser;
+  };
+  initData?: string;
+  showAlert?: (message: string) => void;
+};
+
+type TelegramSdkWindow = Window & {
+  Telegram?: {
+    WebApp?: TelegramWebApp;
+  };
+};
+
+function getBackendBase() {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
+  return raw ? raw.replace(/\/+$/, "") : "";
+}
+
 export default function MainPage() {
+  const router = useRouter();
+
+  const initData = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    const w = window as TelegramSdkWindow;
+    const initDataRaw = w.Telegram?.WebApp?.initData;
+    return typeof initDataRaw === "string" && initDataRaw.length > 10 ? initDataRaw : null;
+  }, []);
+
+  const [referralLink, setReferralLink] = useState<string | null>(null);
+
+  const loadReferralLink = useCallback(async () => {
+    if (!initData) return null;
+    if (referralLink) return referralLink;
+    const base = getBackendBase();
+    const res = await fetch(`${base}/api/referral/link`, { headers: { "x-telegram-init-data": initData } }).catch(() => null);
+    if (!res || !res.ok) return null;
+    const json = (await res.json().catch(() => null)) as { link?: string } | null;
+    const link = typeof json?.link === "string" && json.link.length > 0 ? json.link : null;
+    if (link) setReferralLink(link);
+    return link;
+  }, [initData, referralLink]);
+
+  const handleInviteCardClick = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      const link = await loadReferralLink();
+      const w = window as TelegramSdkWindow;
+      if (link && navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(link);
+          w.Telegram?.WebApp?.showAlert?.("Реферальная ссылка скопирована");
+        } catch {
+          w.Telegram?.WebApp?.showAlert?.("Не удалось скопировать ссылку");
+        }
+      }
+      router.push("/main/invite");
+    },
+    [loadReferralLink, router]
+  );
+
   return (
     <div className={styles.screen}>
       <TelegramInit />
@@ -118,7 +188,7 @@ export default function MainPage() {
 
             <div className={styles.grid}>
               <div className={styles.card}>
-                <Link href="/main/invite" className={styles.cardLink} aria-label="Пригласить друзей">
+                <Link href="/main/invite" className={styles.cardLink} aria-label="Пригласить друзей" onClick={handleInviteCardClick}>
                   <div className={styles.girlWrap}>
                     <Image
                       src="/4девушка.PNG"

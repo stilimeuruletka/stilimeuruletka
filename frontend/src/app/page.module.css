@@ -235,6 +235,17 @@
   z-index: 2;
 }
 
+.profileArrowRightNoFlip {
+  position: absolute;
+  right: -50px;
+  top: 2px;
+  z-index: 2;
+}
+
+.profileArrowIconRight {
+  transform: scaleX(-1);
+}
+
 .profileArrowLeftProfile {
   left: 22px;
   top: 100px;
@@ -471,6 +482,48 @@
   cursor: pointer;
 }
 
+.profileQuickButtonButton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.profileHistoryOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileHistoryFrame {
+  width: min(520px, calc(100vh * 9 / 16));
+  height: 100vh;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+}
+
+.profileHistoryCloseButton {
+  position: absolute;
+  top: 96px;
+  left: 18px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.profileHistoryCloseIcon {
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
 .profileQuickButtonImgBrandShiftLeft {
   margin-left: 0;
 }
@@ -672,7 +725,7 @@
 
 .friendsListHeader {
   position: absolute;
-  top: 0;
+  top: 150px;
   left: 0;
   right: 0;
   height: 200px;
@@ -686,7 +739,7 @@
 
 .friendsListBackButton {
   position: absolute;
-  top: 48px;
+  top: 198px;
   left: 20px;
   border: 0;
   background: transparent;
@@ -703,7 +756,7 @@
 
 .friendsListCount {
   position: absolute;
-  top: 76px;
+  top: 226px;
   right: 54px;
   font-family: var(--font-uncage);
   font-size: 16px;
@@ -717,7 +770,7 @@
 .friendsListScroll {
   position: absolute;
   inset: 0;
-  padding: 200px 16px 22px;
+  padding: 350px 16px 22px;
   overflow-y: auto;
   z-index: 1;
 }
@@ -1095,7 +1148,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #B81F22;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .profileSpinTimerValue {
