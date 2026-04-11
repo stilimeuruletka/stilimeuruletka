@@ -179,7 +179,7 @@
 .profileInviteButtonOverlay {
   position: absolute;
   left: 50%;
-  top: 16%;
+  top: 18%;
   transform: translateX(-50%);
   border: 0;
   background: transparent;
@@ -247,7 +247,7 @@
 
 .profileCenterIcons {
   position: absolute;
-  top: 32%;
+  top: 34%;
   left: 54%;
   transform: translateX(-50%);
   z-index: 2;
@@ -263,12 +263,12 @@
 
 .profileCenterIconLeft {
   left: -52px;
-  top: -2px;
+  top: 6px;
 }
 
 .profileCenterIconRight {
   right: -20px;
-  top: -46px;
+  top: -38px;
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
@@ -276,7 +276,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 12%;
+  top: 14%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -284,7 +284,7 @@
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 28%;
+  top: 30%;
   left: 58%;
 }
 
@@ -954,7 +954,7 @@
   position: absolute;
   left: 64px;
   transform: none;
-  bottom: 152px;
+  bottom: 144px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1090,13 +1090,12 @@
   justify-content: center;
   padding-top: 0;
   transform: translate(2px, 10px);
-  font-family: var(--font-uncage-semibold);
+  font-family: var(--font-uncage);
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #B81F22;
-  font-weight: 800;
-  text-shadow: 0.4px 0 0 currentColor, -0.4px 0 0 currentColor;
+  font-weight: 700;
 }
 
 .profileSpinTimerValue {
@@ -1541,7 +1540,7 @@
 
   .howToPlayRulesRow {
     left: 40px;
-    bottom: 84px;
+    bottom: 78px;
     transform: none;
   }
 }
