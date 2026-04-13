@@ -387,25 +387,57 @@ export default function ProfilePage() {
           <div className={styles.profileHistoryOverlay} role="dialog" aria-modal="true" onClick={() => setHistoryOpen(false)}>
             <div className={styles.profileHistoryFrame} onClick={(e) => e.stopPropagation()}>
               <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} priority />
-              <div className={styles.profileHistoryList}>
-                {historyLoading && <div className={styles.profileHistoryStatus}>Загрузка…</div>}
-                {!historyLoading && historyError && <div className={styles.profileHistoryStatus}>{historyError}</div>}
+              
+              <div className={styles.profileHistoryContent}>
+                {historyLoading && <div className={styles.profileHistoryEmpty}>ЗАГРУЗКА...</div>}
+                {!historyLoading && historyError && <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>}
                 {!historyLoading && !historyError && historyItems.length === 0 && (
-                  <div className={styles.profileHistoryStatus}>Пока нет спинов</div>
+                  <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>
                 )}
                 {!historyLoading && !historyError && historyItems.length > 0 && (
-                  <div className={styles.profileHistoryRows}>
-                    {historyItems.map((it) => (
-                      <div key={it.spin_id} className={styles.profileHistoryRow}>
-                        <div className={styles.profileHistoryRowLeft}>
-                          <div className={styles.profileHistoryRowTitle}>{it.win ? "Выигрыш" : "Проигрыш"}</div>
-                          <div className={styles.profileHistoryRowMeta}>{formatHistoryDate(it.created_at)}</div>
+                  <div className={styles.profileHistoryCarouselWrapper}>
+                    <button
+                      type="button"
+                      className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowLeft}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        document.getElementById('history-carousel')?.scrollBy({ left: -200, behavior: 'smooth' });
+                      }}
+                      aria-label="Листать влево"
+                    >
+                      <Image src="/стрелканазад.PNG" alt="Влево" width={40} height={20} className={styles.profileHistoryArrowIcon} />
+                    </button>
+                    
+                    <div id="history-carousel" className={styles.profileHistoryCarousel}>
+                      {historyItems.map((it) => (
+                        <div key={it.spin_id} className={styles.profileHistoryCard}>
+                          <div className={styles.profileHistoryCardDate}>{formatHistoryDate(it.created_at)}</div>
+                          <div className={styles.profileHistoryCardImageWrapper}>
+                            <img
+                              src={it.win ? "/IMG_2805.PNG" : "/проигрыш.PNG"}
+                              alt={it.win ? "Победа" : "Поражение"}
+                              className={styles.profileHistoryCardImage}
+                              draggable="false"
+                            />
+                          </div>
+                          <div className={styles.profileHistoryCardResult}>
+                            {it.win ? "WOW! ПОБЕДА" : "OOPS...ПОРАЖЕНИЕ"}
+                          </div>
                         </div>
-                        <div className={`${styles.profileHistoryRowRight} ${it.win ? styles.profileHistoryRowRightWin : styles.profileHistoryRowRightLose}`}>
-                          {it.win ? (it.prize_title || "Приз") : "—"}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowRight}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        document.getElementById('history-carousel')?.scrollBy({ left: 200, behavior: 'smooth' });
+                      }}
+                      aria-label="Листать вправо"
+                    >
+                      <Image src="/стрелканазад.PNG" alt="Вправо" width={40} height={20} className={styles.profileHistoryArrowIcon} />
+                    </button>
                   </div>
                 )}
               </div>

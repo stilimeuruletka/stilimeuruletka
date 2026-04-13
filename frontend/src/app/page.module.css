@@ -507,88 +507,146 @@
   overflow: hidden;
 }
 
-.profileHistoryList {
+.profileHistoryContent {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 220px;
-  bottom: 20px;
+  inset: 0;
   z-index: 2;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.profileHistoryStatus {
-  font-family: var(--font-uncage);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.7);
-  text-align: center;
-  padding: 18px 0;
-}
-
-.profileHistoryRows {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.profileHistoryRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.86);
-  border-radius: 14px;
-  padding: 12px 12px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  justify-content: center;
 }
 
-.profileHistoryRowLeft {
-  min-width: 0;
+.profileHistoryEmpty {
+  font-family: var(--font-uncage);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #333;
+  text-align: center;
+  transform: translateY(-40px);
+}
+
+.profileHistoryCarouselWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profileHistoryCarousel {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 0 calc(50% - 90px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.profileHistoryCarousel::-webkit-scrollbar {
+  display: none;
+}
+
+.profileHistoryCard {
+  flex: 0 0 160px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  transform: scale(0.85);
+  transition: transform 0.3s ease;
+  transform-origin: center;
 }
 
-.profileHistoryRowTitle {
+/* This targets the item roughly in the center */
+.profileHistoryCarousel > *:target,
+.profileHistoryCarousel > *:hover {
+  /* It's tricky to do exact center scaling without JS intersection observer,
+     so we can just keep them consistent or rely on hover for now. */
+}
+
+/* Actually, we can just make them all the same size and let the scroll snap center them */
+.profileHistoryCard {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: center;
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(20px);
+}
+
+.profileHistoryCardDate {
   font-family: var(--font-uncage);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   color: #000;
+  margin-bottom: 8px;
+  text-align: center;
 }
 
-.profileHistoryRowMeta {
-  font-family: var(--font-uncage);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: rgba(0, 0, 0, 0.62);
-}
-
-.profileHistoryRowRight {
-  font-family: var(--font-uncage);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: right;
-  max-width: 46%;
-  white-space: nowrap;
+.profileHistoryCardImageWrapper {
+  width: 140px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
-  text-overflow: ellipsis;
+  border-radius: 4px;
 }
 
-.profileHistoryRowRightWin {
-  color: #950911;
+.profileHistoryCardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
 }
 
-.profileHistoryRowRightLose {
-  color: rgba(0, 0, 0, 0.55);
+.profileHistoryCardResult {
+  font-family: var(--font-uncage);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #000;
+  margin-top: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.profileHistoryArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.profileHistoryArrowLeft {
+  left: 10px;
+}
+
+.profileHistoryArrowRight {
+  right: 10px;
+}
+
+.profileHistoryArrowIcon {
+  width: 32px;
+  height: auto;
+}
+
+.profileHistoryArrowRight .profileHistoryArrowIcon {
+  transform: rotate(180deg);
 }
 
 .profileHistoryCloseButton {
@@ -1047,7 +1105,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
