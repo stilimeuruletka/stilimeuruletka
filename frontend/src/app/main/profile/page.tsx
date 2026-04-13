@@ -142,6 +142,11 @@ export default function ProfilePage() {
 
   const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [historyItems, setHistoryItems] = useState<
+    Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>
+  >([]);
 
   const { displayName, avatarSrc } = useMemo(() => {
     if (!isClient) {
@@ -171,6 +176,66 @@ export default function ProfilePage() {
     document.addEventListener("visibilitychange", sync);
     sync();
     return () => document.removeEventListener("visibilitychange", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!historyOpen) return;
+    const initData = getInitData();
+    if (!initData) {
+      const id = window.setTimeout(() => {
+        setHistoryError("Откройте приложение через Telegram");
+        setHistoryItems([]);
+      }, 0);
+      return () => window.clearTimeout(id);
+    }
+    const base = getBackendBase();
+    const controller = new AbortController();
+    const id = window.setTimeout(() => {
+      setHistoryLoading(true);
+      setHistoryError(null);
+      void fetch(`${base}/api/spins/history?limit=80`, {
+        headers: { "x-telegram-init-data": initData },
+        cache: "no-store",
+        signal: controller.signal
+      })
+        .then(async (res) => {
+          const json = (await res.json().catch(() => null)) as
+            | { items?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }> }
+            | { message?: string }
+            | null;
+          if (!res.ok) {
+            const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Не удалось загрузить историю";
+            throw new Error(msg);
+          }
+          const items =
+            json && typeof json === "object" && "items" in json && Array.isArray((json as { items?: unknown }).items)
+              ? ((json as { items: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }> }).items ?? [])
+              : [];
+          setHistoryItems(items);
+        })
+        .catch((e) => {
+          if (e instanceof DOMException && e.name === "AbortError") return;
+          setHistoryError(e instanceof Error ? e.message : "Не удалось загрузить историю");
+          setHistoryItems([]);
+        })
+        .finally(() => setHistoryLoading(false));
+    }, 0);
+    return () => {
+      window.clearTimeout(id);
+      controller.abort();
+    };
+  }, [historyOpen]);
+
+  const formatHistoryDate = useCallback((iso: string) => {
+    const ms = Date.parse(iso);
+    if (!Number.isFinite(ms)) return iso;
+    return new Intl.DateTimeFormat("ru-RU", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date(ms));
   }, []);
 
   return (
@@ -221,7 +286,7 @@ export default function ProfilePage() {
             className={styles.profileArrow}
           />
         </Link>
-        <Link href="/main/how-to-play" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+        <Link href="/main/roulette" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
@@ -322,6 +387,28 @@ export default function ProfilePage() {
           <div className={styles.profileHistoryOverlay} role="dialog" aria-modal="true" onClick={() => setHistoryOpen(false)}>
             <div className={styles.profileHistoryFrame} onClick={(e) => e.stopPropagation()}>
               <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} priority />
+              <div className={styles.profileHistoryList}>
+                {historyLoading && <div className={styles.profileHistoryStatus}>Загрузка…</div>}
+                {!historyLoading && historyError && <div className={styles.profileHistoryStatus}>{historyError}</div>}
+                {!historyLoading && !historyError && historyItems.length === 0 && (
+                  <div className={styles.profileHistoryStatus}>Пока нет спинов</div>
+                )}
+                {!historyLoading && !historyError && historyItems.length > 0 && (
+                  <div className={styles.profileHistoryRows}>
+                    {historyItems.map((it) => (
+                      <div key={it.spin_id} className={styles.profileHistoryRow}>
+                        <div className={styles.profileHistoryRowLeft}>
+                          <div className={styles.profileHistoryRowTitle}>{it.win ? "Выигрыш" : "Проигрыш"}</div>
+                          <div className={styles.profileHistoryRowMeta}>{formatHistoryDate(it.created_at)}</div>
+                        </div>
+                        <div className={`${styles.profileHistoryRowRight} ${it.win ? styles.profileHistoryRowRightWin : styles.profileHistoryRowRightLose}`}>
+                          {it.win ? (it.prize_title || "Приз") : "—"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button type="button" className={styles.profileHistoryCloseButton} onClick={() => setHistoryOpen(false)} aria-label="Закрыть">
                 <Image src="/стрелканазад.PNG" alt="Назад" width={52} height={26} className={styles.profileHistoryCloseIcon} />
               </button>

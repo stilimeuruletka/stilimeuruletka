@@ -15,7 +15,11 @@ const EnvSchema = z.object({
 
   PUBLIC_WEBAPP_URL: z.string().url(),
   CRON_SECRET: z.string().min(10).optional(),
-  TELEGRAM_APP_SLUG: z.string().min(1).optional()
+  TELEGRAM_APP_SLUG: z.string().min(1).optional(),
+
+  SPIN_TEST_MODE: z.coerce.number().int().optional(),
+  SPIN_MAX_WINS_PER_MONTH: z.coerce.number().int().optional(),
+  SPIN_SEGMENTS_COUNT: z.coerce.number().int().optional()
 });
 
 export type Env = z.infer<typeof EnvSchema>;

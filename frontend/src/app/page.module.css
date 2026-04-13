@@ -507,6 +507,90 @@
   overflow: hidden;
 }
 
+.profileHistoryList {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 220px;
+  bottom: 20px;
+  z-index: 2;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profileHistoryStatus {
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  padding: 18px 0;
+}
+
+.profileHistoryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profileHistoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 14px;
+  padding: 12px 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.profileHistoryRowLeft {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profileHistoryRowTitle {
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.profileHistoryRowMeta {
+  font-family: var(--font-uncage);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.62);
+}
+
+.profileHistoryRowRight {
+  font-family: var(--font-uncage);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: right;
+  max-width: 46%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profileHistoryRowRightWin {
+  color: #950911;
+}
+
+.profileHistoryRowRightLose {
+  color: rgba(0, 0, 0, 0.55);
+}
+
 .profileHistoryCloseButton {
   position: absolute;
   top: 96px;
@@ -867,6 +951,392 @@
 .rouletteSpinButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.rouletteTopHeader {
+  top: 88px;
+}
+
+.rouletteHeaderImage {
+  width: 150%;
+}
+
+.rouletteStage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 170px;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  z-index: 3;
+  padding: 0 16px 18px;
+}
+
+.roulettePointer {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 16px solid #000;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  z-index: 6;
+}
+
+.roulettePointerCap {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 30px;
+  z-index: 7;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.28));
+}
+
+.roulettePointerCapSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rouletteWheelButton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: min(92vw, 420px);
+  aspect-ratio: 1;
+  position: relative;
+  margin-top: 26px;
+  touch-action: manipulation;
+  z-index: 4;
+}
+
+.rouletteWheelButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.rouletteWheel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transform: translateZ(0);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.1, 0.82, 0.12, 1);
+}
+
+.rouletteWheelArt {
+  position: absolute;
+  inset: 0;
+}
+
+.rouletteWheelComposite {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rouletteSegmentsBg {
+  position: absolute;
+  inset: 0%;
+  border-radius: 999px;
+  transform: rotate(var(--rouletteSegmentOffset, 18deg));
+  transform-origin: 50% 50%;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.0) 56%),
+    radial-gradient(circle at 50% 55%, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.0) 54%),
+    conic-gradient(
+      from -90deg,
+      #F8F9FB 0deg 36deg,
+      #E6E6E6 36deg 72deg,
+      #F8F9FB 72deg 108deg,
+      #E6E6E6 108deg 144deg,
+      #F8F9FB 144deg 180deg,
+      #E6E6E6 180deg 216deg,
+      #F8F9FB 216deg 252deg,
+      #E6E6E6 252deg 288deg,
+      #F8F9FB 288deg 324deg,
+      #E6E6E6 324deg 360deg
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    inset 0 12px 34px rgba(0, 0, 0, 0.09),
+    inset 0 -18px 48px rgba(255, 255, 255, 0.18);
+}
+
+.rouletteWheelSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rouletteSegmentItems {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rouletteSegmentItem {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(38px, 12.5vw, 58px);
+  height: clamp(38px, 12.5vw, 58px);
+  transform: translate(-50%, -50%) rotate(var(--rouletteItemAngle, 0deg)) translateY(-33%) rotate(calc(-1 * var(--rouletteItemAngle, 0deg)));
+  transform-origin: 50% 50%;
+}
+
+.rouletteSegmentItemImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.rouletteWheelOverlaySvg {
+  transform: scale(1.07);
+  transform-origin: 50% 50%;
+}
+
+.rouletteSeparators {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rouletteDivider {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 48%;
+  transform-origin: 50% 100%;
+}
+
+.rouletteDividerLine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+  opacity: 0.85;
+}
+
+.rouletteDividerTexture {
+  position: absolute;
+  left: 50%;
+  top: -2%;
+  width: 180%;
+  height: 100%;
+  transform: translateX(-50%);
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  object-fit: contain;
+}
+
+.rouletteBorderDecorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.rouletteBorderDecoItem {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6.2%;
+  height: 50%;
+  transform-origin: 50% 100%;
+}
+
+.rouletteBorderDecoSvg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  width: 100%;
+  height: auto;
+}
+
+.rouletteCenter {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -50%);
+  width: clamp(76px, 18vw, 92px);
+  height: clamp(76px, 18vw, 92px);
+  border-radius: 322px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+  z-index: 5;
+}
+
+.rouletteCenterInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 322px;
+  position: relative;
+  padding: 8px;
+}
+
+.rouletteCenterLogo {
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rouletteCenterTitle {
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.rouletteCenterSub {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
+  font-family: var(--font-uncage);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.rouletteHud {
+  width: min(92vw, 420px);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+.rouletteHudLine {
+  display: block;
+}
+
+.rouletteHudError {
+  margin-top: 6px;
+  color: #950911;
+  font-weight: 800;
+}
+
+.rouletteResultOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.rouletteResultCard {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  padding: 18px 16px 16px;
+  text-align: center;
+}
+
+.rouletteResultTitle {
+  font-family: var(--font-uncage);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.rouletteResultSubtitle {
+  margin-top: 8px;
+  font-family: var(--font-uncage);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #950911;
+}
+
+.rouletteResultMeta {
+  margin-top: 10px;
+  font-family: var(--font-uncage);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.rouletteResultActions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.rouletteResultButton {
+  flex: 1;
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rouletteResultButtonPrimary {
+  background: #950911;
+  color: #fff;
 }
 
 .howToPlayNavLeft {

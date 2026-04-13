@@ -17,7 +17,11 @@ const SpinResultSchema = z.object({
   prize_title: z.string().nullable(),
   prize_value: z.number().nullable(),
   win: z.boolean(),
-  balance_after: z.number().int().min(0)
+  balance_after: z.number().int().min(0),
+  wins_this_month: z.number().int().min(0).optional(),
+  max_wins_per_month: z.number().int().nullable().optional(),
+  segments_count: z.number().int().min(2).optional(),
+  sector_index: z.number().int().min(0).optional()
 });
 
 const FreeSpinStateSchema = z.object({
@@ -63,9 +67,52 @@ export async function spinWheel(supabase: SupabaseClient, tgUserId: number) {
   return SpinResultSchema.parse(data);
 }
 
+export async function spinWheelLimited(
+  supabase: SupabaseClient,
+  input: { tgUserId: number; maxWinsPerMonth: number | null; testMode: boolean; segmentsCount: number }
+) {
+  try {
+    const data = await rpc<unknown>(supabase, "spin_wheel_limited", {
+      p_tg_user_id: input.tgUserId,
+      p_max_wins_per_month: input.maxWinsPerMonth,
+      p_test_mode: input.testMode,
+      p_segments_count: input.segmentsCount
+    });
+    return SpinResultSchema.parse(data);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    if (msg.startsWith("spin_wheel_limited:") && (msg.includes("does not exist") || msg.includes("unknown"))) {
+      return spinWheel(supabase, input.tgUserId);
+    }
+    throw e;
+  }
+}
+
 export async function ensureFreeSpin(supabase: SupabaseClient, tgUserId: number) {
   const data = await rpc<unknown>(supabase, "ensure_free_spin", { p_tg_user_id: tgUserId });
   return FreeSpinStateSchema.parse(data);
+}
+
+export async function getSpinHistory(
+  supabase: SupabaseClient,
+  input: { tgUserId: number; limit?: number; offset?: number }
+) {
+  const data = await rpc<unknown>(supabase, "get_spin_history", {
+    p_tg_user_id: input.tgUserId,
+    p_limit: input.limit ?? 50,
+    p_offset: input.offset ?? 0
+  });
+  return z
+    .array(
+      z.object({
+        spin_id: z.string().uuid(),
+        created_at: z.string(),
+        win: z.boolean(),
+        prize_title: z.string().nullable(),
+        prize_value: z.number().nullable()
+      })
+    )
+    .parse(data);
 }
 
 export async function upsertUserProfile(

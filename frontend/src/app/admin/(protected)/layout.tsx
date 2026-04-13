@@ -31,6 +31,12 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
             >
               Блогеры
             </Link>
+            <Link
+              href="/admin/users"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/users") ? styles.navLinkActive : ""}`}
+            >
+              Пользователи
+            </Link>
           </div>
           <button className={styles.button} type="button" onClick={logout}>
             Выйти
@@ -41,4 +47,3 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
     </div>
   );
 }
-

@@ -936,4 +936,82 @@ describe("buildApp", () => {
     expect(auditInsert).toHaveBeenCalled();
     await app.close();
   });
+
+  it("serves /api/spins/history with valid initData", async () => {
+    const env = {
+      NODE_ENV: "test",
+      PORT: 0,
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "x".repeat(40),
+      TELEGRAM_BOT_TOKEN: "1234567890:abcdefghijklmnopqrstuvwxyz",
+      TELEGRAM_WEBHOOK_SECRET: "secret-token",
+      TELEGRAM_BOT_USERNAME: "my_bot",
+      TELEGRAM_CHANNEL_ID: "@my_channel",
+      PUBLIC_WEBAPP_URL: "https://example.com"
+    } as const;
+
+    const db = {
+      getSpinHistory: vi.fn(async () => [
+        { spin_id: "00000000-0000-0000-0000-000000000000", created_at: "2026-01-01T00:00:00.000Z", win: true, prize_title: "Сертификат", prize_value: 1000 },
+        { spin_id: "00000000-0000-0000-0000-000000000001", created_at: "2026-01-02T00:00:00.000Z", win: false, prize_title: null, prize_value: null }
+      ])
+    };
+
+    const app = buildApp(env, { db: db as any });
+    const initData = createInitData(env.TELEGRAM_BOT_TOKEN, { id: 42, first_name: "A" });
+    const res = await app.inject({ method: "GET", url: "/api/spins/history?limit=10", headers: { "x-telegram-init-data": initData } });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      items: [
+        { spin_id: "00000000-0000-0000-0000-000000000000", created_at: "2026-01-01T00:00:00.000Z", win: true, prize_title: "Сертификат", prize_value: 1000 },
+        { spin_id: "00000000-0000-0000-0000-000000000001", created_at: "2026-01-02T00:00:00.000Z", win: false, prize_title: null, prize_value: null }
+      ]
+    });
+    await app.close();
+  });
+
+  it("prefers spinWheelLimited when provided by DB override", async () => {
+    const env = {
+      NODE_ENV: "test",
+      PORT: 0,
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "x".repeat(40),
+      TELEGRAM_BOT_TOKEN: "1234567890:abcdefghijklmnopqrstuvwxyz",
+      TELEGRAM_WEBHOOK_SECRET: "secret-token",
+      TELEGRAM_BOT_USERNAME: "my_bot",
+      TELEGRAM_CHANNEL_ID: "@my_channel",
+      PUBLIC_WEBAPP_URL: "https://example.com"
+    } as const;
+
+    const spinOk = {
+      spin_id: "00000000-0000-0000-0000-000000000000",
+      prize_id: null,
+      prize_title: null,
+      prize_value: null,
+      win: false,
+      balance_after: 0,
+      segments_count: 10,
+      sector_index: 2,
+      wins_this_month: 1,
+      max_wins_per_month: 3
+    };
+
+    const db = {
+      handleStart: vi.fn(async () => ({ is_new_user: false, referral_processed: false, inviter_user_id: null })),
+      trackBloggerClick: vi.fn(async () => {}),
+      ensureFreeSpin: vi.fn(async () => ({ balance: 1, can_spin: true, next_spin_at: null, granted: false })),
+      setUserTzOffset: vi.fn(async () => {}),
+      upsertUserProfile: vi.fn(async () => {}),
+      spinWheel: vi.fn(async () => spinOk),
+      spinWheelLimited: vi.fn(async () => spinOk),
+      setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-03T00:00:00.000Z" }))
+    };
+
+    const app = buildApp(env, { db: db as any });
+    const initData = createInitData(env.TELEGRAM_BOT_TOKEN, { id: 42, first_name: "A" });
+    const res = await app.inject({ method: "POST", url: "/api/spin", headers: { "x-telegram-init-data": initData } });
+    expect(res.statusCode).toBe(200);
+    expect(db.spinWheelLimited).toHaveBeenCalled();
+    await app.close();
+  });
 });

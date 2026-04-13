@@ -1,9 +1,31 @@
-import { describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Home from "./page";
 import MainPage from "./main/page";
 
+const pushMock = vi.fn();
+const replaceMock = vi.fn();
+
+vi.mock("next/navigation", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    useRouter: () => ({
+      push: pushMock,
+      replace: replaceMock,
+      prefetch: vi.fn()
+    })
+  };
+});
+
 describe("Home", () => {
+  afterEach(() => {
+    cleanup();
+    pushMock.mockReset();
+    replaceMock.mockReset();
+    delete (window as unknown as Record<string, unknown>).Telegram;
+  });
+
   it("renders splash link to main", async () => {
     render(<Home />);
 
@@ -37,6 +59,45 @@ describe("Home", () => {
     await waitFor(() => {
       expect(window.Telegram?.WebApp?.ready).toHaveBeenCalled();
       expect(window.Telegram?.WebApp?.expand).toHaveBeenCalled();
+    });
+  });
+
+  it("copies referral link on invite card click and navigates", async () => {
+    const showAlert = vi.fn();
+    window.Telegram = {
+      WebApp: { initData: "initData-long-enough", ready: vi.fn(), expand: vi.fn() }
+    };
+    if (window.Telegram?.WebApp) {
+      (window.Telegram.WebApp as unknown as Record<string, unknown>).showAlert = showAlert;
+    }
+
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ link: "https://t.me/test?startapp=ref_abc" })
+    }));
+    Object.defineProperty(globalThis, "fetch", { value: fetchMock, configurable: true });
+
+    pushMock.mockClear();
+    render(<MainPage />);
+
+    const invite = await screen.findAllByRole("link", { name: "Пригласить друзей" });
+    fireEvent.click(invite[invite.length - 1]!);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled();
+      expect(writeText).toHaveBeenCalledWith("https://t.me/test?startapp=ref_abc");
+      expect(showAlert).toHaveBeenCalled();
+      expect(pushMock).toHaveBeenCalledWith("/main/invite");
+    });
+
+    fireEvent.click(invite[invite.length - 1]!);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(pushMock).toHaveBeenCalledTimes(2);
     });
   });
 });

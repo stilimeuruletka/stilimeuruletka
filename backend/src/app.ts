@@ -18,6 +18,7 @@ import { verifyTelegramWebAppInitData, TelegramWebAppAuthError } from "./auth/te
 import {
   ensureFreeSpin,
   getReferralCode,
+  getSpinHistory,
   getTicketBalance,
   grantSubscriptionTicket,
   handleStart,
@@ -28,6 +29,7 @@ import {
   setUserTzOffset,
   upsertUserProfile,
   spinWheel,
+  spinWheelLimited,
   trackBloggerClick,
   writeAuditEvent
 } from "./db.js";
@@ -79,6 +81,27 @@ type DbApi = {
     prize_value: number | null;
     win: boolean;
     balance_after: number;
+    wins_this_month?: number | undefined;
+    max_wins_per_month?: number | null | undefined;
+    segments_count?: number | undefined;
+    sector_index?: number | undefined;
+  }>;
+  spinWheelLimited: (input: {
+    tgUserId: number;
+    maxWinsPerMonth: number | null;
+    testMode: boolean;
+    segmentsCount: number;
+  }) => Promise<{
+    spin_id: string;
+    prize_id: string | null;
+    prize_title: string | null;
+    prize_value: number | null;
+    win: boolean;
+    balance_after: number;
+    wins_this_month?: number | undefined;
+    max_wins_per_month?: number | null | undefined;
+    segments_count?: number | undefined;
+    sector_index?: number | undefined;
   }>;
   ensureFreeSpin: (tgUserId: number) => Promise<{ balance: number; can_spin: boolean; next_spin_at: string | null; granted: boolean }>;
   setUserTzOffset: (tgUserId: number, tzOffsetMinutes: number) => Promise<void>;
@@ -87,6 +110,9 @@ type DbApi = {
   setNextSpinAfterSpinMidnight: (tgUserId: number) => Promise<{ next_spin_at: string }>;
   listDueSpinUsers: (nowIso: string) => Promise<number[]>;
   listReferrals: (tgUserId: number) => Promise<Array<{ tg_user_id: number; username: string | null; photo_url: string | null; created_at: string }>>;
+  getSpinHistory: (input: { tgUserId: number; limit?: number; offset?: number }) => Promise<
+    Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>
+  >;
   writeAuditEvent: (event: { tg_user_id: number; event_type: string; payload?: Record<string, unknown> }) => Promise<void>;
   getReferralCode: (tgUserId: number) => Promise<string>;
 };
@@ -105,6 +131,7 @@ export function buildApp(
       getTicketBalance: (tgUserId) => getTicketBalance(supabase, tgUserId),
       grantSubscriptionTicket: (tgUserId, channelId) => grantSubscriptionTicket(supabase, tgUserId, channelId),
       spinWheel: (tgUserId) => spinWheel(supabase, tgUserId),
+      spinWheelLimited: (input) => spinWheelLimited(supabase, input),
       ensureFreeSpin: (tgUserId) => ensureFreeSpin(supabase, tgUserId),
       setUserTzOffset: (tgUserId, tzOffsetMinutes) => setUserTzOffset(supabase, tgUserId, tzOffsetMinutes),
       upsertUserProfile: (tgUserId, input) => upsertUserProfile(supabase, tgUserId, input),
@@ -112,6 +139,7 @@ export function buildApp(
       setNextSpinAfterSpinMidnight: (tgUserId) => setNextSpinAfterSpinMidnight(supabase, tgUserId),
       listDueSpinUsers: (nowIso) => listDueSpinUsers(supabase, nowIso),
       listReferrals: (tgUserId) => listReferrals(supabase, tgUserId),
+      getSpinHistory: (input) => getSpinHistory(supabase, input),
       writeAuditEvent: (event) => writeAuditEvent(supabase, event),
       getReferralCode: (tgUserId) => getReferralCode(supabase, tgUserId)
     } satisfies DbApi);
@@ -525,10 +553,24 @@ export function buildApp(
         throw app.httpErrors.badRequest("Spin not available yet");
       }
 
-      const result = await db.spinWheel(auth.tgUserId);
+      const limited = (db as unknown as { spinWheelLimited?: unknown }).spinWheelLimited;
+      const result =
+        typeof limited === "function"
+          ? await (limited as (input: {
+              tgUserId: number;
+              maxWinsPerMonth: number | null;
+              testMode: boolean;
+              segmentsCount: number;
+            }) => Promise<unknown>)({
+              tgUserId: auth.tgUserId,
+              maxWinsPerMonth: typeof env.SPIN_MAX_WINS_PER_MONTH === "number" ? env.SPIN_MAX_WINS_PER_MONTH : 3,
+              testMode: env.SPIN_TEST_MODE === undefined ? true : env.SPIN_TEST_MODE !== 0,
+              segmentsCount: typeof env.SPIN_SEGMENTS_COUNT === "number" ? env.SPIN_SEGMENTS_COUNT : 10
+            })
+          : await db.spinWheel(auth.tgUserId);
       const next = await db.setNextSpinAfterSpinMidnight(auth.tgUserId);
 
-      return { ...result, next_spin_at: next.next_spin_at };
+      return { ...(result as Record<string, unknown>), next_spin_at: next.next_spin_at };
     } catch (e) {
       req.log.warn({ err: e }, "api_spin_failed");
       if (typeof e === "object" && e && "statusCode" in e) {
@@ -536,6 +578,22 @@ export function buildApp(
       }
       throw app.httpErrors.badRequest("Spin failed");
     }
+  });
+
+  app.get("/api/spins/history", async (req: FastifyRequest) => {
+    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    const query = req.query as unknown;
+    const limitRaw = query && typeof query === "object" ? (query as Record<string, unknown>).limit : undefined;
+    const offsetRaw = query && typeof query === "object" ? (query as Record<string, unknown>).offset : undefined;
+    const limit = typeof limitRaw === "string" ? Number(limitRaw) : typeof limitRaw === "number" ? limitRaw : 50;
+    const offset = typeof offsetRaw === "string" ? Number(offsetRaw) : typeof offsetRaw === "number" ? offsetRaw : 0;
+
+    const history = await db.getSpinHistory({
+      tgUserId: auth.tgUserId,
+      limit: Number.isFinite(limit) ? Math.min(200, Math.max(0, Math.floor(limit))) : 50,
+      offset: Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0
+    });
+    return { items: history };
   });
 
   app.post("/api/test/spin-reminder", async (req: FastifyRequest) => {
