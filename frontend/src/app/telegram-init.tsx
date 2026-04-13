@@ -11,6 +11,8 @@ export default function TelegramInit() {
             ready?: () => void;
             expand?: () => void;
             requestFullscreen?: () => Promise<void>;
+            isVersionAtLeast?: (version: string) => boolean;
+            version?: string;
             setHeaderColor?: (color: string) => void;
             setBackgroundColor?: (color: string) => void;
             setBottomBarColor?: (color: string) => void;
@@ -28,8 +30,19 @@ export default function TelegramInit() {
       webApp.disableVerticalSwipes?.();
       webApp.ready?.();
 
-      if (typeof webApp.requestFullscreen === "function") {
-        webApp.requestFullscreen().catch(() => {});
+      const canFullscreen =
+        (typeof webApp.isVersionAtLeast === "function" && webApp.isVersionAtLeast("8.0")) ||
+        (typeof webApp.version === "string" && Number.parseFloat(webApp.version) >= 8);
+
+      if (canFullscreen && typeof webApp.requestFullscreen === "function") {
+        try {
+          const p = webApp.requestFullscreen();
+          if (p && typeof (p as Promise<void>).catch === "function") {
+            (p as Promise<void>).catch(() => {});
+          }
+        } catch {
+          /* no-op */
+        }
       }
     } catch {
       /* no-op */

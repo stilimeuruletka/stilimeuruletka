@@ -277,10 +277,17 @@ export default function RoulettePage() {
   }, [spinning]);
 
   return (
-    <div className={styles.fullScreenPage}>
-      <div className={styles.fullScreenFrame}>
+    <div className={styles.placeholderPage}>
+      <div className={styles.placeholderFrame}>
         <button type="button" className={styles.aboutNavArrowLeft} onClick={() => router.push("/main")} aria-label="Назад">
-          <Image src="/стрелканазад.PNG" alt="" width={52} height={26} className={styles.aboutNavArrowImage} priority />
+          <Image
+            src="/стрелканазад.PNG"
+            alt=""
+            width={52}
+            height={26}
+            className={`${styles.aboutNavArrowImage} ${styles.rouletteBackArrowImage}`}
+            priority
+          />
         </button>
         <div className={`${styles.commonTopHeader} ${styles.rouletteTopHeader}`} aria-hidden="true">
           <Image
@@ -329,7 +336,7 @@ export default function RoulettePage() {
             <div className={styles.rouletteResultCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.rouletteResultTitle}>{modalTitle}</div>
               <div className={styles.rouletteResultSubtitle}>{modalSubtitle}</div>
-              {typeof wonSegmentIndex === "number" && (
+              {typeof wonSegmentIndex === "number" && result.win && (
                 <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
                   <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
                 </div>

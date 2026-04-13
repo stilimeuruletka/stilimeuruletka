@@ -867,7 +867,7 @@
 
 .friendsListHeader {
   position: absolute;
-  top: 150px;
+  top: 128px;
   left: 0;
   right: 0;
   height: 200px;
@@ -1090,6 +1090,7 @@
   height: 100%;
   will-change: transform;
   transform: translateZ(0);
+  backface-visibility: hidden;
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.1, 0.82, 0.12, 1);
 }
@@ -1106,9 +1107,16 @@
   height: 100%;
   display: block;
   object-fit: contain;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.rouletteBackArrowImage {
+  filter: none;
 }
 
 .rouletteSegmentsBg {

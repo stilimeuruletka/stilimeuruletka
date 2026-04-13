@@ -182,7 +182,19 @@ export default function ProfilePage() {
     if (!historyOpen) return;
     const initData = getInitData();
     if (!initData) {
+      const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
       const id = window.setTimeout(() => {
+        if (isLocalhost) {
+          const now = Date.now();
+          setHistoryLoading(false);
+          setHistoryError(null);
+          setHistoryItems([
+            { spin_id: `demo-${now}-1`, created_at: new Date(now - 3_600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null },
+            { spin_id: `demo-${now}-2`, created_at: new Date(now - 2_100_000).toISOString(), win: false, prize_title: null, prize_value: null },
+            { spin_id: `demo-${now}-3`, created_at: new Date(now - 600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null }
+          ]);
+          return;
+        }
         setHistoryError("Откройте приложение через Telegram");
         setHistoryItems([]);
       }, 0);
