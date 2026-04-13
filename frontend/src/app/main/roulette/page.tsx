@@ -153,7 +153,7 @@ function PointerCapArt() {
 function WheelArt() {
   return (
     <div className={styles.rouletteWheelArt} aria-hidden="true">
-      <img src="/колесорулетка.svg" alt="" className={styles.rouletteWheelComposite} draggable={false} />
+      <img src="/колесоновое.svg" alt="" className={styles.rouletteWheelComposite} draggable={false} />
     </div>
   );
 }
@@ -317,10 +317,11 @@ export default function RoulettePage() {
               <WheelArt />
             </div>
           </button>
-          <div className={styles.rouletteHud} aria-live="polite">
-            <div className={styles.rouletteHudLine}>Нажмите на колесо</div>
-            {error && <div className={styles.rouletteHudError}>{error}</div>}
-          </div>
+          {error && (
+            <div className={styles.rouletteHud} aria-live="polite">
+              <div className={styles.rouletteHudError}>{error}</div>
+            </div>
+          )}
         </div>
 
         {modalOpen && result && (
