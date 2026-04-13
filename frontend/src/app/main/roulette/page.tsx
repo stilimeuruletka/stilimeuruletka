@@ -29,6 +29,19 @@ type SpinResult = {
   sector_index?: number;
 };
 
+const SEGMENT_IMAGES = [
+  "/1колесо.png",
+  "/2колесо.png",
+  "/3колесо.png",
+  "/4колесо.png",
+  "/5колесо.png",
+  "/6колесо.png",
+  "/7колесо.png",
+  "/8колесо.png",
+  "/9колесо.png",
+  "/10колесо.png"
+] as const;
+
 function getBackendBase() {
   const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
   return raw ? raw.replace(/\/+$/, "") : "";
@@ -65,7 +78,7 @@ function playTick(ctx: AudioContext) {
   osc.type = "square";
   osc.frequency.value = 920;
   gain.gain.setValueAtTime(0.0001, t);
-  gain.gain.exponentialRampToValueAtTime(0.06, t + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.09, t + 0.005);
   gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
   osc.connect(gain);
   gain.connect(ctx.destination);
@@ -101,6 +114,13 @@ function stopTicks(timeoutRef: React.MutableRefObject<number | null>) {
     window.clearTimeout(timeoutRef.current);
     timeoutRef.current = null;
   }
+}
+
+function getSegmentImageByIndex(index: number) {
+  const safe = Number.isFinite(index) ? Math.trunc(index) : 0;
+  const len = SEGMENT_IMAGES.length;
+  const normalized = ((safe % len) + len) % len;
+  return SEGMENT_IMAGES[normalized];
 }
 
 function PointerCapArt() {
@@ -151,16 +171,16 @@ export default function RoulettePage() {
   const [result, setResult] = useState<SpinResult | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
 
   useEffect(() => {
     rotationRef.current = rotation;
   }, [rotation]);
 
   useEffect(() => {
-    audioRef.current = new AudioContext();
-    const ctx = audioRef.current;
     return () => {
       stopTicks(tickTimeoutRef);
+      const ctx = audioRef.current;
       audioRef.current = null;
       void ctx?.close().catch(() => {});
     };
@@ -185,31 +205,42 @@ export default function RoulettePage() {
     if (spinning) return;
     setError(null);
     setModalOpen(false);
+    setWonSegmentIndex(null);
 
     const initData = getInitData();
-    if (!initData) {
-      setError("Откройте приложение через Telegram");
-      return;
-    }
+    const base = getBackendBase();
 
     setSpinning(true);
     try {
-      const base = getBackendBase();
-      const tzOffset = new Date().getTimezoneOffset();
-      const res = await fetch(`${base}/api/spin?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
-        method: "POST",
-        headers: { "x-telegram-init-data": initData }
-      });
-      const json = (await res.json().catch(() => null)) as SpinResult | { message?: string } | null;
-      if (!res.ok || !json || typeof json !== "object" || !("win" in json)) {
-        const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
-        throw new Error(msg);
-      }
-      const data = json as SpinResult;
+      const segCount = 10;
+      let data: SpinResult;
+      let sectorIndex: number;
 
-      const segCount = typeof data.segments_count === "number" && data.segments_count >= 2 ? data.segments_count : 10;
-      const sectorIndex =
-        typeof data.sector_index === "number" && data.sector_index >= 0 ? data.sector_index : Math.floor(Math.random() * segCount);
+      if (!initData || !base) {
+        data = {
+          spin_id: `local-${Date.now()}`,
+          win: Math.random() < 0.5,
+          prize_title: null,
+          prize_value: null,
+          balance_after: 0,
+          segments_count: segCount,
+          sector_index: Math.floor(Math.random() * segCount)
+        };
+        sectorIndex = data.sector_index ?? 0;
+      } else {
+        const tzOffset = new Date().getTimezoneOffset();
+        const res = await fetch(`${base}/api/spin?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+          method: "POST",
+          headers: { "x-telegram-init-data": initData }
+        });
+        const json = (await res.json().catch(() => null)) as SpinResult | { message?: string } | null;
+        if (!res.ok || !json || typeof json !== "object" || !("win" in json)) {
+          const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
+          throw new Error(msg);
+        }
+        data = json as SpinResult;
+        sectorIndex = typeof data.sector_index === "number" && data.sector_index >= 0 ? data.sector_index : Math.floor(Math.random() * segCount);
+      }
 
       const segmentAngle = 360 / segCount;
       const sectorCenterFromTop = sectorIndex * segmentAngle + segmentAngle / 2;
@@ -220,8 +251,13 @@ export default function RoulettePage() {
       const ms = 6500 + Math.floor(Math.random() * 400);
 
       setResult(data);
+      setWonSegmentIndex(sectorIndex);
       setDurationMs(ms);
       stopTicks(tickTimeoutRef);
+      const ctx = ensureAudioContext(audioRef);
+      if (ctx.state === "suspended") {
+        await ctx.resume().catch(() => {});
+      }
       scheduleTicks(audioRef, tickTimeoutRef, ms);
       requestAnimationFrame(() => setRotation(nextRotation));
     } catch (e) {
@@ -292,6 +328,11 @@ export default function RoulettePage() {
             <div className={styles.rouletteResultCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.rouletteResultTitle}>{modalTitle}</div>
               <div className={styles.rouletteResultSubtitle}>{modalSubtitle}</div>
+              {typeof wonSegmentIndex === "number" && (
+                <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
+                  <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                </div>
+              )}
               {result.next_spin_at && (
                 <div className={styles.rouletteResultMeta}>Следующий спин: {formatRuDateTime(result.next_spin_at)}</div>
               )}
