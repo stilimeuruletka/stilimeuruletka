@@ -230,7 +230,9 @@ export function buildApp(
     };
 
     const sendSubscribedMenu = async (chatId: number | string) => {
-      await telegram.sendMessage(chatId, "Подписка подтверждена. Выберите действие:", {
+      const base = env.PUBLIC_WEBAPP_URL.replace(/\/+$/, "");
+      await telegram.sendPhoto(chatId, `${base}/IMG_3178.JPEG`, {
+        caption: "Подписка подтверждена. Выберите действие:",
         reply_markup: {
           inline_keyboard: [
             (() => {
