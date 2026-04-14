@@ -216,7 +216,7 @@ export default function RoulettePage() {
       let data: SpinResult;
       let sectorIndex: number;
 
-      if (!initData || !base) {
+      if (!initData) {
         data = {
           spin_id: `local-${Date.now()}`,
           win: Math.random() < 0.5,
