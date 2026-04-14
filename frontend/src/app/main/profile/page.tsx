@@ -47,6 +47,39 @@ function getInitData() {
   return typeof initData === "string" && initData.length > 10 ? initData : null;
 }
 
+function getTgUserId() {
+  const w = window as TelegramSdkWindow;
+  const id = w.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  return typeof id === "number" && Number.isFinite(id) ? id : null;
+}
+
+function getLocalSpinHistoryKey() {
+  const id = typeof window !== "undefined" ? getTgUserId() : null;
+  return `stilimeuruletka_spin_history:${id ?? "anon"}`;
+}
+
+function readLocalSpinHistory() {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(getLocalSpinHistoryKey());
+    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+    const list = Array.isArray(parsed) ? parsed : [];
+    return list
+      .filter(
+        (x): x is { spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null } =>
+          !!x &&
+          typeof x === "object" &&
+          typeof (x as Record<string, unknown>).spin_id === "string" &&
+          typeof (x as Record<string, unknown>).created_at === "string" &&
+          typeof (x as Record<string, unknown>).win === "boolean"
+      )
+      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+      .slice(0, 80);
+  } catch {
+    return [];
+  }
+}
+
 function SpinTimer() {
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const [canSpin, setCanSpin] = useState<boolean>(false);
@@ -223,10 +256,17 @@ export default function ProfilePage() {
             json && typeof json === "object" && "items" in json && Array.isArray((json as { items?: unknown }).items)
               ? ((json as { items: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }> }).items ?? [])
               : [];
-          setHistoryItems(items);
+          const local = items.length === 0 ? readLocalSpinHistory() : [];
+          setHistoryItems(local.length ? local : items);
         })
         .catch((e) => {
           if (e instanceof DOMException && e.name === "AbortError") return;
+          const local = readLocalSpinHistory();
+          if (local.length) {
+            setHistoryError(null);
+            setHistoryItems(local);
+            return;
+          }
           setHistoryError(e instanceof Error ? e.message : "Не удалось загрузить историю");
           setHistoryItems([]);
         })

@@ -8,6 +8,7 @@ import styles from "../../page.module.css";
 
 type TelegramWebApp = {
   initData?: string;
+  initDataUnsafe?: { user?: { id?: number } };
 };
 
 type TelegramSdkWindow = Window & {
@@ -41,6 +42,34 @@ const SEGMENT_IMAGES = [
   "/9колесо.png",
   "/10колесо.png"
 ] as const;
+
+function getTgUserId() {
+  const w = window as TelegramSdkWindow;
+  const id = w.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  return typeof id === "number" && Number.isFinite(id) ? id : null;
+}
+
+function getLocalSpinHistoryKey() {
+  const id = typeof window !== "undefined" ? getTgUserId() : null;
+  return `stilimeuruletka_spin_history:${id ?? "anon"}`;
+}
+
+function appendLocalSpinHistoryItem(item: { spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }) {
+  if (typeof window === "undefined") return;
+  try {
+    const key = getLocalSpinHistoryKey();
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+    const list = Array.isArray(parsed) ? parsed : [];
+    const next = [
+      item,
+      ...list.filter((x) => x && typeof x === "object" && "spin_id" in (x as Record<string, unknown>) && (x as Record<string, unknown>).spin_id !== item.spin_id)
+    ].slice(0, 80);
+    window.localStorage.setItem(key, JSON.stringify(next));
+  } catch {
+    /* no-op */
+  }
+}
 
 function getBackendBase() {
   const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -253,6 +282,13 @@ export default function RoulettePage() {
       setResult(data);
       setWonSegmentIndex(sectorIndex);
       setDurationMs(ms);
+      appendLocalSpinHistoryItem({
+        spin_id: data.spin_id,
+        created_at: new Date().toISOString(),
+        win: data.win,
+        prize_title: data.prize_title,
+        prize_value: data.prize_value
+      });
       stopTicks(tickTimeoutRef);
       const ctx = ensureAudioContext(audioRef);
       if (ctx.state === "suspended") {
