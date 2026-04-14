@@ -217,8 +217,9 @@ export function buildApp(
       "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
 
     const sendWelcome = async (chatId: number | string) => {
-      await telegram.sendPhoto(chatId, `${env.PUBLIC_WEBAPP_URL.replace(/\/+$/, "")}/IMG_3162.JPEG`);
-      await telegram.sendMessage(chatId, welcomeText, {
+      const base = env.PUBLIC_WEBAPP_URL.replace(/\/+$/, "");
+      await telegram.sendPhoto(chatId, `${base}/IMG_3162.JPEG`, {
+        caption: welcomeText,
         reply_markup: {
           inline_keyboard: [
             [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
@@ -226,6 +227,7 @@ export function buildApp(
           ]
         }
       });
+      await telegram.sendPhoto(chatId, `${base}/IMG_3178.JPEG`);
     };
 
     const sendSubscribedMenu = async (chatId: number | string) => {
@@ -569,7 +571,9 @@ export function buildApp(
               segmentsCount: typeof env.SPIN_SEGMENTS_COUNT === "number" ? env.SPIN_SEGMENTS_COUNT : 10
             })
           : await db.spinWheel(auth.tgUserId);
-      const next = await db.setNextSpinAfterSpinMidnight(auth.tgUserId);
+      const prizeTitleRaw = (result as Record<string, unknown>).prize_title;
+      const isBonusSpin = typeof prizeTitleRaw === "string" && /спин/i.test(prizeTitleRaw);
+      const next = isBonusSpin ? { next_spin_at: null } : await db.setNextSpinAfterSpinMidnight(auth.tgUserId);
 
       return { ...(result as Record<string, unknown>), next_spin_at: next.next_spin_at };
     } catch (e) {
@@ -579,6 +583,48 @@ export function buildApp(
       }
       throw app.httpErrors.badRequest("Spin failed");
     }
+  });
+
+  const PrizeClaimBodySchema = z.object({
+    spin_id: z.string().uuid().optional(),
+    prize_title: z.string().nullable().optional(),
+    prize_value: z.number().nullable().optional()
+  });
+
+  app.post("/api/prize/claim", async (req: FastifyRequest) => {
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string } }).auth;
+    const parsed = PrizeClaimBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw app.httpErrors.badRequest("Invalid payload");
+    }
+
+    const payload = parsed.data;
+    await db
+      .writeAuditEvent({
+        tg_user_id: auth.tgUserId,
+        event_type: "prize_claim",
+        payload: {
+          spin_id: payload.spin_id ?? null,
+          prize_title: payload.prize_title ?? null,
+          prize_value: payload.prize_value ?? null
+        }
+      })
+      .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
+
+    const text = [
+      "ЗАЯВКА НА ПРИЗ",
+      `tg_user_id: ${auth.tgUserId}`,
+      auth.username ? `username: @${auth.username}` : null,
+      payload.spin_id ? `spin_id: ${payload.spin_id}` : null,
+      payload.prize_title ? `prize: ${payload.prize_title}` : "prize: (не указано)",
+      payload.prize_value !== undefined && payload.prize_value !== null ? `value: ${payload.prize_value}` : null,
+      `at: ${new Date().toISOString()}`
+    ]
+      .filter((x): x is string => typeof x === "string" && x.length > 0)
+      .join("\n");
+
+    await telegram.sendMessage("@stilimeuruletkasos", text).catch((e) => req.log.warn({ err: e }, "support_notify_failed"));
+    return { ok: true };
   });
 
   app.get("/api/spins/history", async (req: FastifyRequest) => {

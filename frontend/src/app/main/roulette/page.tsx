@@ -9,6 +9,7 @@ import styles from "../../page.module.css";
 type TelegramWebApp = {
   initData?: string;
   initDataUnsafe?: { user?: { id?: number } };
+  openTelegramLink?: (url: string) => void;
 };
 
 type TelegramSdkWindow = Window & {
@@ -152,37 +153,10 @@ function getSegmentImageByIndex(index: number) {
   return SEGMENT_IMAGES[normalized];
 }
 
-function PointerCapArt() {
-  return (
-    <svg className={styles.roulettePointerCapSvg} viewBox="0 0 146 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        d="M52.9832 75.0388C68.3973 86.3772 89.7746 83.3701 100.731 68.3222C111.687 53.2743 108.073 31.8839 92.6586 20.5455C77.2445 9.20717 55.8672 12.2144 44.9111 27.2623C33.9551 42.3102 37.5691 63.7005 52.9832 75.0388Z"
-        fill="#333333"
-      />
-      <path
-        d="M55.7985 71.2631C71.2234 82.6223 91.9748 80.4858 102.148 66.4909C112.321 52.4961 108.064 31.9425 92.6391 20.5833C77.2142 9.22407 56.4627 11.3607 46.2895 25.3556C36.1162 39.3504 40.3736 59.9039 55.7985 71.2631Z"
-        fill="white"
-      />
-      <path
-        d="M59.3263 66.3432C70.2459 74.3761 85.3552 72.2929 93.0739 61.6902C100.793 51.0874 98.198 35.9802 87.2784 27.9472C76.3588 19.9143 61.2494 21.9976 53.5306 32.6004C45.8118 43.2032 48.4067 58.3103 59.3263 66.3432Z"
-        fill="#333333"
-      />
-      <path
-        d="M61.1785 63.8725C72.1051 71.9191 86.805 70.4056 94.0115 60.4919C101.218 50.5783 98.2022 36.0186 87.2756 27.972C76.3489 19.9254 61.649 21.4389 54.4425 31.3526C47.236 41.2662 50.2518 55.8259 61.1785 63.8725Z"
-        fill="white"
-      />
-      <path
-        d="M85.5619 53.7304C90.9169 49.1995 90.9994 40.974 85.7462 35.3583C80.4931 29.7425 71.8935 28.8629 66.5386 33.3938C61.1836 37.9247 61.1012 46.1502 66.3544 51.766C71.6075 57.3818 80.207 58.2613 85.5619 53.7304Z"
-        fill="white"
-      />
-    </svg>
-  );
-}
-
 function WheelArt() {
   return (
     <div className={styles.rouletteWheelArt} aria-hidden="true">
-      <img src="/колесоновое.svg" alt="" className={styles.rouletteWheelComposite} draggable={false} />
+      <img src="/колесо4к.png" alt="" className={styles.rouletteWheelComposite} draggable={false} />
     </div>
   );
 }
@@ -201,6 +175,7 @@ export default function RoulettePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
+  const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
 
   useEffect(() => {
     rotationRef.current = rotation;
@@ -215,26 +190,12 @@ export default function RoulettePage() {
     };
   }, []);
 
-  const modalTitle = useMemo(() => {
-    if (!result) return null;
-    return result.win ? "ВЫ ВЫИГРАЛИ" : "ВЫ ПРОИГРАЛИ";
-  }, [result]);
-
-  const modalSubtitle = useMemo(() => {
-    if (!result) return null;
-    if (result.win) {
-      const prize = result.prize_title ? result.prize_title : "Приз";
-      const value = typeof result.prize_value === "number" ? ` · ${result.prize_value}` : "";
-      return `${prize}${value}`;
-    }
-    return "Попробуйте ещё раз завтра";
-  }, [result]);
-
   const startSpin = useCallback(async () => {
     if (spinning) return;
     setError(null);
     setModalOpen(false);
     setWonSegmentIndex(null);
+    setSpinAtIso(null);
 
     const initData = getInitData();
     const base = getBackendBase();
@@ -278,13 +239,15 @@ export default function RoulettePage() {
 
       const nextRotation = rotationRef.current + extraSpins * 360 + targetAngle;
       const ms = 6500 + Math.floor(Math.random() * 400);
+      const nowIso = new Date().toISOString();
 
       setResult(data);
       setWonSegmentIndex(sectorIndex);
       setDurationMs(ms);
+      setSpinAtIso(nowIso);
       appendLocalSpinHistoryItem({
         spin_id: data.spin_id,
-        created_at: new Date().toISOString(),
+        created_at: nowIso,
         win: data.win,
         prize_title: data.prize_title,
         prize_value: data.prize_value
@@ -311,6 +274,45 @@ export default function RoulettePage() {
     setDurationMs(0);
     setModalOpen(true);
   }, [spinning]);
+
+  const isBonusSpinPrize = useMemo(() => {
+    const title = result?.prize_title;
+    if (!result?.win) return false;
+    if (!title) return false;
+    return /спин/i.test(title);
+  }, [result?.prize_title, result?.win]);
+
+  const nextAttemptIso = useMemo(() => {
+    if (result?.next_spin_at) return result.next_spin_at;
+    if (!spinAtIso) return null;
+    const ms = Date.parse(spinAtIso);
+    if (!Number.isFinite(ms)) return null;
+    return new Date(ms + 24 * 60 * 60 * 1000).toISOString();
+  }, [result?.next_spin_at, spinAtIso]);
+
+  const claimPrize = useCallback(async () => {
+    const initData = getInitData();
+    const base = getBackendBase();
+    if (initData && result?.spin_id) {
+      await fetch(`${base}/api/prize/claim`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-telegram-init-data": initData },
+        body: JSON.stringify({
+          spin_id: result.spin_id,
+          prize_title: result.prize_title,
+          prize_value: result.prize_value
+        })
+      }).catch(() => {});
+    }
+
+    const w = window as TelegramSdkWindow;
+    const link = "https://t.me/stilimeuruletkasos";
+    if (typeof w.Telegram?.WebApp?.openTelegramLink === "function") {
+      w.Telegram.WebApp.openTelegramLink(link);
+      return;
+    }
+    window.open(link, "_blank", "noopener,noreferrer");
+  }, [result?.prize_title, result?.prize_value, result?.spin_id]);
 
   return (
     <div className={styles.placeholderPage}>
@@ -339,9 +341,6 @@ export default function RoulettePage() {
         </div>
 
         <div className={styles.rouletteStage}>
-          <div className={styles.roulettePointerCap} aria-hidden="true">
-            <PointerCapArt />
-          </div>
           <button
             type="button"
             className={styles.rouletteWheelButton}
@@ -370,24 +369,63 @@ export default function RoulettePage() {
         {modalOpen && result && (
           <div className={styles.rouletteResultOverlay} role="dialog" aria-modal="true" onClick={() => setModalOpen(false)}>
             <div className={styles.rouletteResultCard} onClick={(e) => e.stopPropagation()}>
-              <div className={styles.rouletteResultTitle}>{modalTitle}</div>
-              <div className={styles.rouletteResultSubtitle}>{modalSubtitle}</div>
-              {typeof wonSegmentIndex === "number" && result.win && (
-                <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
-                  <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
-                </div>
+              {!result.win ? (
+                <>
+                  <div className={styles.rouletteResultTitle}>Oops… Попытайте удачу еще раз!</div>
+                  {nextAttemptIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(nextAttemptIso)}</div>}
+                  <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
+                    <img src="/проигрыш.PNG" alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                  </div>
+                  <div className={styles.rouletteResultActions}>
+                    <button
+                      type="button"
+                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
+                      onClick={() => router.push("/main")}
+                    >
+                      В главное меню
+                    </button>
+                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
+                      История стильных спинов
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
+                  {spinAtIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(spinAtIso)}</div>}
+                  {typeof wonSegmentIndex === "number" && (
+                    <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
+                      <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                      <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
+                    </div>
+                  )}
+                  <div className={styles.rouletteResultActions}>
+                    {isBonusSpinPrize ? (
+                      <button
+                        type="button"
+                        className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
+                        onClick={() => {
+                          setModalOpen(false);
+                          void startSpin();
+                        }}
+                      >
+                        Повторный спин
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
+                        onClick={() => void claimPrize()}
+                      >
+                        Забрать приз
+                      </button>
+                    )}
+                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
+                      История стильных спинов
+                    </button>
+                  </div>
+                </>
               )}
-              {result.next_spin_at && (
-                <div className={styles.rouletteResultMeta}>Следующий спин: {formatRuDateTime(result.next_spin_at)}</div>
-              )}
-              <div className={styles.rouletteResultActions}>
-                <button type="button" className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`} onClick={() => setModalOpen(false)}>
-                  Закрыть
-                </button>
-                <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
-                  История
-                </button>
-              </div>
             </div>
           </div>
         )}

@@ -102,19 +102,20 @@ async function sendStartMessage(chatId: number) {
 
 И помните: удача — это тоже стиль!`;
 
-  const photoUrl = `${PUBLIC_WEBAPP_URL}/${encodeURIComponent("IMG_3162.JPEG")}`;
+  const base = PUBLIC_WEBAPP_URL.replace(/\/+$/, "");
 
   await sendTelegramRequest("sendPhoto", {
     chat_id: chatId,
-    photo: photoUrl
-  });
-
-  await sendTelegramRequest("sendMessage", {
-    chat_id: chatId,
-    text,
+    photo: `${base}/${encodeURIComponent("IMG_3162.JPEG")}`,
+    caption: text,
     reply_markup: {
       inline_keyboard: [[{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: PUBLIC_WEBAPP_URL } }]]
     }
+  });
+
+  await sendTelegramRequest("sendPhoto", {
+    chat_id: chatId,
+    photo: `${base}/${encodeURIComponent("IMG_3178.JPEG")}`
   });
 }
 

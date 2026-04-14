@@ -61,17 +61,18 @@ async function sendWelcome(chatId: number | string) {
   const base = (PUBLIC_WEBAPP_URL || "https://stilimeuruletka.vercel.app").replace(/\/+$/, "");
   await tg("sendPhoto", {
     chat_id: chatId,
-    photo: `${base}/IMG_3162.JPEG`
-  });
-  await tg("sendMessage", {
-    chat_id: chatId,
-    text,
+    photo: `${base}/IMG_3162.JPEG`,
+    caption: text,
     reply_markup: {
       inline_keyboard: [
         [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
         [{ text: "Проверить подписку", callback_data: "check_sub" }]
       ]
     }
+  });
+  await tg("sendPhoto", {
+    chat_id: chatId,
+    photo: `${base}/IMG_3178.JPEG`
   });
 }
 
