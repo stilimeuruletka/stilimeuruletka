@@ -501,7 +501,7 @@
 
 .profileHistoryFrame {
   width: min(520px, calc(100vh * 9 / 16));
-  height: 100vh;
+  height: 100dvh;
   position: relative;
   background: #fff;
   overflow: hidden;
@@ -538,54 +538,36 @@
 .profileHistoryCarousel {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
-  padding: 0 calc(50% - 90px);
+  padding: 0 calc(50% - 65px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
 }
 .profileHistoryCarousel::-webkit-scrollbar {
   display: none;
 }
 
 .profileHistoryCard {
-  flex: 0 0 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-  transform: scale(0.85);
-  transition: transform 0.3s ease;
-  transform-origin: center;
-}
-
-/* This targets the item roughly in the center */
-.profileHistoryCarousel > *:target,
-.profileHistoryCarousel > *:hover {
-  /* It's tricky to do exact center scaling without JS intersection observer,
-     so we can just keep them consistent or rely on hover for now. */
-}
-
-/* Actually, we can just make them all the same size and let the scroll snap center them */
-.profileHistoryCard {
-  flex: 0 0 180px;
+  flex: 0 0 130px;
   display: flex;
   flex-direction: column;
   align-items: center;
   scroll-snap-align: center;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  transform: translateY(20px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(18px);
 }
 
 .profileHistoryCardDate {
   font-family: var(--font-uncage);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.05em;
   color: #000;
@@ -594,13 +576,13 @@
 }
 
 .profileHistoryCardImageWrapper {
-  width: 140px;
-  height: 160px;
+  width: 100px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .profileHistoryCardImage {
@@ -612,11 +594,11 @@
 
 .profileHistoryCardResult {
   font-family: var(--font-uncage);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: 0.05em;
   color: #000;
-  margin-top: 12px;
+  margin-top: 10px;
   text-align: center;
   text-transform: uppercase;
 }
@@ -624,7 +606,8 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  bottom: auto;
+  transform: translateY(112px);
   background: transparent;
   border: none;
   padding: 10px;
@@ -633,11 +616,11 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 10px;
+  left: 28%;
 }
 
 .profileHistoryArrowRight {
-  right: 10px;
+  right: 28%;
 }
 
 .profileHistoryArrowIcon {

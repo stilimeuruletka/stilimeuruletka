@@ -182,9 +182,9 @@ export default function ProfilePage() {
     if (!historyOpen) return;
     const initData = getInitData();
     if (!initData) {
-      const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+      const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.includes("192.168."));
       const id = window.setTimeout(() => {
-        if (isLocalhost) {
+        if (isLocalhost || process.env.NODE_ENV === "development") {
           const now = Date.now();
           setHistoryLoading(false);
           setHistoryError(null);
