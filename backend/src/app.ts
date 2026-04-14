@@ -218,11 +218,8 @@ export function buildApp(
 
     const sendWelcome = async (chatId: number | string) => {
       const base = env.PUBLIC_WEBAPP_URL.replace(/\/+$/, "");
-      await telegram.sendMediaGroup(chatId, [
-        { type: "photo", media: `${base}/IMG_3162.JPEG`, caption: welcomeText },
-        { type: "photo", media: `${base}/IMG_3178.JPEG` }
-      ]);
-      await telegram.sendMessage(chatId, "⠀", {
+      await telegram.sendPhoto(chatId, `${base}/IMG_3162.JPEG`, {
+        caption: welcomeText,
         reply_markup: {
           inline_keyboard: [
             [{ text: "СТИЛЬНАЯ РУЛЕТКА | СООБЩЕСТВО", url: "https://t.me/stilimeuruletka" }],
