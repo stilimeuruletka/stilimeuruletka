@@ -217,6 +217,7 @@ export function buildApp(
       "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
 
     const sendWelcome = async (chatId: number | string) => {
+      await telegram.sendPhoto(chatId, `${env.PUBLIC_WEBAPP_URL.replace(/\/+$/, "")}/IMG_3162.JPEG`);
       await telegram.sendMessage(chatId, welcomeText, {
         reply_markup: {
           inline_keyboard: [

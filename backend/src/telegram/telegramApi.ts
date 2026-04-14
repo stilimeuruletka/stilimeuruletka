@@ -49,6 +49,8 @@ export function createTelegramApi(botToken: string) {
   return {
     sendMessage: (chatId: number | string, text: string, extra?: Record<string, unknown>) =>
       call("sendMessage", { chat_id: chatId, text, ...extra }),
+    sendPhoto: (chatId: number | string, photo: string, extra?: Record<string, unknown>) =>
+      call("sendPhoto", { chat_id: chatId, photo, ...extra }),
     answerCallbackQuery: (callbackQueryId: string, extra?: Record<string, unknown>) =>
       call("answerCallbackQuery", { callback_query_id: callbackQueryId, ...extra }),
     getChatMember: (chatId: number | string, userId: number) =>

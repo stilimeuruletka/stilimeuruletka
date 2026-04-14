@@ -58,6 +58,11 @@ async function resolveChannelId(channelId: ChannelId): Promise<number | null> {
 async function sendWelcome(chatId: number | string) {
   const text =
     "Приветствую, стилевые! Готовы позволить себе щепотку элегантной эстетики?\n\nПроверьте подписку на наше сообщество, мы начинаем! 💔";
+  const base = (PUBLIC_WEBAPP_URL || "https://stilimeuruletka.vercel.app").replace(/\/+$/, "");
+  await tg("sendPhoto", {
+    chat_id: chatId,
+    photo: `${base}/IMG_3162.JPEG`
+  });
   await tg("sendMessage", {
     chat_id: chatId,
     text,

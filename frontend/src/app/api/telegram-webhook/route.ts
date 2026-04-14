@@ -102,7 +102,7 @@ async function sendStartMessage(chatId: number) {
 
 И помните: удача — это тоже стиль!`;
 
-  const photoUrl = `${PUBLIC_WEBAPP_URL}/${encodeURIComponent("Frame 164.png")}`;
+  const photoUrl = `${PUBLIC_WEBAPP_URL}/${encodeURIComponent("IMG_3162.JPEG")}`;
 
   await sendTelegramRequest("sendPhoto", {
     chat_id: chatId,
