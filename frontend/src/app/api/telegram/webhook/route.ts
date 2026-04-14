@@ -77,7 +77,6 @@ async function sendSubscribedMenu(chatId: number | string) {
   await tg("sendPhoto", {
     chat_id: chatId,
     photo: `${base}/IMG_3178.JPEG`,
-    caption: "Подписка подтверждена. Выберите действие:",
     reply_markup: {
       inline_keyboard: [
         [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: base } }],
