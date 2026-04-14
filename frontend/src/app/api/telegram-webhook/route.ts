@@ -104,18 +104,20 @@ async function sendStartMessage(chatId: number) {
 
   const base = PUBLIC_WEBAPP_URL.replace(/\/+$/, "");
 
-  await sendTelegramRequest("sendPhoto", {
+  await sendTelegramRequest("sendMediaGroup", {
     chat_id: chatId,
-    photo: `${base}/${encodeURIComponent("IMG_3162.JPEG")}`,
-    caption: text,
+    media: [
+      { type: "photo", media: `${base}/${encodeURIComponent("IMG_3162.JPEG")}`, caption: text },
+      { type: "photo", media: `${base}/${encodeURIComponent("IMG_3178.JPEG")}` }
+    ]
+  });
+
+  await sendTelegramRequest("sendMessage", {
+    chat_id: chatId,
+    text: "⠀",
     reply_markup: {
       inline_keyboard: [[{ text: "СТИЛЬНАЯ РУЛЕТКА", web_app: { url: PUBLIC_WEBAPP_URL } }]]
     }
-  });
-
-  await sendTelegramRequest("sendPhoto", {
-    chat_id: chatId,
-    photo: `${base}/${encodeURIComponent("IMG_3178.JPEG")}`
   });
 }
 

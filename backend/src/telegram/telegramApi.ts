@@ -51,6 +51,11 @@ export function createTelegramApi(botToken: string) {
       call("sendMessage", { chat_id: chatId, text, ...extra }),
     sendPhoto: (chatId: number | string, photo: string, extra?: Record<string, unknown>) =>
       call("sendPhoto", { chat_id: chatId, photo, ...extra }),
+    sendMediaGroup: (
+      chatId: number | string,
+      media: Array<{ type: "photo"; media: string; caption?: string }>,
+      extra?: Record<string, unknown>
+    ) => call("sendMediaGroup", { chat_id: chatId, media, ...extra }),
     answerCallbackQuery: (callbackQueryId: string, extra?: Record<string, unknown>) =>
       call("answerCallbackQuery", { callback_query_id: callbackQueryId, ...extra }),
     getChatMember: (chatId: number | string, userId: number) =>
