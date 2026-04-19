@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -327,18 +328,26 @@ export default function RoulettePage() {
             priority
           />
         </button>
-        <div className={`${styles.commonTopHeader} ${styles.rouletteTopHeader}`} aria-hidden="true">
+        <Link href="/main" className={styles.rouletteTopMenuLink} aria-label="В главное меню">
           <Image
-            src="/белоеглавноеменюрулетка.png"
+            src="/чернымглавноеменюистория.png"
             alt=""
-            width={4052}
-            height={1312}
-            className={`${styles.commonTopHeaderImage} ${styles.rouletteHeaderImage}`}
+            width={6900}
+            height={1416}
+            className={styles.rouletteTopMenuImg}
             priority
-            sizes="(max-width: 520px) 100vw, 520px"
+            sizes="220px"
             quality={90}
           />
-        </div>
+          <Image
+            src="/стрелканазад.PNG"
+            alt=""
+            width={52}
+            height={26}
+            className={styles.rouletteTopMenuArrow}
+            priority
+          />
+        </Link>
 
         <div className={styles.rouletteStage}>
           <button
