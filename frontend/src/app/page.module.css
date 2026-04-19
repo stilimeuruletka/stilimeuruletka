@@ -1045,7 +1045,7 @@
   height: auto;
   display: block;
   transform: rotate(180deg);
-  filter: invert(1) brightness(1.6);
+  filter: none;
 }
 
 .rouletteHeaderImage {
