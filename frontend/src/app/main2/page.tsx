@@ -76,13 +76,13 @@ export default function Main2Page() {
                 />
               </div>
               <Image
-                src="/каталогплашка.png"
+                src="/каталог.png"
                 alt="Страница в разработке"
                 width={3882}
                 height={608}
                 className={`${styles.btnImg} ${styles.btnImgCatalogLower}`}
                 sizes="(max-width: 520px) 33vw, 170px"
-                quality={90}
+                quality={95}
               />
             </Link>
           </div>
