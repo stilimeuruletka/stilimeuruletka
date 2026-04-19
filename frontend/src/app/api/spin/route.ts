@@ -32,6 +32,34 @@ function jsonError(message: string, status: number, extra?: Record<string, unkno
   return NextResponse.json({ message, ...(extra ?? {}) }, { status });
 }
 
+async function repairDailyTicketIfMissing(supabase: ReturnType<typeof getAdminSupabase>, tgUserId: number) {
+  const { data: user, error: userError } = await supabase.from("users").select("id").eq("tg_user_id", tgUserId).single();
+  if (userError) return { repaired: false, error: userError.message };
+
+  const { data: lastGrant } = await supabase
+    .from("ticket_ledger")
+    .select("created_at")
+    .eq("user_id", user.id)
+    .eq("reason", "daily_free_spin")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const lastMs = lastGrant?.created_at ? Date.parse(lastGrant.created_at as unknown as string) : Number.NaN;
+  const recent = Number.isFinite(lastMs) && Date.now() - lastMs < 20 * 60 * 60 * 1000;
+  if (recent) return { repaired: false, error: null };
+
+  const { error: insertError } = await supabase.from("ticket_ledger").insert({
+    user_id: user.id,
+    delta: 1,
+    reason: "daily_free_spin",
+    meta: { kind: "repair", granted_at: new Date().toISOString() }
+  });
+  if (insertError) return { repaired: false, error: insertError.message };
+
+  return { repaired: true, error: null };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const initDataHeader = req.headers.get("x-telegram-init-data") ?? "";
@@ -45,12 +73,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (!verifyTelegramInitData(initDataHeader, botToken)) {
-      return jsonError("Invalid Telegram data", 401);
+      return jsonError("Откройте приложение через нашего Telegram-бота", 401, { code: "INITDATA_INVALID" });
     }
 
     const extracted = extractTelegramInitData(initDataHeader);
     if (!extracted) {
-      return jsonError("Invalid Telegram data", 401);
+      return jsonError("Откройте приложение через нашего Telegram-бота", 401, { code: "INITDATA_PARSE_FAILED" });
     }
 
     const tzOffsetRaw = req.nextUrl.searchParams.get("tz_offset");
@@ -79,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     const { data: cooldown, error: cooldownError } = await supabase.rpc("ensure_free_spin", { p_tg_user_id: extracted.userId });
     if (cooldownError) {
-      return jsonError("Спин недоступен", 500, { error: cooldownError.message });
+      return jsonError("Спин недоступен", 500, { code: "ENSURE_FREE_SPIN_FAILED", error: cooldownError.message });
     }
 
     const canSpin = !!(cooldown as { can_spin?: boolean } | null)?.can_spin;
@@ -87,7 +115,14 @@ export async function POST(req: NextRequest) {
     const balance = (cooldown as { balance?: number } | null)?.balance ?? null;
 
     if (!canSpin) {
-      return jsonError("Спин недоступен", 429, { next_spin_at: nextSpinAt, balance });
+      return jsonError("Спин недоступен", 429, { code: "COOLDOWN_ACTIVE", next_spin_at: nextSpinAt, balance });
+    }
+
+    if ((balance ?? 0) <= 0) {
+      const repair = await repairDailyTicketIfMissing(supabase, extracted.userId);
+      if (repair.error) {
+        return jsonError("Спин недоступен", 500, { code: "REPAIR_TICKET_FAILED", error: repair.error });
+      }
     }
 
     const { data: spin, error: spinError } = await supabase.rpc("spin_wheel_limited", {
@@ -97,8 +132,10 @@ export async function POST(req: NextRequest) {
       p_segments_count: 10
     });
     if (spinError) {
-      const msg = /Not enough tickets/i.test(spinError.message) ? "Спин недоступен" : spinError.message;
-      return jsonError(msg, 400, { error: spinError.message });
+      if (/Not enough tickets/i.test(spinError.message)) {
+        return jsonError("Спин недоступен", 400, { code: "NO_TICKETS", error: spinError.message });
+      }
+      return jsonError("Спин недоступен", 400, { code: "SPIN_FAILED", error: spinError.message });
     }
 
     let nextData: unknown = null;
@@ -109,11 +146,23 @@ export async function POST(req: NextRequest) {
       nextData = null;
     }
     const nextSpinIso = (nextData as { next_spin_at?: string } | null)?.next_spin_at;
+    let nextSpinFinal = nextSpinIso ?? nextSpinAt ?? null;
 
-    return NextResponse.json({ ...(spin as Record<string, unknown>), next_spin_at: nextSpinIso ?? nextSpinAt ?? null });
+    if (!nextSpinFinal) {
+      const fallback = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      try {
+        const res = await supabase.rpc("set_next_spin_after_spin", { p_tg_user_id: extracted.userId, p_next_spin_at: fallback });
+        const setIso = (res.data as { next_spin_at?: string } | null)?.next_spin_at;
+        nextSpinFinal = setIso ?? fallback;
+      } catch {
+        nextSpinFinal = fallback;
+      }
+    }
+
+    return NextResponse.json({ ...(spin as Record<string, unknown>), next_spin_at: nextSpinFinal });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     const publicMessage = /not configured/i.test(message) ? message : "Спин недоступен";
-    return jsonError(publicMessage, 500, { error: message });
+    return jsonError(publicMessage, 500, { code: "UNHANDLED", error: message });
   }
 }

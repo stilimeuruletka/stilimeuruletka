@@ -84,6 +84,12 @@ function getInitData() {
   return typeof initData === "string" && initData.length > 10 ? initData : null;
 }
 
+function isLocalDevHost() {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".local") || host.startsWith("192.168.");
+}
+
 function formatRuDateTime(iso: string) {
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return iso;
@@ -208,6 +214,9 @@ export default function RoulettePage() {
       let sectorIndex: number;
 
       if (!initData) {
+        if (!isLocalDevHost()) {
+          throw new Error("Откройте приложение через Telegram");
+        }
         data = {
           spin_id: `local-${Date.now()}`,
           win: Math.random() < 0.5,
@@ -328,26 +337,30 @@ export default function RoulettePage() {
             priority
           />
         </button>
-        <Link href="/main" className={styles.rouletteTopMenuLink} aria-label="В главное меню">
-          <Image
-            src="/чернымглавноеменюистория.png"
-            alt=""
-            width={6900}
-            height={1416}
-            className={styles.rouletteTopMenuImg}
-            priority
-            sizes="220px"
-            quality={90}
-          />
-          <Image
-            src="/стрелканазад.PNG"
-            alt=""
-            width={52}
-            height={26}
-            className={styles.rouletteTopMenuArrow}
-            priority
-          />
-        </Link>
+        <div className={styles.rouletteTopMenuLink}>
+          <Link href="/main" className={styles.rouletteTopMenuMainLink} aria-label="В главное меню">
+            <Image
+              src="/чернымглавноеменюистория.png"
+              alt=""
+              width={6900}
+              height={1416}
+              className={styles.rouletteTopMenuImg}
+              priority
+              sizes="220px"
+              quality={90}
+            />
+          </Link>
+          <Link href="/main/prizes" className={styles.rouletteTopMenuPrizesLink} aria-label="Мои выигрыши">
+            <Image
+              src="/стрелканазад.PNG"
+              alt=""
+              width={52}
+              height={26}
+              className={styles.rouletteTopMenuArrow}
+              priority
+            />
+          </Link>
+        </div>
 
         <div className={styles.rouletteStage}>
           <button
@@ -393,6 +406,9 @@ export default function RoulettePage() {
                     >
                       В главное меню
                     </button>
+                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
+                      Мои выигрыши
+                    </button>
                     <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
                       История стильных спинов
                     </button>
@@ -431,6 +447,9 @@ export default function RoulettePage() {
                         Забрать приз
                       </button>
                     )}
+                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
+                      Мои выигрыши
+                    </button>
                     <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
                       История стильных спинов
                     </button>

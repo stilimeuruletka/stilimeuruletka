@@ -1031,6 +1031,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.rouletteTopMenuMainLink,
+.rouletteTopMenuPrizesLink {
+  display: block;
   text-decoration: none;
 }
 
