@@ -1490,6 +1490,12 @@
   position: relative;
 }
 
+.roulettePrizeLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 .rouletteResultPrizeImg {
   width: 100%;
   height: 100%;

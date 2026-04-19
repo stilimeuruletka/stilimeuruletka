@@ -403,10 +403,12 @@ export default function RoulettePage() {
                   <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
                   {spinAtIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(spinAtIso)}</div>}
                   {typeof wonSegmentIndex === "number" && (
-                    <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
-                      <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
-                      <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
-                    </div>
+                    <Link href="/main/prizes" className={styles.roulettePrizeLink} aria-label="Открыть выигранные призы">
+                      <div className={styles.rouletteResultPrizeWrap}>
+                        <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                        <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
+                      </div>
+                    </Link>
                   )}
                   <div className={styles.rouletteResultActions}>
                     {isBonusSpinPrize ? (
