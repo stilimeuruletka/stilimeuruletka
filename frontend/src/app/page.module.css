@@ -651,8 +651,9 @@
 
 .profileHistoryTopRightLink {
   position: absolute;
-  top: 96px;
-  right: 18px;
+  top: 132px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
   display: flex;
   align-items: center;
