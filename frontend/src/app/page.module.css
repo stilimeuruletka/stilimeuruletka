@@ -2117,9 +2117,6 @@
   margin-top: 8px;
 }
 
-.btnImgCatalogLower {
-  margin-top: 52px;
-}
 
 .imageButton:active {
   transform: translateY(1px);

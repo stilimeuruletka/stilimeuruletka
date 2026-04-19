@@ -62,7 +62,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/roulette" className={`${styles.cardLink} ${styles.cardLinkLower}`} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/8девушка.PNG"
@@ -80,7 +80,7 @@ export default function Main2Page() {
                 alt="Страница в разработке"
                 width={3882}
                 height={608}
-                className={`${styles.btnImg} ${styles.btnImgCatalogLower}`}
+                className={styles.btnImg}
                 sizes="(max-width: 520px) 33vw, 170px"
                 quality={95}
               />
