@@ -163,7 +163,15 @@ function getSegmentImageByIndex(index: number) {
 function WheelArt() {
   return (
     <div className={styles.rouletteWheelArt} aria-hidden="true">
-      <img src="/колесо4к.png" alt="" className={styles.rouletteWheelComposite} draggable={false} />
+      <Image
+        src="/колесо4к.png"
+        alt=""
+        fill
+        className={styles.rouletteWheelComposite}
+        priority
+        sizes="(max-width: 520px) 92vw, 420px"
+        quality={80}
+      />
     </div>
   );
 }
