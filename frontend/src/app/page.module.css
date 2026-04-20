@@ -1626,7 +1626,6 @@
 }
 
 .rouletteLossSpinsText {
-  margin-top: 10px;
   font-family: var(--font-uncage);
   font-size: 11px;
   font-weight: 900;
@@ -1636,12 +1635,35 @@
 }
 
 .rouletteLossSpinsValue {
-  margin-top: 4px;
   font-family: var(--font-uncage);
   font-size: 18px;
   font-weight: 900;
   letter-spacing: 0.08em;
   color: #000;
+}
+
+.rouletteLossSpinsWrap {
+  margin: 10px auto 0;
+  width: min(320px, 78vw);
+  position: relative;
+}
+
+.rouletteLossSpinsBg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rouletteLossSpinsOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  pointer-events: none;
 }
 
 .howToPlayNavLeft {

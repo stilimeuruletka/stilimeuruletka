@@ -417,8 +417,22 @@ export default function RoulettePage() {
                       quality={95}
                     />
                   </button>
-                  <div className={styles.rouletteLossSpinsText}>КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ:</div>
-                  <div className={styles.rouletteLossSpinsValue}>{Math.max(0, Number(result.balance_after ?? 0))}</div>
+                  <div className={styles.rouletteLossSpinsWrap} aria-hidden="true">
+                    <Image
+                      src="/подлошкабилетов.PNG"
+                      alt=""
+                      width={2200}
+                      height={520}
+                      className={styles.rouletteLossSpinsBg}
+                      priority
+                      sizes="(max-width: 520px) 78vw, 320px"
+                      quality={90}
+                    />
+                    <div className={styles.rouletteLossSpinsOverlay}>
+                      <div className={styles.rouletteLossSpinsText}>КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ:</div>
+                      <div className={styles.rouletteLossSpinsValue}>{Math.max(0, Number(result.balance_after ?? 0))}</div>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <>
