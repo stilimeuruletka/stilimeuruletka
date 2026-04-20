@@ -533,7 +533,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  transform: translateY(120px);
+  transform: translateY(72px);
 }
 
 .profileHistoryCarousel {
@@ -608,7 +608,7 @@
   position: absolute;
   top: 50%;
   bottom: auto;
-  transform: translateY(190px);
+  transform: translateY(130px);
   background: transparent;
   border: none;
   padding: 10px;
