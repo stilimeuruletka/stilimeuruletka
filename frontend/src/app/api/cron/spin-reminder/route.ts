@@ -40,8 +40,10 @@ async function handle(req: NextRequest) {
     if (!cronSecret) return jsonError("CRON_SECRET is not configured", 500);
 
     const headerSecret = req.headers.get("x-cron-secret");
+    const authHeader = req.headers.get("authorization");
+    const bearerSecret = authHeader?.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : null;
     const querySecret = req.nextUrl.searchParams.get("secret");
-    const provided = headerSecret ?? querySecret ?? "";
+    const provided = bearerSecret ?? headerSecret ?? querySecret ?? "";
     if (!provided || provided !== cronSecret) return jsonError("Unauthorized", 401);
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
@@ -95,4 +97,3 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   return handle(req);
 }
-
