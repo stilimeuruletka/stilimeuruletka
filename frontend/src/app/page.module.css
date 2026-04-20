@@ -533,6 +533,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  transform: translateY(-34px);
 }
 
 .profileHistoryCarousel {
@@ -562,7 +563,7 @@
   border-radius: 12px;
   padding: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  transform: translateY(18px);
+  transform: translateY(0);
 }
 
 .profileHistoryCardDate {
@@ -607,7 +608,7 @@
   position: absolute;
   top: 50%;
   bottom: auto;
-  transform: translateY(112px);
+  transform: translateY(70px);
   background: transparent;
   border: none;
   padding: 10px;
@@ -616,15 +617,15 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 28%;
+  left: 10px;
 }
 
 .profileHistoryArrowRight {
-  right: 28%;
+  right: 10px;
 }
 
 .profileHistoryArrowIcon {
-  width: 32px;
+  width: 64px;
   height: auto;
 }
 
@@ -651,9 +652,9 @@
 
 .profileHistoryTopRightLink {
   position: absolute;
-  top: 132px;
+  top: 106px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateX(18px);
   z-index: 2;
   display: flex;
   align-items: center;
@@ -661,7 +662,7 @@
 }
 
 .profileHistoryTopRightImg {
-  width: 220px;
+  width: 440px;
   height: auto;
   display: block;
 }

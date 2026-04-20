@@ -512,14 +512,6 @@ export default function ProfilePage() {
                   sizes="220px"
                   quality={90}
                 />
-                <Image
-                  src="/стрелканазад.PNG"
-                  alt=""
-                  width={52}
-                  height={26}
-                  className={styles.profileHistoryTopRightArrow}
-                  priority
-                />
               </Link>
             </div>
           </div>
