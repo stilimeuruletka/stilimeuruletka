@@ -533,7 +533,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  transform: translateY(-34px);
+  transform: translateY(120px);
 }
 
 .profileHistoryCarousel {
@@ -608,7 +608,7 @@
   position: absolute;
   top: 50%;
   bottom: auto;
-  transform: translateY(70px);
+  transform: translateY(190px);
   background: transparent;
   border: none;
   padding: 10px;
@@ -652,9 +652,9 @@
 
 .profileHistoryTopRightLink {
   position: absolute;
-  top: 106px;
+  top: 140px;
   left: 50%;
-  transform: translateX(-50%) translateX(18px);
+  transform: translateX(-50%);
   z-index: 2;
   display: flex;
   align-items: center;
@@ -662,7 +662,7 @@
 }
 
 .profileHistoryTopRightImg {
-  width: 440px;
+  width: 220px;
   height: auto;
   display: block;
 }
