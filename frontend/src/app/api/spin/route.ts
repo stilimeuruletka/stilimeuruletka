@@ -62,6 +62,8 @@ async function repairDailyTicketIfMissing(supabase: ReturnType<typeof getAdminSu
 
 export async function POST(req: NextRequest) {
   try {
+    const now = new Date();
+    now.setSeconds(0, 0);
     const initDataHeader = req.headers.get("x-telegram-init-data") ?? "";
     if (!initDataHeader) {
       return jsonError("Откройте приложение через Telegram", 401);
@@ -124,11 +126,12 @@ export async function POST(req: NextRequest) {
         return jsonError("Ошибка выдачи билета: " + repair.error, 500, { code: "REPAIR_TICKET_FAILED", error: repair.error });
       }
       if (!repair.repaired) {
-        let fallback = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         try {
-          const res = await supabase.rpc("set_next_spin_after_spin_midnight", { p_tg_user_id: extracted.userId });
-          fallback = (res.data as { next_spin_at?: string } | null)?.next_spin_at ?? fallback;
+          const fallback = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+          await supabase.rpc("set_next_spin_after_spin", { p_tg_user_id: extracted.userId, p_next_spin_at: fallback });
+          return jsonError("Билет уже был использован недавно", 429, { code: "COOLDOWN_ACTIVE_REPAIRED", next_spin_at: fallback, balance: 0 });
         } catch {}
+        const fallback = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
         return jsonError("Билет уже был использован недавно", 429, { code: "COOLDOWN_ACTIVE_REPAIRED", next_spin_at: fallback, balance: 0 });
       }
     }
@@ -146,25 +149,13 @@ export async function POST(req: NextRequest) {
       return jsonError("Ошибка БД: " + spinError.message, 400, { code: "SPIN_FAILED", error: spinError.message });
     }
 
-    let nextData: unknown = null;
+    let nextSpinFinal = nextSpinAt ?? null;
+    const desired = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
     try {
-      const res = await supabase.rpc("set_next_spin_after_spin_midnight", { p_tg_user_id: extracted.userId });
-      nextData = res.data;
+      const res = await supabase.rpc("set_next_spin_after_spin", { p_tg_user_id: extracted.userId, p_next_spin_at: desired });
+      nextSpinFinal = (res.data as { next_spin_at?: string } | null)?.next_spin_at ?? desired;
     } catch {
-      nextData = null;
-    }
-    const nextSpinIso = (nextData as { next_spin_at?: string } | null)?.next_spin_at;
-    let nextSpinFinal = nextSpinIso ?? nextSpinAt ?? null;
-
-    if (!nextSpinFinal) {
-      const fallback = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-      try {
-        const res = await supabase.rpc("set_next_spin_after_spin", { p_tg_user_id: extracted.userId, p_next_spin_at: fallback });
-        const setIso = (res.data as { next_spin_at?: string } | null)?.next_spin_at;
-        nextSpinFinal = setIso ?? fallback;
-      } catch {
-        nextSpinFinal = fallback;
-      }
+      nextSpinFinal = desired;
     }
 
     return NextResponse.json({ ...(spin as Record<string, unknown>), next_spin_at: nextSpinFinal });
