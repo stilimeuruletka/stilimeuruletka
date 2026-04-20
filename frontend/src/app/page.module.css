@@ -608,7 +608,7 @@
   position: absolute;
   top: 50%;
   bottom: auto;
-  transform: translateY(86px);
+  transform: translateY(64px);
   background: transparent;
   border: none;
   padding: 10px;
@@ -652,7 +652,7 @@
 
 .profileHistoryTopRightLink {
   position: absolute;
-  top: 124px;
+  top: 104px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
