@@ -300,14 +300,6 @@ export default function RoulettePage() {
     return /спин/i.test(title);
   }, [result?.prize_title, result?.win]);
 
-  const nextAttemptIso = useMemo(() => {
-    if (result?.next_spin_at) return result.next_spin_at;
-    if (!spinAtIso) return null;
-    const ms = Date.parse(spinAtIso);
-    if (!Number.isFinite(ms)) return null;
-    return new Date(ms + 24 * 60 * 60 * 1000).toISOString();
-  }, [result?.next_spin_at, spinAtIso]);
-
   const claimPrize = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
@@ -401,26 +393,32 @@ export default function RoulettePage() {
             <div className={styles.rouletteResultCard} onClick={(e) => e.stopPropagation()}>
               {!result.win ? (
                 <>
-                  <div className={styles.rouletteResultTitle}>Oops… Попытайте удачу еще раз!</div>
-                  {nextAttemptIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(nextAttemptIso)}</div>}
-                  <div className={styles.rouletteResultPrizeWrap} aria-hidden="true">
-                    <img src="/проигрыш.PNG" alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                  <div className={styles.rouletteLossPosterWrap} aria-hidden="true">
+                    <Image
+                      src="/спинпроигрыш.PNG"
+                      alt=""
+                      width={900}
+                      height={1600}
+                      className={styles.rouletteLossPoster}
+                      priority
+                      sizes="(max-width: 520px) 78vw, 320px"
+                      quality={90}
+                    />
                   </div>
-                  <div className={styles.rouletteResultActions}>
-                    <button
-                      type="button"
-                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
-                      onClick={() => router.push("/main")}
-                    >
-                      В главное меню
-                    </button>
-                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
-                      Мои выигрыши
-                    </button>
-                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
-                      История стильных спинов
-                    </button>
-                  </div>
+                  <button type="button" className={styles.rouletteLossCtaButton} onClick={() => setModalOpen(false)} aria-label="Запустить рулетку">
+                    <Image
+                      src="/запуститьрулетку.PNG"
+                      alt=""
+                      width={3882}
+                      height={608}
+                      className={styles.rouletteLossCtaImg}
+                      priority
+                      sizes="(max-width: 520px) 78vw, 320px"
+                      quality={95}
+                    />
+                  </button>
+                  <div className={styles.rouletteLossSpinsText}>КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ:</div>
+                  <div className={styles.rouletteLossSpinsValue}>{Math.max(0, Number(result.balance_after ?? 0))}</div>
                 </>
               ) : (
                 <>

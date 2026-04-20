@@ -1594,6 +1594,51 @@
   color: #fff;
 }
 
+.rouletteLossPosterWrap {
+  margin: 0 auto;
+  width: min(320px, 78vw);
+}
+
+.rouletteLossPoster {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rouletteLossCtaButton {
+  margin: 10px auto 0;
+  width: min(320px, 78vw);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rouletteLossCtaImg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rouletteLossSpinsText {
+  margin-top: 10px;
+  font-family: var(--font-uncage);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.rouletteLossSpinsValue {
+  margin-top: 4px;
+  font-family: var(--font-uncage);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #000;
+}
+
 .howToPlayNavLeft {
   left: 16px;
   top: 76px;
