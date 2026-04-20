@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/spin-reminder",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
