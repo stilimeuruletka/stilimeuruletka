@@ -47,6 +47,5 @@ export async function GET(req: NextRequest) {
     return jsonError("Не удалось загрузить историю", 500, { error: error.message });
   }
 
-  return NextResponse.json({ spins: rows ?? [] });
+  return NextResponse.json({ items: rows ?? [] });
 }
-

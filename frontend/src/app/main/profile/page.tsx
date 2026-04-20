@@ -245,17 +245,22 @@ export default function ProfilePage() {
       })
         .then(async (res) => {
           const json = (await res.json().catch(() => null)) as
-            | { items?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }> }
+            | {
+                items?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>;
+                spins?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>;
+              }
             | { message?: string }
             | null;
           if (!res.ok) {
             const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Не удалось загрузить историю";
             throw new Error(msg);
           }
-          const items =
-            json && typeof json === "object" && "items" in json && Array.isArray((json as { items?: unknown }).items)
-              ? ((json as { items: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }> }).items ?? [])
-              : [];
+          const items = (() => {
+            const fromItems = json && typeof json === "object" && Array.isArray((json as { items?: unknown }).items) ? (json as { items: typeof historyItems }).items : null;
+            if (fromItems) return fromItems;
+            const fromSpins = json && typeof json === "object" && Array.isArray((json as { spins?: unknown }).spins) ? (json as { spins: typeof historyItems }).spins : null;
+            return fromSpins ?? [];
+          })();
           const local = items.length === 0 ? readLocalSpinHistory() : [];
           setHistoryItems(local.length ? local : items);
         })
