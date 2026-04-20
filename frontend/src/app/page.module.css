@@ -1597,12 +1597,17 @@
 .rouletteLossPosterWrap {
   margin: 0 auto;
   width: min(320px, 78vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .rouletteLossPoster {
   width: 100%;
+  max-height: min(68vh, 560px);
   height: auto;
   display: block;
+  object-fit: contain;
 }
 
 .rouletteLossCtaButton {
