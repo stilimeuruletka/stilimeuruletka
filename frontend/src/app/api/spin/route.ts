@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     const { data: cooldown, error: cooldownError } = await supabase.rpc("ensure_free_spin", { p_tg_user_id: extracted.userId });
     if (cooldownError) {
-      return jsonError("Спин недоступен", 500, { code: "ENSURE_FREE_SPIN_FAILED", error: cooldownError.message });
+      return jsonError("Ошибка кулдауна: " + cooldownError.message, 500, { code: "ENSURE_FREE_SPIN_FAILED", error: cooldownError.message });
     }
 
     const canSpin = !!(cooldown as { can_spin?: boolean } | null)?.can_spin;
@@ -115,13 +115,21 @@ export async function POST(req: NextRequest) {
     const balance = (cooldown as { balance?: number } | null)?.balance ?? null;
 
     if (!canSpin) {
-      return jsonError("Спин недоступен", 429, { code: "COOLDOWN_ACTIVE", next_spin_at: nextSpinAt, balance });
+      return jsonError("Спин пока недоступен (подождите)", 429, { code: "COOLDOWN_ACTIVE", next_spin_at: nextSpinAt, balance });
     }
 
     if ((balance ?? 0) <= 0) {
       const repair = await repairDailyTicketIfMissing(supabase, extracted.userId);
       if (repair.error) {
-        return jsonError("Спин недоступен", 500, { code: "REPAIR_TICKET_FAILED", error: repair.error });
+        return jsonError("Ошибка выдачи билета: " + repair.error, 500, { code: "REPAIR_TICKET_FAILED", error: repair.error });
+      }
+      if (!repair.repaired) {
+        let fallback = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        try {
+          const res = await supabase.rpc("set_next_spin_after_spin_midnight", { p_tg_user_id: extracted.userId });
+          fallback = (res.data as { next_spin_at?: string } | null)?.next_spin_at ?? fallback;
+        } catch {}
+        return jsonError("Билет уже был использован недавно", 429, { code: "COOLDOWN_ACTIVE_REPAIRED", next_spin_at: fallback, balance: 0 });
       }
     }
 
@@ -133,9 +141,9 @@ export async function POST(req: NextRequest) {
     });
     if (spinError) {
       if (/Not enough tickets/i.test(spinError.message)) {
-        return jsonError("Спин недоступен", 400, { code: "NO_TICKETS", error: spinError.message });
+        return jsonError("Недостаточно билетов", 400, { code: "NO_TICKETS", error: spinError.message });
       }
-      return jsonError("Спин недоступен", 400, { code: "SPIN_FAILED", error: spinError.message });
+      return jsonError("Ошибка БД: " + spinError.message, 400, { code: "SPIN_FAILED", error: spinError.message });
     }
 
     let nextData: unknown = null;
