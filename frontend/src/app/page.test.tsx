@@ -62,13 +62,15 @@ describe("Home", () => {
     });
   });
 
-  it("copies referral link on invite card click and navigates", async () => {
+  it("copies referral link and opens Telegram share on invite card click", async () => {
     const showAlert = vi.fn();
+    const openTelegramLink = vi.fn();
     window.Telegram = {
       WebApp: { initData: "initData-long-enough", ready: vi.fn(), expand: vi.fn() }
     };
     if (window.Telegram?.WebApp) {
       (window.Telegram.WebApp as unknown as Record<string, unknown>).showAlert = showAlert;
+      (window.Telegram.WebApp as unknown as Record<string, unknown>).openTelegramLink = openTelegramLink;
     }
 
     const writeText = vi.fn(async () => {});
@@ -90,14 +92,14 @@ describe("Home", () => {
       expect(fetchMock).toHaveBeenCalled();
       expect(writeText).toHaveBeenCalledWith("https://t.me/test?startapp=ref_abc");
       expect(showAlert).toHaveBeenCalled();
-      expect(pushMock).toHaveBeenCalledWith("/main/invite");
+      expect(openTelegramLink).toHaveBeenCalledWith("https://t.me/share/url?url=https%3A%2F%2Ft.me%2Ftest%3Fstartapp%3Dref_abc");
     });
 
     fireEvent.click(invite[invite.length - 1]!);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(pushMock).toHaveBeenCalledTimes(2);
+      expect(openTelegramLink).toHaveBeenCalledTimes(2);
     });
   });
 });

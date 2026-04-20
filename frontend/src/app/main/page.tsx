@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import styles from "../page.module.css";
 import { TelegramInit } from "./TelegramInit";
@@ -20,6 +19,7 @@ type TelegramWebApp = {
   };
   initData?: string;
   showAlert?: (message: string) => void;
+  openTelegramLink?: (url: string) => void;
 };
 
 type TelegramSdkWindow = Window & {
@@ -34,8 +34,6 @@ function getBackendBase() {
 }
 
 export default function MainPage() {
-  const router = useRouter();
-
   const initData = useMemo(() => {
     if (typeof window === "undefined") return null;
     const w = window as TelegramSdkWindow;
@@ -62,17 +60,30 @@ export default function MainPage() {
       e.preventDefault();
       const link = await loadReferralLink();
       const w = window as TelegramSdkWindow;
-      if (link && navigator.clipboard?.writeText) {
+      if (!link) {
+        w.Telegram?.WebApp?.showAlert?.("Не удалось получить реферальную ссылку");
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
         try {
           await navigator.clipboard.writeText(link);
           w.Telegram?.WebApp?.showAlert?.("Реферальная ссылка скопирована");
         } catch {
-          w.Telegram?.WebApp?.showAlert?.("Не удалось скопировать ссылку");
+          w.Telegram?.WebApp?.showAlert?.("Скопируйте ссылку вручную в следующем окне");
         }
+      } else {
+        w.Telegram?.WebApp?.showAlert?.("Скопируйте ссылку вручную в следующем окне");
       }
-      router.push("/main/invite");
+
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}`;
+      if (typeof w.Telegram?.WebApp?.openTelegramLink === "function") {
+        w.Telegram.WebApp.openTelegramLink(shareUrl);
+        return;
+      }
+      window.open(shareUrl, "_blank", "noopener,noreferrer");
     },
-    [loadReferralLink, router]
+    [loadReferralLink]
   );
 
   return (

@@ -1039,6 +1039,12 @@
   text-decoration: none;
 }
 
+.rouletteTopMenuPrizesLink {
+  position: relative;
+  top: -4px;
+  left: 8px;
+}
+
 .rouletteTopMenuImg {
   width: 220px;
   height: auto;
