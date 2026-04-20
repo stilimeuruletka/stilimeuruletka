@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import Home from "./page";
 import MainPage from "./main/page";
 
@@ -62,44 +62,10 @@ describe("Home", () => {
     });
   });
 
-  it("copies referral link and opens Telegram share on invite card click", async () => {
-    const showAlert = vi.fn();
-    const openTelegramLink = vi.fn();
-    window.Telegram = {
-      WebApp: { initData: "initData-long-enough", ready: vi.fn(), expand: vi.fn() }
-    };
-    if (window.Telegram?.WebApp) {
-      (window.Telegram.WebApp as unknown as Record<string, unknown>).showAlert = showAlert;
-      (window.Telegram.WebApp as unknown as Record<string, unknown>).openTelegramLink = openTelegramLink;
-    }
-
-    const writeText = vi.fn(async () => {});
-    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
-
-    const fetchMock = vi.fn(async () => ({
-      ok: true,
-      json: async () => ({ link: "https://t.me/test?startapp=ref_abc" })
-    }));
-    Object.defineProperty(globalThis, "fetch", { value: fetchMock, configurable: true });
-
-    pushMock.mockClear();
+  it("opens friend page from invite card", async () => {
     render(<MainPage />);
 
     const invite = await screen.findAllByRole("link", { name: "Пригласить друзей" });
-    fireEvent.click(invite[invite.length - 1]!);
-
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalled();
-      expect(writeText).toHaveBeenCalledWith("https://t.me/test?startapp=ref_abc");
-      expect(showAlert).toHaveBeenCalled();
-      expect(openTelegramLink).toHaveBeenCalledWith("https://t.me/share/url?url=https%3A%2F%2Ft.me%2Ftest%3Fstartapp%3Dref_abc");
-    });
-
-    fireEvent.click(invite[invite.length - 1]!);
-
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(openTelegramLink).toHaveBeenCalledTimes(2);
-    });
+    expect(invite[invite.length - 1]).toHaveAttribute("href", "/main/friend");
   });
 });
