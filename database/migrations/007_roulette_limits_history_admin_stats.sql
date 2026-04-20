@@ -213,5 +213,5 @@ as $$
    and s.created_at >= (select from_ts from range)
    and s.created_at < (select to_ts from range)
   group by u.tg_user_id, u.username
-  order by last_spin_at desc nulls last, total_spins desc, u.created_at desc;
+  order by last_spin_at desc nulls last, total_spins desc, u.tg_user_id desc;
 $$;
