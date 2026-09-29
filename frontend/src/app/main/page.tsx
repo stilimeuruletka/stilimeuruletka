@@ -17,22 +17,23 @@ export default function MainPage() {
             <Image
               src="/основавверх-trim.png"
               alt="Верхняя часть"
-              width={90}
-              height={12}
+              width={180}
+              height={24}
               className={styles.topImage}
               priority
               sizes="90px"
-              quality={90}
+              quality={80}
             />
           </a>
           <Image
             src="/основавверхниже-trim.png"
             alt="Заголовок"
-            width={4490}
-            height={1012}
+            width={1040}
+            height={235}
             className={styles.titleImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
+            quality={80}
           />
         </div>
 
@@ -45,22 +46,22 @@ export default function MainPage() {
                     <Image
                       src="/1девушка.PNG"
                       alt="Девушка 1"
-                      width={600}
-                      height={1100}
+                      width={340}
+                      height={623}
                       className={styles.girl}
                       priority
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/стильнаярулетка-trim.png"
                     alt="Стильная рулетка"
-                    width={3882}
-                    height={608}
+                    width={340}
+                    height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </Link>
               </div>
@@ -71,22 +72,21 @@ export default function MainPage() {
                     <Image
                       src="/2девушка.PNG"
                       alt="Девушка 2"
-                      width={600}
-                      height={1100}
+                      width={340}
+                      height={623}
                       className={styles.girl}
-                      priority
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/профиль-trim.png"
                     alt="Профиль"
-                    width={3882}
-                    height={608}
+                    width={340}
+                    height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </Link>
               </div>
@@ -97,22 +97,21 @@ export default function MainPage() {
                     <Image
                       src="/3девушка.jpg"
                       alt="Девушка 3"
-                      width={600}
-                      height={1100}
+                      width={340}
+                      height={623}
                       className={styles.girl}
-                      priority
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/какиграть-trim.png"
                     alt="Как играть"
-                    width={3882}
-                    height={608}
+                    width={340}
+                    height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </Link>
               </div>
@@ -125,21 +124,21 @@ export default function MainPage() {
                     <Image
                       src="/4девушка.PNG"
                       alt="Девушка 4"
-                      width={1340}
-                      height={2400}
+                      width={340}
+                      height={623}
                       className={styles.girl}
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/пригласитьдр-trim.png"
                     alt="Пригласить друзей"
-                    width={3882}
-                    height={608}
+                    width={340}
+                    height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </Link>
               </div>
@@ -150,21 +149,21 @@ export default function MainPage() {
                     <Image
                       src="/5девушка.PNG"
                       alt="Девушка 5"
-                      width={1340}
-                      height={2400}
+                      width={340}
+                      height={623}
                       className={styles.girl}
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/списокпризов-trim.png"
                     alt="Список призов"
-                    width={3882}
-                    height={608}
+                    width={340}
+                    height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </a>
               </div>
@@ -175,21 +174,21 @@ export default function MainPage() {
                     <Image
                       src="/6девушка.PNG"
                       alt="Девушка 6"
-                      width={1340}
-                      height={2400}
+                      width={340}
+                      height={623}
                       className={styles.girl}
                       sizes="(max-width: 520px) 33vw, 170px"
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                   <Image
                     src="/поддержка-trim.png"
                     alt="Поддержка"
-                    width={3882}
-                    height={608}
+                    width={340}
+                      height={54}
                     className={styles.btnImg}
                     sizes="(max-width: 520px) 33vw, 170px"
-                    quality={90}
+                    quality={80}
                   />
                 </a>
               </div>
@@ -209,11 +208,11 @@ export default function MainPage() {
             <Image
               src="/низ-trim.png"
               alt="Низ"
-              width={1186}
-              height={591}
+              width={460}
+              height={230}
               className={styles.bottomImage}
               sizes="(max-width: 520px) 100vw, 520px"
-              quality={90}
+              quality={80}
             />
           </section>
 

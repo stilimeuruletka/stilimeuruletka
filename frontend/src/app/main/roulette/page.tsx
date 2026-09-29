@@ -170,7 +170,7 @@ function WheelArt() {
         className={styles.rouletteWheelComposite}
         priority
         sizes="(max-width: 520px) 92vw, 420px"
-        quality={80}
+        quality={75}
       />
     </div>
   );
@@ -331,10 +331,12 @@ export default function RoulettePage() {
           <Image
             src="/стрелканазад.PNG"
             alt=""
-            width={52}
-            height={26}
+            width={104}
+            height={52}
             className={`${styles.aboutNavArrowImage} ${styles.rouletteBackArrowImage}`}
             priority
+            sizes="52px"
+            quality={80}
           />
         </button>
         <div className={styles.rouletteTopMenuLink}>
@@ -342,27 +344,28 @@ export default function RoulettePage() {
             <Image
               src="/чернымглавноеменюистория.png"
               alt=""
-              width={6900}
-              height={1416}
+              width={440}
+              height={90}
               className={styles.rouletteTopMenuImg}
               priority
               sizes="220px"
-              quality={90}
+              quality={80}
             />
           </Link>
           <Link href="/main/prizes" className={styles.rouletteTopMenuPrizesLink} aria-label="Мои выигрыши">
             <Image
               src="/стрелканазад.PNG"
               alt=""
-              width={52}
-              height={26}
+              width={104}
+              height={52}
               className={styles.rouletteTopMenuArrow}
-              priority
+              sizes="52px"
+              quality={80}
             />
           </Link>
         </div>
 
-        <div className={styles.rouletteStage}>
+        <div className={`${styles.rouletteStage} ${modalOpen ? styles.rouletteStageBlurred : ""}`}>
           <button
             type="button"
             className={styles.rouletteWheelButton}
@@ -389,51 +392,30 @@ export default function RoulettePage() {
         </div>
 
         {modalOpen && result && (
-          <div className={styles.rouletteResultOverlay} role="dialog" aria-modal="true" onClick={() => setModalOpen(false)}>
-            <div className={styles.rouletteResultCard} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={`${styles.rouletteResultOverlay} ${!result.win ? styles.rouletteResultOverlayLoss : ""}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={() => setModalOpen(false)}
+          >
+            <div
+              className={`${styles.rouletteResultCard} ${!result.win ? styles.rouletteResultCardLoss : ""}`}
+              onClick={(e) => {
+                if (result.win) e.stopPropagation();
+              }}
+            >
               {!result.win ? (
-                <>
-                  <div className={styles.rouletteLossPosterWrap} aria-hidden="true">
-                    <Image
-                      src="/спинпроигрыш.PNG"
-                      alt=""
-                      width={900}
-                      height={1600}
-                      className={styles.rouletteLossPoster}
-                      priority
-                      sizes="(max-width: 520px) 78vw, 320px"
-                      quality={90}
-                    />
-                  </div>
-                  <button type="button" className={styles.rouletteLossCtaButton} onClick={() => setModalOpen(false)} aria-label="Запустить рулетку">
-                    <Image
-                      src="/запуститьрулетку.PNG"
-                      alt=""
-                      width={3882}
-                      height={608}
-                      className={styles.rouletteLossCtaImg}
-                      priority
-                      sizes="(max-width: 520px) 78vw, 320px"
-                      quality={95}
-                    />
-                  </button>
-                  <div className={styles.rouletteLossSpinsWrap} aria-hidden="true">
-                    <Image
-                      src="/подлошкабилетов.PNG"
-                      alt=""
-                      width={2200}
-                      height={520}
-                      className={styles.rouletteLossSpinsBg}
-                      priority
-                      sizes="(max-width: 520px) 78vw, 320px"
-                      quality={90}
-                    />
-                    <div className={styles.rouletteLossSpinsOverlay}>
-                      <div className={styles.rouletteLossSpinsText}>КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ:</div>
-                      <div className={styles.rouletteLossSpinsValue}>{Math.max(0, Number(result.balance_after ?? 0))}</div>
-                    </div>
-                  </div>
-                </>
+                <div className={styles.rouletteLossSingleWrap} aria-hidden="true">
+                  <Image
+                    src="/telegram-cloud-document-2-5411623505508734699 1.png"
+                    alt=""
+                    fill
+                    className={styles.rouletteLossSingleImage}
+                    sizes="(max-width: 520px) 22vw, 105px"
+                    quality={80}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
               ) : (
                 <>
                   <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
@@ -441,7 +423,15 @@ export default function RoulettePage() {
                   {typeof wonSegmentIndex === "number" && (
                     <Link href="/main/prizes" className={styles.roulettePrizeLink} aria-label="Открыть выигранные призы">
                       <div className={styles.rouletteResultPrizeWrap}>
-                        <img src={getSegmentImageByIndex(wonSegmentIndex)} alt="" className={styles.rouletteResultPrizeImg} draggable={false} />
+                        <Image
+                          src={getSegmentImageByIndex(wonSegmentIndex)}
+                          alt=""
+                          fill
+                          className={styles.rouletteResultPrizeImg}
+                          sizes="(max-width: 520px) 68vw, 240px"
+                          quality={80}
+                          style={{ objectFit: "contain" }}
+                        />
                         <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
                       </div>
                     </Link>

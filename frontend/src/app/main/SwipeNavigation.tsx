@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 "use client";
 
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 type Props = {
   nextPath?: string;
@@ -9,12 +10,22 @@ type Props = {
 };
 
 export function SwipeNavigation({ nextPath, prevPath }: Props) {
+  const router = useRouter();
+  const nextRef = useRef(nextPath);
+  const prevRef = useRef(prevPath);
+
+  useEffect(() => {
+    nextRef.current = nextPath;
+    prevRef.current = prevPath;
+  }, [nextPath, prevPath]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     let startX: number | null = null;
     let startY: number | null = null;
     let active = false;
+    let navigating = false;
 
     const start = (x: number, y: number) => {
       startX = x;
@@ -23,16 +34,34 @@ export function SwipeNavigation({ nextPath, prevPath }: Props) {
     };
 
     const finish = (x: number, y: number) => {
-      if (!active || startX === null || startY === null) return;
+      if (!active || startX === null || startY === null || navigating) return;
       const deltaX = x - startX;
       const deltaY = y - startY;
       const threshold = 40;
 
       if (Math.abs(deltaX) > threshold && Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX < 0 && nextPath) {
-          window.location.href = nextPath;
-        } else if (deltaX > 0 && prevPath) {
-          window.location.href = prevPath;
+        navigating = true;
+        const supportsViewTransition = "startViewTransition" in document;
+        const doNavigate = (path: string) => {
+          if (supportsViewTransition) {
+            try {
+              (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition?.(() => {
+                router.push(path);
+              });
+              return;
+            } catch {
+              /* fallthrough */
+            }
+          }
+          router.push(path);
+        };
+
+        if (deltaX < 0 && nextRef.current) {
+          doNavigate(nextRef.current);
+        } else if (deltaX > 0 && prevRef.current) {
+          doNavigate(prevRef.current);
+        } else {
+          navigating = false;
         }
       }
 
@@ -73,7 +102,7 @@ export function SwipeNavigation({ nextPath, prevPath }: Props) {
       window.removeEventListener("touchstart", handleTouchStart, { capture: true });
       window.removeEventListener("touchend", handleTouchEnd, { capture: true });
     };
-  }, [nextPath, prevPath]);
+  }, [router]);
 
   return null;
 }

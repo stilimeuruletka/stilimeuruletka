@@ -152,11 +152,11 @@ function SpinTimer() {
       <Image
         src="/круг5к.png"
         alt="До следующего спина"
-        width={720}
-        height={320}
+        width={640}
+        height={284}
         className={styles.profileSpinTimerImage}
         sizes="320px"
-        quality={90}
+        quality={80}
       />
       <div className={styles.profileSpinTimerText}>
         <span>{canSpin ? "МОЖНО КРУТИТЬ" : "ДО СЛЕДУЮЩЕГО СПИНА"}</span>
@@ -319,16 +319,25 @@ export default function ProfilePage() {
           <Image
             src="/главноеменюрулеткакрасный.png"
             alt=""
-            width={4052}
-            height={1312}
+            width={1040}
+            height={336}
             className={styles.commonTopHeaderImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
-            quality={90}
+            quality={80}
           />
           <div className={styles.commonTopHeaderUser}>
             <div className={styles.commonTopHeaderAvatar}>
-              {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
+              {avatarSrc && (
+                <Image
+                  src={avatarSrc}
+                  alt=""
+                  fill
+                  sizes="66px"
+                  quality={80}
+                  style={{ objectFit: "cover", objectPosition: "center" }}
+                />
+              )}
             </div>
             <div className={styles.commonTopHeaderName}>{displayName}</div>
           </div>
@@ -338,18 +347,22 @@ export default function ProfilePage() {
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"
-            width={52}
-            height={26}
+            width={104}
+            height={52}
             className={styles.profileArrow}
+            sizes="52px"
+            quality={80}
           />
         </Link>
         <Link href="/main/roulette" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
-            width={52}
-            height={26}
+            width={104}
+            height={52}
             className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+            sizes="52px"
+            quality={80}
           />
         </Link>
 
@@ -365,11 +378,11 @@ export default function ProfilePage() {
                 <Image
                   src="/историястильныхпинов.png"
                   alt="История стильных спинов"
-                  width={10324}
-                  height={1720}
+                  width={410}
+                  height={68}
                   className={styles.profileQuickButtonImg}
                   sizes="(max-width: 520px) 44vw, 180px"
-                  quality={90}
+                  quality={80}
                 />
               </button>
             </div>
@@ -379,11 +392,11 @@ export default function ProfilePage() {
                 <Image
                   src="/пригласитьстильныхдрузей2.png"
                   alt="Пригласить стильных друзей"
-                  width={10296}
-                  height={1732}
+                  width={420}
+                  height={70}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
                   sizes="(max-width: 520px) 46vw, 186px"
-                  quality={90}
+                  quality={80}
                 />
               </Link>
               <a
@@ -396,11 +409,11 @@ export default function ProfilePage() {
                 <Image
                   src="/рекламаисотрудничество.png"
                   alt="Реклама и сотрудничество"
-                  width={10260}
-                  height={1700}
+                  width={410}
+                  height={68}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgAdTweak}`}
                   sizes="(max-width: 520px) 44vw, 180px"
-                  quality={90}
+                  quality={80}
                 />
               </a>
             </div>
@@ -416,22 +429,22 @@ export default function ProfilePage() {
                 <Image
                   src="/каналсообщество.png"
                   alt="Канал сообщества"
-                  width={10252}
-                  height={1692}
+                  width={410}
+                  height={68}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgChannelTweak}`}
                   sizes="(max-width: 520px) 44vw, 180px"
-                  quality={90}
+                  quality={80}
                 />
               </a>
               <Link href="/main/about" className={styles.profileQuickButtonLink}>
                 <Image
                   src="/обренда.png"
                   alt="О бренде"
-                  width={10216}
-                  height={1664}
+                  width={420}
+                  height={70}
                   className={`${styles.profileQuickButtonImg} ${styles.profileQuickButtonImgBrandShiftLeft} ${styles.profileQuickButtonImgLift} ${styles.profileQuickButtonImgLarge}`}
                   sizes="(max-width: 520px) 46vw, 186px"
-                  quality={90}
+                  quality={80}
                 />
               </Link>
             </div>
@@ -443,8 +456,8 @@ export default function ProfilePage() {
         {historyOpen && (
           <div className={styles.profileHistoryOverlay} role="dialog" aria-modal="true" onClick={() => setHistoryOpen(false)}>
             <div className={styles.profileHistoryFrame} onClick={(e) => e.stopPropagation()}>
-              <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} priority />
-              
+              <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
+
               <div className={styles.profileHistoryContent}>
                 {historyLoading && <div className={styles.profileHistoryEmpty}>ЗАГРУЗКА...</div>}
                 {!historyLoading && historyError && <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>}
@@ -462,19 +475,21 @@ export default function ProfilePage() {
                       }}
                       aria-label="Листать влево"
                     >
-                      <Image src="/стрелканазад.PNG" alt="Влево" width={40} height={20} className={styles.profileHistoryArrowIcon} />
+                      <Image src="/стрелканазад.PNG" alt="Влево" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
                     </button>
-                    
+
                     <div id="history-carousel" className={styles.profileHistoryCarousel}>
                       {historyItems.map((it) => (
                         <div key={it.spin_id} className={styles.profileHistoryCard}>
                           <div className={styles.profileHistoryCardDate}>{formatHistoryDate(it.created_at)}</div>
                           <div className={styles.profileHistoryCardImageWrapper}>
-                            <img
+                            <Image
                               src={it.win ? "/IMG_2805.PNG" : "/проигрыш.PNG"}
                               alt={it.win ? "Победа" : "Поражение"}
-                              className={styles.profileHistoryCardImage}
-                              draggable="false"
+                              fill
+                              sizes="100px"
+                              quality={75}
+                              style={{ objectFit: "cover", objectPosition: "top center" }}
                             />
                           </div>
                           <div className={styles.profileHistoryCardResult}>
@@ -493,24 +508,23 @@ export default function ProfilePage() {
                       }}
                       aria-label="Листать вправо"
                     >
-                      <Image src="/стрелканазад.PNG" alt="Вправо" width={40} height={20} className={styles.profileHistoryArrowIcon} />
+                      <Image src="/стрелканазад.PNG" alt="Вправо" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
                     </button>
                   </div>
                 )}
               </div>
               <button type="button" className={styles.profileHistoryCloseButton} onClick={() => setHistoryOpen(false)} aria-label="Закрыть">
-                <Image src="/стрелканазад.PNG" alt="Назад" width={52} height={26} className={styles.profileHistoryCloseIcon} />
+                <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.profileHistoryCloseIcon} sizes="52px" quality={80} />
               </button>
               <Link href="/main" className={styles.profileHistoryTopRightLink} aria-label="В главное меню">
                 <Image
                   src="/чернымглавноеменюистория.png"
                   alt=""
-                  width={6900}
-                  height={1416}
+                  width={440}
+                  height={90}
                   className={styles.profileHistoryTopRightImg}
-                  priority
                   sizes="220px"
-                  quality={90}
+                  quality={80}
                 />
               </Link>
             </div>

@@ -584,6 +584,7 @@
   align-items: center;
   overflow: hidden;
   border-radius: 6px;
+  position: relative;
 }
 
 .profileHistoryCardImage {
@@ -608,7 +609,7 @@
   position: absolute;
   top: 50%;
   bottom: auto;
-  transform: translateY(64px);
+  transform: translateY(36px);
   background: transparent;
   border: none;
   padding: 10px;
@@ -1174,6 +1175,10 @@
   padding: 0 16px 18px;
 }
 
+.rouletteStageBlurred {
+  filter: blur(16px);
+}
+
 .roulettePointer {
   position: absolute;
   top: 12px;
@@ -1478,7 +1483,10 @@
   justify-content: center;
   padding: 24px 16px;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
+}
+
+.rouletteResultOverlayLoss {
+  background: rgba(0, 0, 0, 0.14);
 }
 
 .rouletteResultCard {
@@ -1489,6 +1497,32 @@
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
   padding: 18px 16px 16px;
   text-align: center;
+}
+
+.rouletteResultCardLoss {
+  max-width: 520px;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.rouletteLossSingleWrap {
+  margin: 0 auto;
+  width: min(105px, 22vw);
+  aspect-ratio: 840 / 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-18px);
+  position: relative;
+}
+
+.rouletteLossSingleImage {
+  width: 100%;
+  max-height: min(74vh, 620px);
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .rouletteResultPrizeWrap {
@@ -1723,13 +1757,13 @@
   border-radius: 999px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
+  position: relative;
 }
 
-.commonTopHeaderAvatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.commonTopHeaderAvatar img,
+.commonTopHeaderAvatar > span {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .commonTopHeaderName {
