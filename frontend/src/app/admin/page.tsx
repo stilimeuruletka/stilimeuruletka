@@ -56,15 +56,16 @@ function AdminLoginInner() {
 
           <form onSubmit={onSubmit} className={styles.row}>
             <div className={styles.field}>
-              <div className={styles.label}>Email</div>
+              <div className={styles.label}>Логин</div>
               <input
                 className={styles.input}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                autoComplete="email"
-                inputMode="email"
+                type="text"
+                autoComplete="username"
+                inputMode="text"
                 required
+                placeholder="admin"
               />
             </div>
             <div className={styles.field}>
@@ -76,6 +77,7 @@ function AdminLoginInner() {
                 type="password"
                 autoComplete="current-password"
                 required
+                minLength={6}
               />
             </div>
 

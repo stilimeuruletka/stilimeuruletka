@@ -169,7 +169,7 @@ export function buildApp(
   app.register(cors, {
     origin: [env.PUBLIC_WEBAPP_URL],
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["content-type", "x-telegram-init-data"]
+    allowedHeaders: ["content-type", "x-telegram-init-data", "x-tg-start-param"]
   });
   app.register(sensible);
   app.register(rateLimit, { global: true, max: 120, timeWindow: "1 minute" });
@@ -466,11 +466,22 @@ export function buildApp(
       }
       try {
         const auth = verifyTelegramWebAppInitData(initData, env.TELEGRAM_BOT_TOKEN);
+        const startParamFromHeader = (() => {
+          const h = req.headers["x-tg-start-param"];
+          if (typeof h === "string" && h.length > 0) return h;
+          const q = (req.query as Record<string, unknown> | undefined)?.start_param;
+          if (typeof q === "string" && q.length > 0) return q;
+          return null;
+        })();
         (req as unknown as { auth: { tgUserId: number; username?: string; photoUrl?: string; startParam?: string } }).auth = {
           tgUserId: auth.user.id,
           ...(auth.user.username ? { username: auth.user.username } : {}),
           ...(auth.user.photo_url ? { photoUrl: auth.user.photo_url } : {}),
-          ...(auth.startParam ? { startParam: auth.startParam } : {})
+          ...(auth.startParam
+            ? { startParam: auth.startParam }
+            : startParamFromHeader
+              ? { startParam: startParamFromHeader }
+              : {})
         };
       } catch (e) {
         if (e instanceof TelegramWebAppAuthError) {

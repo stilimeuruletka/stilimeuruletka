@@ -20,6 +20,12 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
         <div className={styles.nav}>
           <div className={styles.navLinks}>
             <Link
+              href="/admin/dashboard"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/dashboard") ? styles.navLinkActive : ""}`}
+            >
+              Дашборд
+            </Link>
+            <Link
               href="/admin/prizes"
               className={`${styles.navLink} ${pathname.startsWith("/admin/prizes") ? styles.navLinkActive : ""}`}
             >

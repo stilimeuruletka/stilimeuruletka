@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+import { verifyAdminSession } from "../../../../../lib/adminSession";
+
 export const runtime = "nodejs";
 
 function getAdminSupabase() {
@@ -11,6 +13,24 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+function parseAdminCookie(cookieHeader: string | null): string | null {
+  if (!cookieHeader) return null;
+  const parts = cookieHeader.split(";");
+  for (const part of parts) {
+    const [k, v] = part.split("=");
+    if (!k) continue;
+    if (k.trim() === "admin_session") return typeof v === "string" ? decodeURIComponent(v.trim()) : null;
+  }
+  return null;
+}
+
+async function requireAdmin(req: Request) {
+  const token = parseAdminCookie(req.headers.get("cookie"));
+  const session = await verifyAdminSession(token);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return null;
+}
+
 function parseMaybeIso(input: string | null) {
   if (!input) return null;
   const ms = Date.parse(input);
@@ -19,6 +39,9 @@ function parseMaybeIso(input: string | null) {
 }
 
 export async function GET(req: Request) {
+  const fail = await requireAdmin(req);
+  if (fail) return fail;
+
   const url = new URL(req.url);
   const from = parseMaybeIso(url.searchParams.get("from"));
   const to = parseMaybeIso(url.searchParams.get("to"));

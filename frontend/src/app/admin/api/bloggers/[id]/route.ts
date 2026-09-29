@@ -35,32 +35,22 @@ function isUuid(v: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
 }
 
-function normalizePrizePatch(input: unknown) {
+function normalizeBloggerName(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const name = v.trim();
+  if (name.length < 1 || name.length > 120) return null;
+  return name;
+}
+
+function normalizeBloggerPatch(input: unknown) {
   if (!input || typeof input !== "object") return null;
   const obj = input as Record<string, unknown>;
   const patch: Record<string, unknown> = {};
 
-  if (obj.title !== undefined) {
-    if (typeof obj.title !== "string") return null;
-    const title = obj.title.trim();
-    if (title.length < 1 || title.length > 160) return null;
-    patch.title = title;
-  }
-
-  if (obj.weight !== undefined) {
-    const weight = typeof obj.weight === "number" ? obj.weight : Number(obj.weight);
-    if (!Number.isFinite(weight) || !Number.isInteger(weight) || weight <= 0 || weight > 1_000_000) return null;
-    patch.weight = weight;
-  }
-
-  if (obj.value !== undefined) {
-    if (obj.value === null || obj.value === "") {
-      patch.value = null;
-    } else {
-      const n = typeof obj.value === "number" ? obj.value : Number(obj.value);
-      if (!Number.isFinite(n) || n < 0) return null;
-      patch.value = n;
-    }
+  if (obj.name !== undefined) {
+    const name = normalizeBloggerName(obj.name);
+    if (!name) return null;
+    patch.name = name;
   }
 
   if (obj.active !== undefined) {
@@ -80,19 +70,19 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   if (!isUuid(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
   const body = (await req.json().catch(() => null)) as unknown;
-  const patch = normalizePrizePatch(body);
-  if (!patch) return NextResponse.json({ error: "Invalid prize data" }, { status: 400 });
+  const patch = normalizeBloggerPatch(body);
+  if (!patch) return NextResponse.json({ error: "Invalid blogger data" }, { status: 400 });
 
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
-    .from("prizes")
+    .from("bloggers")
     .update(patch)
     .eq("id", id)
-    .select("id,title,weight,value,active,created_at")
+    .select("id,code,name,active,created_at")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ prize: data });
+  return NextResponse.json({ blogger: data });
 }
 
 export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -102,9 +92,11 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }
   const { id } = await ctx.params;
   if (!isUuid(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
+  const ok = (req.headers.get("x-confirm") || "").toLowerCase() === "yes";
+  if (!ok) return NextResponse.json({ error: "Missing x-confirm: yes header" }, { status: 400 });
+
   const supabase = getAdminSupabase();
-  const { error } = await supabase.from("prizes").delete().eq("id", id);
+  const { error } = await supabase.from("bloggers").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
-
