@@ -170,7 +170,7 @@
 }
 
 .friendProfileStack {
-  transform: translateY(-40px);
+  transform: translateY(0px);
 }
 
 .friendProfileStack .profileBottomImage {
@@ -179,7 +179,7 @@
 
 @media (min-width: 521px) {
   .friendProfileStack {
-    transform: translateY(-20px);
+    transform: translateY(0px);
   }
 }
 
@@ -346,7 +346,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 14%;
+  top: 18%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -354,8 +354,8 @@
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 30%;
-  left: 58%;
+  top: 34%;
+  left: 54%;
 }
 
 .friendProfileStack .profileArrow {
@@ -671,7 +671,7 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(28px);
+  transform: translateY(60px);
   bottom: auto;
   background: transparent;
   border: none;
@@ -718,10 +718,29 @@
   display: block;
 }
 
+.profileHistoryTopRightButton {
+  position: absolute;
+  top: 108px;
+  right: calc(50% + 86px);
+  transform: translateX(50%);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.profileHistoryTopRightIcon {
+  width: 52px;
+  height: auto;
+  display: block;
+  transform: rotate(180deg);
+}
+
 .profileHistoryTopRightLink {
   position: absolute;
   top: 104px;
-  left: 50%;
+  left: calc(50% + 120px);
   transform: translateX(-50%);
   z-index: 2;
   display: flex;

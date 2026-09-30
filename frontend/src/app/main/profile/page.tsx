@@ -516,6 +516,9 @@ export default function ProfilePage() {
               <button type="button" className={styles.profileHistoryCloseButton} onClick={() => setHistoryOpen(false)} aria-label="Закрыть">
                 <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.profileHistoryCloseIcon} sizes="52px" quality={80} />
               </button>
+              <button type="button" className={styles.profileHistoryTopRightButton} aria-label="Далее">
+                <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.profileHistoryTopRightIcon} sizes="52px" quality={80} />
+              </button>
               <Link href="/main" className={styles.profileHistoryTopRightLink} aria-label="В главное меню">
                 <Image
                   src="/чернымглавноеменюистория.png"
