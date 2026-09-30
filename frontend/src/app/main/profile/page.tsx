@@ -466,12 +466,6 @@ export default function ProfilePage() {
                 )}
                 {!historyLoading && !historyError && historyItems.length > 0 && (
                   <div className={styles.profileHistoryCarouselWrapper}>
-                    <div className={styles.profileHistoryTopLabels}>
-                      <span>MIX</span>
-                      <span>MATCH</span>
-                      <span>TEST</span>
-                    </div>
-
                     <div id="history-carousel" className={styles.profileHistoryCarousel}>
                       {historyItems.map((it) => (
                         <div key={it.spin_id} className={styles.profileHistoryCard}>
@@ -503,7 +497,6 @@ export default function ProfilePage() {
                       aria-label="Листать влево"
                     >
                       <Image src="/стрелканазад.PNG" alt="Влево" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
-                      <span className={styles.profileHistoryArrowLabel}>STYLE</span>
                     </button>
 
                     <button
@@ -516,10 +509,7 @@ export default function ProfilePage() {
                       aria-label="Листать вправо"
                     >
                       <Image src="/стрелканазад.PNG" alt="Вправо" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
-                      <span className={styles.profileHistoryArrowLabel}>SHINE</span>
                     </button>
-
-                    <div className={styles.profileHistoryCenterLabel}>STILNAYARULETKA</div>
                   </div>
                 )}
               </div>
