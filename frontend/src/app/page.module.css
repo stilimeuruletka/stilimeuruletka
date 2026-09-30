@@ -671,7 +671,7 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(28px);
   bottom: auto;
   background: transparent;
   border: none;
