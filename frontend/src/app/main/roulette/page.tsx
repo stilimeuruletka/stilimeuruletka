@@ -393,80 +393,70 @@ export default function RoulettePage() {
 
         {modalOpen && result && (
           <div
-            className={`${styles.rouletteResultOverlay} ${!result.win ? styles.rouletteResultOverlayLoss : ""}`}
-            role="dialog"
-            aria-modal="true"
-            onClick={() => setModalOpen(false)}
+            className={`${styles.rouletteResultInline} ${!result.win ? styles.rouletteResultInlineLoss : ""}`}
           >
-            <div
-              className={`${styles.rouletteResultCard} ${!result.win ? styles.rouletteResultCardLoss : ""}`}
-              onClick={(e) => {
-                if (result.win) e.stopPropagation();
-              }}
-            >
-              {!result.win ? (
-                <div className={styles.rouletteLossSingleWrap} aria-hidden="true">
-                  <Image
-                    src="/telegram-cloud-document-2-5411623505508734699 1.png"
-                    alt=""
-                    fill
-                    className={styles.rouletteLossSingleImage}
-                    sizes="(max-width: 520px) 22vw, 105px"
-                    quality={80}
-                    style={{ objectFit: "contain" }}
-                  />
-                </div>
-              ) : (
-                <>
-                  <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
-                  {spinAtIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(spinAtIso)}</div>}
-                  {typeof wonSegmentIndex === "number" && (
-                    <Link href="/main/prizes" className={styles.roulettePrizeLink} aria-label="Открыть выигранные призы">
-                      <div className={styles.rouletteResultPrizeWrap}>
-                        <Image
-                          src={getSegmentImageByIndex(wonSegmentIndex)}
-                          alt=""
-                          fill
-                          className={styles.rouletteResultPrizeImg}
-                          sizes="(max-width: 520px) 68vw, 240px"
-                          quality={80}
-                          style={{ objectFit: "contain" }}
-                        />
-                        <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
-                      </div>
-                    </Link>
+            {!result.win ? (
+              <div className={styles.rouletteLossSingleWrap} aria-hidden="true">
+                <Image
+                  src="/telegram-cloud-document-2-5411623505508734699 1.png"
+                  alt=""
+                  fill
+                  className={styles.rouletteLossSingleImage}
+                  sizes="(max-width: 520px) 22vw, 105px"
+                  quality={80}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            ) : (
+              <>
+                <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
+                {spinAtIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(spinAtIso)}</div>}
+                {typeof wonSegmentIndex === "number" && (
+                  <Link href="/main/prizes" className={styles.roulettePrizeLink} aria-label="Открыть выигранные призы">
+                    <div className={styles.rouletteResultPrizeWrap}>
+                      <Image
+                        src={getSegmentImageByIndex(wonSegmentIndex)}
+                        alt=""
+                        fill
+                        className={styles.rouletteResultPrizeImg}
+                        sizes="(max-width: 520px) 68vw, 240px"
+                        quality={80}
+                        style={{ objectFit: "contain" }}
+                      />
+                      <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
+                    </div>
+                  </Link>
+                )}
+                <div className={styles.rouletteResultActions}>
+                  {isBonusSpinPrize ? (
+                    <button
+                      type="button"
+                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
+                      onClick={() => {
+                        setModalOpen(false);
+                        void startSpin();
+                      }}
+                    >
+                      Повторный спин
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
+                      onClick={() => void claimPrize()}
+                    >
+                      Забрать приз
+                    </button>
                   )}
-                  <div className={styles.rouletteResultActions}>
-                    {isBonusSpinPrize ? (
-                      <button
-                        type="button"
-                        className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
-                        onClick={() => {
-                          setModalOpen(false);
-                          void startSpin();
-                        }}
-                      >
-                        Повторный спин
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
-                        onClick={() => void claimPrize()}
-                      >
-                        Забрать приз
-                      </button>
-                    )}
-                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
-                      Мои выигрыши
-                    </button>
-                    <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
-                      История стильных спинов
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                  <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
+                    Мои выигрыши
+                  </button>
+                  <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
+                    История стильных спинов
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

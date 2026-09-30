@@ -584,7 +584,12 @@ export function buildApp(
           : await db.spinWheel(auth.tgUserId);
       const prizeTitleRaw = (result as Record<string, unknown>).prize_title;
       const isBonusSpin = typeof prizeTitleRaw === "string" && /спин/i.test(prizeTitleRaw);
-      const next = isBonusSpin ? { next_spin_at: null } : await db.setNextSpinAfterSpinMidnight(auth.tgUserId);
+      const next = isBonusSpin
+        ? { next_spin_at: null }
+        : await db.setNextSpinAfterSpin(
+            auth.tgUserId,
+            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+          );
 
       return { ...(result as Record<string, unknown>), next_spin_at: next.next_spin_at };
     } catch (e) {

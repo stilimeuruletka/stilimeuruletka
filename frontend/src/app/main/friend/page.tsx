@@ -203,26 +203,38 @@ export default function FriendPage() {
         </button>
 
         <div className={styles.profileCenterIcons}>
-          <Image
-            src="/рефссылка.PNG"
-            alt="Реферальная ссылка"
-            width={72}
-            height={72}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
+          <span
+            className={`${styles.profileCenterIconWrapper} ${styles.profileCenterIconWrapperRight}`}
             onClick={handleCopyReferral}
             role="button"
             aria-label="Копировать реферальную ссылку"
-          />
-          <Image
-            src="/стильныедрущья.PNG"
-            alt="Стильные друзья"
-            width={72}
-            height={72}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
+          >
+            <Image
+              src="/рефссылка.PNG"
+              alt="Реферальная ссылка"
+              width={72}
+              height={72}
+              className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
+              sizes="72px"
+              quality={80}
+            />
+          </span>
+          <span
+            className={`${styles.profileCenterIconWrapper} ${styles.profileCenterIconWrapperLeft}`}
             onClick={() => router.push("/main/friends")}
             role="button"
             aria-label="Открыть список приглашённых"
-          />
+          >
+            <Image
+              src="/стильныедрущья.PNG"
+              alt="Стильные друзья"
+              width={72}
+              height={72}
+              className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
+              sizes="72px"
+              quality={80}
+            />
+          </span>
         </div>
 
         <Image
@@ -234,19 +246,23 @@ export default function FriendPage() {
           sizes="(max-width: 520px) 100vw, 520px"
           quality={80}
         />
-        <Image
-          src="/IMG_2234.PNG"
-          alt="Стильный профиль"
-          width={720}
-          height={1280}
-          className={styles.profileBottomImage}
-          priority
-          sizes="(max-width: 520px) 100vw, 520px"
-          quality={80}
+        <span
+          className={styles.profileBottomImageWrapper}
           onClick={handleCopyReferral}
           role="button"
           aria-label="Нажмите, чтобы скопировать реферальную ссылку"
-        />
+        >
+          <Image
+            src="/IMG_2234.PNG"
+            alt="Стильный профиль"
+            width={720}
+            height={1280}
+            className={styles.profileBottomImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={80}
+          />
+        </span>
       </div>
 
       {toast && (

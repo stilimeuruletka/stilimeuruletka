@@ -127,12 +127,12 @@ function SpinTimer() {
   useEffect(() => {
     const update = () => {
       if (canSpin || !nextSpinAtMs) {
-        setRemainingMs(0);
+        setRemainingMs(null);
         return;
       }
       const diff = nextSpinAtMs - Date.now();
       if (diff <= 0) {
-        setRemainingMs(0);
+        setRemainingMs(null);
         void refresh();
         return;
       }
