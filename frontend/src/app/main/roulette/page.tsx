@@ -32,6 +32,25 @@ type SpinResult = {
   sector_index?: number;
 };
 
+type SubCampaign = {
+  id: string;
+  blogger_name: string | null;
+  channel_id: string;
+  telegram_link: string | null;
+  goal_subscribers: number;
+};
+
+type SubProgress = { confirmed: number; goal: number; percent: number } | null;
+
+type SubStatusState = {
+  loading: boolean;
+  campaign: SubCampaign | null;
+  confirmed: boolean;
+  progress: SubProgress;
+  checking: boolean;
+  checkError: string | null;
+};
+
 const SEGMENT_IMAGES = [
   "/1колесо.png",
   "/2колесо.png",
@@ -191,6 +210,14 @@ export default function RoulettePage() {
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
   const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
+  const [subStatus, setSubStatus] = useState<SubStatusState>({
+    loading: true,
+    campaign: null,
+    confirmed: true,
+    progress: null,
+    checking: false,
+    checkError: null
+  });
 
   useEffect(() => {
     rotationRef.current = rotation;
@@ -205,8 +232,132 @@ export default function RoulettePage() {
     };
   }, []);
 
+  const fetchSubStatus = useCallback(async () => {
+    const initData = getInitData();
+    const base = getBackendBase();
+    if (!base) {
+      setSubStatus((s) => ({ ...s, loading: false }));
+      return;
+    }
+    if (!initData) {
+      if (isLocalDevHost()) {
+        setSubStatus({ loading: false, campaign: null, confirmed: true, progress: null, checking: false, checkError: null });
+      } else {
+        setSubStatus((s) => ({ ...s, loading: false }));
+      }
+      return;
+    }
+    setSubStatus((s) => ({ ...s, loading: true, checkError: null }));
+    try {
+      const res = await fetch(`${base}/api/subscription/status`, {
+        method: "GET",
+        headers: { "x-telegram-init-data": initData }
+      });
+      const json = (await res.json().catch(() => null)) as {
+        campaign?: SubCampaign | null;
+        confirmed?: boolean;
+        progress?: SubProgress;
+        message?: string;
+      } | null;
+      if (res.ok && json && typeof json === "object") {
+        setSubStatus({
+          loading: false,
+          campaign: json.campaign ?? null,
+          confirmed: typeof json.confirmed === "boolean" ? json.confirmed : true,
+          progress: json.progress ?? null,
+          checking: false,
+          checkError: null
+        });
+      } else {
+        setSubStatus({ loading: false, campaign: null, confirmed: true, progress: null, checking: false, checkError: null });
+      }
+    } catch {
+      setSubStatus({ loading: false, campaign: null, confirmed: true, progress: null, checking: false, checkError: null });
+    }
+  }, []);
+
+  const checkSubNow = useCallback(async () => {
+    const initData = getInitData();
+    const base = getBackendBase();
+    if (!base || !initData) {
+      setSubStatus((s) => ({ ...s, checkError: "Откройте приложение через Telegram" }));
+      return;
+    }
+    setSubStatus((s) => ({ ...s, checking: true, checkError: null }));
+    try {
+      const res = await fetch(`${base}/api/subscription/check`, {
+        method: "POST",
+        headers: { "x-telegram-init-data": initData }
+      });
+      const json = (await res.json().catch(() => null)) as {
+        campaign?: SubCampaign | null;
+        confirmed?: boolean;
+        progress?: SubProgress;
+        message?: string;
+        status?: string;
+      } | null;
+      if (res.ok && json && typeof json === "object") {
+        setSubStatus((prev) => ({
+          ...prev,
+          checking: false,
+          campaign: json.campaign ?? prev.campaign,
+          confirmed: typeof json.confirmed === "boolean" ? json.confirmed : prev.confirmed,
+          progress: json.progress ?? prev.progress,
+          checkError:
+            json.confirmed === false && json.message
+              ? json.message
+              : json.confirmed === false && !json.message
+                ? "Вы ещё не подписались. Если только что подписались — подожди 5 секунд и проверь ещё раз."
+                : null
+        }));
+      } else if (res.status === 503 && json && typeof json === "object") {
+        setSubStatus((prev) => ({
+          ...prev,
+          checking: false,
+          checkError:
+            json.message || "Бот не может проверить подписку — напишите в поддержку."
+        }));
+      } else {
+        setSubStatus((prev) => ({
+          ...prev,
+          checking: false,
+          checkError: "Не удалось проверить подписку. Попробуйте позже."
+        }));
+      }
+    } catch {
+      setSubStatus((prev) => ({
+        ...prev,
+        checking: false,
+        checkError: "Не удалось проверить подписку. Проверьте интернет."
+      }));
+    }
+  }, []);
+
+  const openChannel = useCallback(() => {
+    const link = subStatus.campaign?.telegram_link;
+    if (!link) return;
+    const w = window as TelegramSdkWindow;
+    if (typeof w.Telegram?.WebApp?.openTelegramLink === "function") {
+      w.Telegram.WebApp.openTelegramLink(link);
+      return;
+    }
+    window.open(link, "_blank", "noopener,noreferrer");
+  }, [subStatus.campaign?.telegram_link]);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void fetchSubStatus();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [fetchSubStatus]);
+
   const startSpin = useCallback(async () => {
     if (spinning) return;
+    if (subStatus.campaign && !subStatus.confirmed) {
+      setError("Чтобы крутить — подпишитесь на канал и нажмите «Проверить».");
+      void fetchSubStatus();
+      return;
+    }
     setError(null);
     setModalOpen(false);
     setWonSegmentIndex(null);
@@ -241,8 +392,27 @@ export default function RoulettePage() {
           method: "POST",
           headers: { "x-telegram-init-data": initData }
         });
-        const json = (await res.json().catch(() => null)) as SpinResult | { message?: string } | null;
-        if (!res.ok || !json || typeof json !== "object" || !("win" in json)) {
+        const json = (await res.json().catch(() => null)) as
+          | SpinResult
+          | { message?: string; code?: string; campaign?: SubCampaign; progress?: SubProgress }
+          | null;
+        if (!res.ok || !json || typeof json !== "object") {
+          if (json && "code" in json && json.code === "MUST_SUBSCRIBE_FIRST") {
+            setSubStatus((prev) => ({
+              ...prev,
+              campaign: "campaign" in json && json.campaign ? json.campaign : prev.campaign,
+              confirmed: false,
+              progress: "progress" in json && json.progress ? json.progress : prev.progress
+            }));
+            setSpinning(false);
+            setDurationMs(0);
+            setError("Чтобы крутить — сначала подпишитесь на канал и подтвердите подписку.");
+            return;
+          }
+          const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
+          throw new Error(msg);
+        }
+        if (!("win" in json)) {
           const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
           throw new Error(msg);
         }
@@ -283,7 +453,7 @@ export default function RoulettePage() {
       setDurationMs(0);
       setError(e instanceof Error ? e.message : "Спин недоступен");
     }
-  }, [spinning]);
+  }, [spinning, subStatus.campaign, subStatus.confirmed, fetchSubStatus]);
 
   const onWheelTransitionEnd = useCallback(() => {
     if (!spinning) return;
@@ -365,13 +535,197 @@ export default function RoulettePage() {
           </Link>
         </div>
 
-        <div className={`${styles.rouletteStage} ${modalOpen ? styles.rouletteStageBlurred : ""}`}>
+        {subStatus.campaign && !subStatus.confirmed && (
+          <div
+            aria-live="polite"
+            style={{
+              margin: "14px 10px 6px",
+              padding: "16px 16px 18px",
+              background: "linear-gradient(180deg, #ffffff 0%, #fff5f5 100%)",
+              border: `2px solid rgba(184,31,34,0.85)`,
+              borderRadius: 14,
+              boxShadow: "0 10px 28px rgba(0,0,0,0.18), 0 2px 6px rgba(184,31,34,0.08)"
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: 17,
+                lineHeight: 1.25,
+                color: "#111",
+                marginBottom: 6,
+                letterSpacing: 0.2
+              }}
+            >
+              💗 Чтобы крутить — подпишись на&nbsp;
+              <span style={{ color: "#b81f22" }}>
+                {subStatus.campaign.blogger_name || `канал ${subStatus.campaign.channel_id}`}
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: "#444",
+                marginBottom: 14,
+                lineHeight: 1.45
+              }}
+            >
+              Всего нужно <strong>{subStatus.campaign.goal_subscribers.toLocaleString("ru-RU")}</strong> подписчиков.
+              Уже подтвердило: <strong>{subStatus.progress?.confirmed ?? 0}</strong>.
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                marginBottom: 14,
+                flexWrap: "wrap"
+              }}
+            >
+              {subStatus.campaign.telegram_link && (
+                <button
+                  type="button"
+                  onClick={openChannel}
+                  style={{
+                    flex: "1 1 160px",
+                    minHeight: 46,
+                    padding: "0 16px",
+                    borderRadius: 12,
+                    border: "none",
+                    background: "#b81f22",
+                    color: "#fff",
+                    fontWeight: 800,
+                    fontSize: 14.5,
+                    letterSpacing: 0.3,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(184,31,34,0.35)",
+                    position: "relative"
+                  }}
+                >
+                  <span aria-hidden="true" style={{ position: "absolute", inset: -12 }} />
+                  🚀 Открыть канал
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => void checkSubNow()}
+                disabled={subStatus.checking || subStatus.loading}
+                style={{
+                  flex: "1 1 160px",
+                  minHeight: 46,
+                  padding: "0 16px",
+                  borderRadius: 12,
+                  border: `2px solid #b81f22`,
+                  background: "#fff",
+                  color: "#b81f22",
+                  fontWeight: 800,
+                  fontSize: 14.5,
+                  letterSpacing: 0.3,
+                  cursor: subStatus.checking ? "wait" : "pointer",
+                  opacity: subStatus.checking || subStatus.loading ? 0.75 : 1,
+                  position: "relative"
+                }}
+              >
+                <span aria-hidden="true" style={{ position: "absolute", inset: -12 }} />
+                {subStatus.checking ? "Проверяем…" : "✅ Я подписался. Проверить"}
+              </button>
+            </div>
+
+            {subStatus.progress && subStatus.progress.goal > 0 && (
+              <div style={{ marginTop: 2 }}>
+                <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.min(100, Math.max(0, Math.round(subStatus.progress.percent)))}
+                  style={{
+                    width: "100%",
+                    height: 10,
+                    background: "#f0dada",
+                    borderRadius: 999,
+                    overflow: "hidden",
+                    marginBottom: 6
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${Math.min(100, Math.max(0, subStatus.progress.percent))}%`,
+                      height: "100%",
+                      background: `linear-gradient(90deg, #b81f22 0%, #e03538 100%)`,
+                      borderRadius: 999,
+                      transition: "width 500ms ease"
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "#555",
+                    display: "flex",
+                    justifyContent: "space-between"
+                  }}
+                >
+                  <span>
+                    {subStatus.progress.confirmed.toLocaleString("ru-RU")} /{" "}
+                    {subStatus.progress.goal.toLocaleString("ru-RU")}
+                  </span>
+                  <span style={{ fontWeight: 800, color: "#b81f22" }}>
+                    {subStatus.progress.percent.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {subStatus.checkError && (
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: "8px 10px",
+                  borderRadius: 10,
+                  background: "rgba(184,31,34,0.08)",
+                  color: "#8a181a",
+                  fontSize: 12.5,
+                  lineHeight: 1.4,
+                  fontWeight: 600
+                }}
+              >
+                {subStatus.checkError}
+              </div>
+            )}
+
+            <div
+              style={{
+                marginTop: 12,
+                fontSize: 11.5,
+                color: "#777",
+                lineHeight: 1.4
+              }}
+            >
+              💡 Совет: если только что подписались — подожди 5 секунд и нажми «Проверить» ещё раз.
+            </div>
+          </div>
+        )}
+
+        <div
+          className={`${styles.rouletteStage} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
+          style={
+            subStatus.campaign && !subStatus.confirmed
+              ? {
+                  filter: "grayscale(0.6) brightness(0.92)",
+                  pointerEvents: "none",
+                  opacity: 0.55
+                }
+              : undefined
+          }
+        >
           <button
             type="button"
             className={styles.rouletteWheelButton}
             onClick={startSpin}
-            disabled={spinning}
-            aria-label={spinning ? "Крутится" : "Крутить"}
+            disabled={spinning || (!!subStatus.campaign && !subStatus.confirmed)}
+            aria-label={
+              spinning ? "Крутится" : subStatus.campaign && !subStatus.confirmed ? "Подпишитесь чтобы крутить" : "Крутить"
+            }
           >
             <div
               className={styles.rouletteWheel}

@@ -17,6 +17,7 @@ type BloggerRow = {
   id: string;
   code: string;
   name: string;
+  telegram_link: string | null;
   active: boolean;
   created_at: string;
 };
@@ -95,9 +96,10 @@ export default function AdminBloggersPage() {
 
   const [newCode, setNewCode] = useState("");
   const [newName, setNewName] = useState("");
+  const [newTelegramLink, setNewTelegramLink] = useState("");
   const [newActive, setNewActive] = useState(true);
 
-  const [editing, setEditing] = useState<Record<string, { name: string; active: boolean }>>({});
+  const [editing, setEditing] = useState<Record<string, { name: string; telegram_link: string; active: boolean }>>({});
 
   const [toast, setToast] = useState<ToastState>(null);
   const toastTimerRef = useRef<number | null>(null);
@@ -217,6 +219,7 @@ export default function AdminBloggersPage() {
     const payload = {
       code: newCode.trim(),
       name: newName.trim(),
+      telegram_link: newTelegramLink.trim() || null,
       active: newActive
     };
     const res = await fetch("/admin/api/bloggers", {
@@ -231,13 +234,17 @@ export default function AdminBloggersPage() {
     }
     setNewCode("");
     setNewName("");
+    setNewTelegramLink("");
     setNewActive(true);
     await loadBloggers();
     void loadStats();
   };
 
   const startEdit = (b: BloggerRow) => {
-    setEditing((prev) => ({ ...prev, [b.id]: { name: b.name, active: b.active } }));
+    setEditing((prev) => ({
+      ...prev,
+      [b.id]: { name: b.name, telegram_link: b.telegram_link ?? "", active: b.active }
+    }));
   };
 
   const cancelEdit = (id: string) => {
@@ -255,7 +262,11 @@ export default function AdminBloggersPage() {
     const res = await fetch(`/admin/api/bloggers/${encodeURIComponent(id)}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name: patch.name, active: patch.active })
+      body: JSON.stringify({
+        name: patch.name,
+        telegram_link: patch.telegram_link.trim() || null,
+        active: patch.active
+      })
     }).catch(() => null);
     if (!res || !res.ok) {
       const msg = (await res?.json().catch(() => null)) as { error?: string } | null;
@@ -315,6 +326,15 @@ export default function AdminBloggersPage() {
             />
           </div>
           <div className={styles.field}>
+            <div className={styles.label}>Ссылка на Telegram (канал/группа)</div>
+            <input
+              className={styles.input}
+              value={newTelegramLink}
+              onChange={(e) => setNewTelegramLink(e.target.value)}
+              placeholder="https://t.me/... или @username"
+            />
+          </div>
+          <div className={styles.field}>
             <div className={styles.label}>Активен</div>
             <select
               className={styles.input}
@@ -348,6 +368,7 @@ export default function AdminBloggersPage() {
               <tr>
                 <th className={styles.th}>Код</th>
                 <th className={styles.th}>Имя</th>
+                <th className={styles.th}>Ссылка Telegram</th>
                 <th className={styles.th}>Активен</th>
                 <th className={styles.th}>Создан</th>
                 <th className={styles.th}>Действия</th>
@@ -379,6 +400,32 @@ export default function AdminBloggersPage() {
                         />
                       ) : (
                         b.name
+                      )}
+                    </td>
+                    <td className={styles.td}>
+                      {e ? (
+                        <input
+                          className={styles.inlineInput}
+                          value={e.telegram_link}
+                          onChange={(ev) =>
+                            setEditing((prev) => ({
+                              ...prev,
+                              [b.id]: { ...prev[b.id]!, telegram_link: ev.target.value }
+                            }))
+                          }
+                          placeholder="https://t.me/..."
+                        />
+                      ) : b.telegram_link ? (
+                        <a
+                          href={b.telegram_link}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#b81f22", textDecoration: "underline", wordBreak: "break-all", fontSize: 13 }}
+                        >
+                          {b.telegram_link}
+                        </a>
+                      ) : (
+                        <span className={styles.muted}>—</span>
                       )}
                     </td>
                     <td className={styles.td}>
@@ -446,7 +493,7 @@ export default function AdminBloggersPage() {
               })}
               {bloggers.length === 0 && (
                 <tr>
-                  <td className={styles.td} colSpan={5}>
+                  <td className={styles.td} colSpan={6}>
                     {bloggersLoading ? "Загрузка..." : "Нет ссылок — создайте первую выше"}
                   </td>
                 </tr>

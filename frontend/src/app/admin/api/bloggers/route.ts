@@ -9,6 +9,7 @@ type Blogger = {
   id: string;
   code: string;
   name: string;
+  telegram_link: string | null;
   active: boolean;
   created_at: string;
 };
@@ -53,6 +54,15 @@ function normalizeBloggerName(v: unknown): string | null {
   return name;
 }
 
+function normalizeTelegramLink(v: unknown): string | null {
+  if (v === null || v === undefined) return null;
+  if (typeof v !== "string") return null;
+  const s = v.trim();
+  if (s.length === 0) return null;
+  if (s.length > 256) return null;
+  return s;
+}
+
 export async function GET(req: Request): Promise<NextResponse> {
   const fail = await requireAdmin(req);
   if (fail) return fail;
@@ -60,7 +70,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
     .from("bloggers")
-    .select("id,code,name,active,created_at")
+    .select("id,code,name,telegram_link,active,created_at")
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -79,6 +89,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const code = normalizeBloggerCode(obj.code);
   const name = normalizeBloggerName(obj.name);
+  const telegramLink = normalizeTelegramLink(obj.telegram_link);
   if (!code || !name) {
     return NextResponse.json(
       { error: "Invalid blogger data: code 2-64 a-z 0-9 _ -, name 1-120" },
@@ -92,8 +103,8 @@ export async function POST(req: Request): Promise<NextResponse> {
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
     .from("bloggers")
-    .insert({ code, name, active })
-    .select("id,code,name,active,created_at")
+    .insert({ code, name, telegram_link: telegramLink, active })
+    .select("id,code,name,telegram_link,active,created_at")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
