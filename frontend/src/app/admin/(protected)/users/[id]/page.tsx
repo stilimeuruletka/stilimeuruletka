@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 
-import styles from "../../../../admin.module.css";
+import styles from "../../../admin.module.css";
 
 type UserDetailUser = {
   id: string;
