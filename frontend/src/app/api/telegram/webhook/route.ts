@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET!;
@@ -135,14 +135,16 @@ async function checkSubscription(userId: number) {
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-telegram-bot-api-secret-token");
-  if (WEBHOOK_SECRET && secret !== WEBHOOK_SECRET) {
-    return new Response(JSON.stringify({ ok: false }), { status: 401 });
+  const provided = typeof secret === "string" ? secret : "";
+  const expected = WEBHOOK_SECRET ?? "";
+  if (!expected || provided !== expected) {
+    return NextResponse.json({ ok: false }, { status: 401 });
   }
   let update: unknown;
   try {
     update = await req.json();
   } catch {
-    return new Response(JSON.stringify({ ok: false }), { status: 400 });
+    return NextResponse.json({ ok: false }, { status: 400 });
   }
 
   const u = update as { message?: { text?: string; chat: { id: number }; from: { id: number } }; callback_query?: { id: string; data?: string; from: { id: number }; message?: { chat?: { id: number } } } };

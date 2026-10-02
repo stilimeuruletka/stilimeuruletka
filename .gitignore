@@ -6,3 +6,13 @@ coverage
 .env.*
 .DS_Store
 .vercel
+.trae
+Icon?
+*.JPEG
+*.jpeg
+IMG_*.PNG
+!public/*.PNG
+!public/*.JPEG
+!public/*.png
+!public/*.jpg
+!public/*.jpeg

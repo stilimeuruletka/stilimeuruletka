@@ -686,13 +686,15 @@ export function buildApp(
     if (!env.CRON_SECRET) {
       throw app.httpErrors.internalServerError("Cron secret is not configured");
     }
-    const headerSecret = req.headers["x-cron-secret"];
-    const query = req.query as unknown;
-    const querySecret =
-      query && typeof query === "object" ? (query as Record<string, unknown>).secret : undefined;
-    const secret =
-      typeof headerSecret === "string" ? headerSecret : typeof querySecret === "string" ? querySecret : null;
+    const headerSecret =
+      typeof req.headers["x-cron-secret"] === "string" ? req.headers["x-cron-secret"] : undefined;
+    const authHeader = typeof req.headers.authorization === "string" ? req.headers.authorization : undefined;
+    const bearerSecret = authHeader && /^Bearer\s+(.+)$/i.test(authHeader)
+      ? authHeader.replace(/^Bearer\s+/i, "").trim()
+      : undefined;
+    const secret = headerSecret ?? bearerSecret ?? null;
     if (!secret || secret !== env.CRON_SECRET) {
+      req.log.warn({ hasHeader: !!headerSecret, hasBearer: !!bearerSecret, peer: req.ip }, "cron_auth_failed");
       throw app.httpErrors.unauthorized("Unauthorized");
     }
 

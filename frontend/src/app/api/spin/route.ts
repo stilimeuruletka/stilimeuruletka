@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
       p_ref_code: extracted.startParam
     });
     if (startError) {
-      return jsonError("Не удалось создать пользователя", 500, { error: startError.message });
+      console.error("[api/spin] handle_start failed", startError);
+      return jsonError("Не удалось создать пользователя", 500);
     }
 
     if (tzOffsetMinutes != null) {
@@ -109,7 +110,8 @@ export async function POST(req: NextRequest) {
 
     const { data: cooldown, error: cooldownError } = await supabase.rpc("ensure_free_spin", { p_tg_user_id: extracted.userId });
     if (cooldownError) {
-      return jsonError("Ошибка кулдауна: " + cooldownError.message, 500, { code: "ENSURE_FREE_SPIN_FAILED", error: cooldownError.message });
+      console.error("[api/spin] ensure_free_spin failed", cooldownError);
+      return jsonError("Спин временно недоступен", 500, { code: "ENSURE_FREE_SPIN_FAILED" });
     }
 
     const canSpin = !!(cooldown as { can_spin?: boolean } | null)?.can_spin;
@@ -123,7 +125,8 @@ export async function POST(req: NextRequest) {
     if ((balance ?? 0) <= 0) {
       const repair = await repairDailyTicketIfMissing(supabase, extracted.userId);
       if (repair.error) {
-        return jsonError("Ошибка выдачи билета: " + repair.error, 500, { code: "REPAIR_TICKET_FAILED", error: repair.error });
+        console.error("[api/spin] repairDailyTicketIfMissing failed", repair.error);
+        return jsonError("Ошибка выдачи билета", 500, { code: "REPAIR_TICKET_FAILED" });
       }
       if (!repair.repaired) {
         try {
@@ -144,9 +147,15 @@ export async function POST(req: NextRequest) {
     });
     if (spinError) {
       if (/Not enough tickets/i.test(spinError.message)) {
-        return jsonError("Недостаточно билетов", 400, { code: "NO_TICKETS", error: spinError.message });
+        console.warn("[api/spin] spin_wheel_limited: no tickets", spinError);
+        return jsonError("Недостаточно билетов", 400, { code: "NO_TICKETS" });
       }
-      return jsonError("Ошибка БД: " + spinError.message, 400, { code: "SPIN_FAILED", error: spinError.message });
+      if (/monthly limit reached/i.test(spinError.message)) {
+        console.warn("[api/spin] spin_wheel_limited: monthly limit reached", spinError);
+        return jsonError("Месячный лимит выигрышей исчерпан", 429, { code: "MONTHLY_LIMIT" });
+      }
+      console.error("[api/spin] spin_wheel_limited failed", spinError);
+      return jsonError("Спин временно недоступен", 400, { code: "SPIN_FAILED" });
     }
 
     let nextSpinFinal = nextSpinAt ?? null;
@@ -161,7 +170,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ...(spin as Record<string, unknown>), next_spin_at: nextSpinFinal });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    const publicMessage = /not configured/i.test(message) ? message : "Спин недоступен";
-    return jsonError(publicMessage, 500, { code: "UNHANDLED", error: message });
+    const notConfigured = /not configured/i.test(message);
+    if (notConfigured) {
+      console.error("[api/spin] unhandled config error", e);
+      return jsonError(message, 500, { code: "UNHANDLED" });
+    }
+    console.error("[api/spin] unhandled exception", e);
+    return jsonError("Спин недоступен", 500, { code: "UNHANDLED" });
   }
 }

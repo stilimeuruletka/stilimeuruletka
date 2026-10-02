@@ -13,8 +13,8 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-function jsonError(message: string, status: number, extra?: Record<string, unknown>) {
-  return NextResponse.json({ message, ...(extra ?? {}) }, { status });
+function jsonError(message: string, status: number) {
+  return NextResponse.json({ message }, { status });
 }
 
 export async function GET(req: NextRequest) {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     if (!initDataHeader) return jsonError("Откройте приложение через Telegram", 401);
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
-    if (!botToken) return jsonError("TELEGRAM_BOT_TOKEN is not configured", 500);
+    if (!botToken) return jsonError("Server is not configured", 500);
     if (!verifyTelegramInitData(initDataHeader, botToken)) return jsonError("Invalid Telegram data", 401);
 
     const extracted = extractTelegramInitData(initDataHeader);
@@ -39,7 +39,10 @@ export async function GET(req: NextRequest) {
       .select("id")
       .eq("tg_user_id", extracted.userId)
       .single();
-    if (userError) return jsonError("User not found", 404, { error: userError.message });
+    if (userError) {
+      console.warn("[api/wins] user not found", extracted.userId, userError);
+      return jsonError("User not found", 404);
+    }
 
     const { data: spins, error: spinsError } = await supabase
       .from("spins")
@@ -48,7 +51,10 @@ export async function GET(req: NextRequest) {
       .eq("win", true)
       .order("created_at", { ascending: false })
       .limit(limit);
-    if (spinsError) return jsonError("Failed to load wins", 500, { error: spinsError.message });
+    if (spinsError) {
+      console.error("[api/wins] spins select failed", spinsError);
+      return jsonError("Failed to load wins", 500);
+    }
 
     const wins =
       (spins ?? [])
@@ -66,7 +72,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ wins });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    return jsonError("Не удалось загрузить выигрыши", 500, { error: message });
+    console.error("[api/wins] unhandled error", message, e);
+    return jsonError("Не удалось загрузить выигрыши", 500);
   }
 }
 

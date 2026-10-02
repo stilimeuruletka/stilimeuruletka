@@ -11,8 +11,8 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-function jsonError(message: string, status: number, extra?: Record<string, unknown>) {
-  return NextResponse.json({ message, ...(extra ?? {}) }, { status });
+function jsonError(message: string, status: number) {
+  return NextResponse.json({ message }, { status });
 }
 
 async function sendTelegramMessage(botToken: string, chatId: number, text: string, webAppUrl: string) {
@@ -37,23 +37,31 @@ async function sendTelegramMessage(botToken: string, chatId: number, text: strin
 async function handle(req: NextRequest) {
   try {
     const cronSecret = process.env.CRON_SECRET ?? "";
-    if (!cronSecret) return jsonError("CRON_SECRET is not configured", 500);
+    if (!cronSecret) {
+      console.error("[cron/spin-reminder] CRON_SECRET is not configured");
+      return jsonError("Service is not configured", 500);
+    }
 
     const headerSecret = req.headers.get("x-cron-secret");
     const authHeader = req.headers.get("authorization");
     const bearerSecret = authHeader?.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : null;
-    const querySecret = req.nextUrl.searchParams.get("secret");
-    const provided = bearerSecret ?? headerSecret ?? querySecret ?? "";
+    const provided = bearerSecret ?? headerSecret ?? null;
     if (!provided || provided !== cronSecret) return jsonError("Unauthorized", 401);
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
-    if (!botToken) return jsonError("TELEGRAM_BOT_TOKEN is not configured", 500);
+    if (!botToken) {
+      console.error("[cron/spin-reminder] TELEGRAM_BOT_TOKEN is not configured");
+      return jsonError("Service is not configured", 500);
+    }
 
     const supabase = getAdminSupabase();
     const nowIso = new Date().toISOString();
 
     const { data: due, error: dueError } = await supabase.rpc("list_due_spin_users", { p_now: nowIso });
-    if (dueError) return jsonError("Failed to list due users", 500, { error: dueError.message });
+    if (dueError) {
+      console.error("[cron/spin-reminder] list_due_spin_users failed", dueError);
+      return jsonError("Failed to list due users", 500);
+    }
 
     const users = Array.isArray(due) ? due : [];
     let processed = 0;
@@ -70,23 +78,31 @@ async function handle(req: NextRequest) {
       processed += 1;
 
       const { data: state, error: stateError } = await supabase.rpc("ensure_free_spin", { p_tg_user_id: tgUserId });
-      if (stateError) continue;
+      if (stateError) {
+        console.warn("[cron/spin-reminder] ensure_free_spin failed for user", tgUserId, stateError);
+        continue;
+      }
       const granted = !!(state as { granted?: boolean } | null)?.granted;
       if (!granted) continue;
 
-      await sendTelegramMessage(
-        botToken,
-        tgUserId,
-        "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
-        webAppUrl
-      );
-      notified += 1;
+      try {
+        await sendTelegramMessage(
+          botToken,
+          tgUserId,
+          "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
+          webAppUrl
+        );
+        notified += 1;
+      } catch (e) {
+        console.warn("[cron/spin-reminder] Telegram send failed", tgUserId, e instanceof Error ? e.message : e);
+      }
     }
 
     return NextResponse.json({ ok: true, processed, notified });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    return jsonError("Cron failed", 500, { error: message });
+    console.error("[cron/spin-reminder] unhandled error", message, e);
+    return jsonError("Cron failed", 500);
   }
 }
 

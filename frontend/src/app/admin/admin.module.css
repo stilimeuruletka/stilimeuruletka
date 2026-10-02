@@ -192,6 +192,147 @@
   color: rgba(245, 245, 247, 0.9);
 }
 
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.calCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.calCard:hover {
+  border-color: rgba(184, 31, 34, 0.55);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.calCardActive {
+  border-color: rgba(184, 31, 34, 0.85);
+  background: rgba(184, 31, 34, 0.14);
+  transform: translateY(-1px);
+}
+
+.calCardTitleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.calCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.calCardPeriod {
+  font-size: 12px;
+  color: rgba(245, 245, 247, 0.7);
+}
+
+.statRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statBig {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.statSub {
+  font-size: 12px;
+  color: rgba(245, 245, 247, 0.7);
+}
+
+.progressWrap {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(184, 31, 34, 0.95), rgba(255, 141, 85, 0.95));
+  border-radius: 999px;
+  transition: width 240ms ease;
+}
+
+.progressFillAlmost {
+  background: linear-gradient(90deg, rgba(255, 87, 87, 0.95), rgba(255, 186, 73, 0.95));
+}
+
+.progressFillFull {
+  background: linear-gradient(90deg, rgba(155, 211, 88, 0.95), rgba(84, 188, 115, 0.95));
+}
+
+.filtersRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.sortButton {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badgeOk {
+  background: rgba(84, 188, 115, 0.16);
+  border: 1px solid rgba(84, 188, 115, 0.35);
+  color: #b9e9c6;
+}
+
+.badgeWarn {
+  background: rgba(255, 186, 73, 0.14);
+  border: 1px solid rgba(255, 186, 73, 0.35);
+  color: #ffdfa8;
+}
+
+.badgeDanger {
+  background: rgba(255, 87, 87, 0.14);
+  border: 1px solid rgba(255, 87, 87, 0.35);
+  color: #ffc4c4;
+}
+
+.toolbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 @media (min-width: 720px) {
   .row {
     grid-template-columns: 1fr 1fr;

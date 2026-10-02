@@ -43,6 +43,12 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
             >
               Пользователи
             </Link>
+            <Link
+              href="/admin/coupons"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/coupons") ? styles.navLinkActive : ""}`}
+            >
+              Купоны
+            </Link>
           </div>
           <button className={styles.button} type="button" onClick={logout}>
             Выйти

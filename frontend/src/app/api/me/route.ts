@@ -13,8 +13,8 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-function jsonError(message: string, status: number, extra?: Record<string, unknown>) {
-  return NextResponse.json({ message, ...(extra ?? {}) }, { status });
+function jsonError(message: string, status: number) {
+  return NextResponse.json({ message }, { status });
 }
 
 export async function GET(req: NextRequest) {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     if (!initDataHeader) return jsonError("Откройте приложение через Telegram", 401);
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
-    if (!botToken) return jsonError("TELEGRAM_BOT_TOKEN is not configured", 500);
+    if (!botToken) return jsonError("Server is not configured", 500);
     if (!verifyTelegramInitData(initDataHeader, botToken)) return jsonError("Invalid Telegram data", 401);
 
     const extracted = extractTelegramInitData(initDataHeader);
@@ -41,7 +41,8 @@ export async function GET(req: NextRequest) {
       p_ref_code: extracted.startParam
     });
     if (startError) {
-      return jsonError("Не удалось создать пользователя", 500, { error: startError.message });
+      console.error("[api/me] handle_start failed", startError);
+      return jsonError("Не удалось создать пользователя", 500);
     }
 
     if (tzOffsetMinutes != null) {
@@ -54,7 +55,10 @@ export async function GET(req: NextRequest) {
     }
 
     const { data, error } = await supabase.rpc("ensure_free_spin", { p_tg_user_id: extracted.userId });
-    if (error) return jsonError("Не удалось загрузить статус", 500, { error: error.message });
+    if (error) {
+      console.error("[api/me] ensure_free_spin failed", error);
+      return jsonError("Не удалось загрузить статус", 500);
+    }
 
     const balance = (data as { balance?: number } | null)?.balance ?? 0;
     const canSpin = !!(data as { can_spin?: boolean } | null)?.can_spin;
@@ -63,7 +67,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ balance, can_spin: canSpin, next_spin_at: nextSpinAt });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    return jsonError("Не удалось загрузить статус", 500, { error: message });
+    console.error("[api/me] unhandled error", message, e);
+    return jsonError("Не удалось загрузить статус", 500);
   }
 }
 

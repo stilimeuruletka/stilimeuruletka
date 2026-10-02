@@ -13,8 +13,8 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-function jsonError(message: string, status: number, extra?: Record<string, unknown>) {
-  return NextResponse.json({ message, ...(extra ?? {}) }, { status });
+function jsonError(message: string, status: number) {
+  return NextResponse.json({ message }, { status });
 }
 
 export async function GET(req: NextRequest) {
@@ -44,7 +44,8 @@ export async function GET(req: NextRequest) {
 
   const { data: rows, error } = await supabase.rpc("get_spin_history", { p_tg_user_id: extracted.userId, p_limit: limit });
   if (error) {
-    return jsonError("Не удалось загрузить историю", 500, { error: error.message });
+    console.error("[api/spins/history] get_spin_history failed", error);
+    return jsonError("Не удалось загрузить историю", 500);
   }
 
   return NextResponse.json({ items: rows ?? [] });

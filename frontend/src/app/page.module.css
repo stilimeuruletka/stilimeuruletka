@@ -170,7 +170,7 @@
 }
 
 .friendProfileStack {
-  transform: translateY(0px);
+  transform: none;
 }
 
 .friendProfileStack .profileBottomImage {
@@ -179,7 +179,7 @@
 
 @media (min-width: 521px) {
   .friendProfileStack {
-    transform: translateY(0px);
+    transform: none;
   }
 }
 
@@ -238,12 +238,19 @@
   width: 220px;
   height: auto;
   display: block;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 .profileArrow {
   width: 40px;
   height: auto;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
   z-index: 2;
 }
 
@@ -302,6 +309,31 @@
   top: 100px;
 }
 
+.profileArrowLeftProfileHitArea,
+.profileArrowRightProfileHitArea {
+  display: block;
+  width: 44%;
+  height: 30%;
+  top: 4%;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.profileArrowLeftProfileHitArea {
+  left: 0;
+}
+
+.profileArrowRightProfileHitArea {
+  right: 0;
+}
+
+.profileArrowLeftProfileHitArea::before,
+.profileArrowRightProfileHitArea::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+}
+
 .profileCenterIcons {
   position: absolute;
   top: 34%;
@@ -318,6 +350,11 @@
   display: block;
 }
 
+.profileCenterIconWrapperRightRow1 {
+  right: -20px;
+  top: -38px;
+}
+
 .profileCenterIconWrapperLeft {
   left: -52px;
   top: 6px;
@@ -329,51 +366,96 @@
 }
 
 .profileCenterIcon {
-  width: 100%;
-  height: 100%;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
-  pointer-events: none;
+  position: absolute;
+  cursor: pointer;
 }
 
-.profileCenterIconLeft,
+.profileCenterIconLeft {
+  left: -52px;
+  top: 24px;
+}
+
 .profileCenterIconRight {
+  right: -20px;
+  top: -40px;
+}
+
+.friendProfileStack .profileCenterIconLeft {
+  left: -52px;
+  top: -80px;
+}
+
+.friendProfileStack .profileCenterIconRight {
+  right: -20px;
+  top: -40px;
+}
+
+.profileCenterIconWrapper .profileCenterIcon {
+  width: 100%;
+  height: 100%;
   left: 0;
   top: 0;
+  pointer-events: none;
+  cursor: default;
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 10px;
+  top: 4px;
+  transform: translateX(-50%) scale(0.7);
+  transform-origin: top center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 18%;
+  top: 20%;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
-  width: 220px;
+  width: 260px;
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 34%;
+  top: 36%;
   left: 54%;
 }
 
 .friendProfileStack .profileArrow {
-  width: 28px;
+  width: 32px;
+  position: absolute;
+  top: 8px;
 }
 
 .friendProfileStack .profileArrowLeft {
-  left: 12px;
-  top: 44px;
+  left: 20px;
+  top: 8px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: -24px;
-  top: 30px;
+  right: -40px;
+  top: 12px;
+  transform: scaleX(-1);
 }
 
 .friendProfileStack .profileArrowRight .profileArrow {
-  width: 40px;
+  width: 32px;
+}
+
+.friendProfileStack .profileOverlayImage {
+  position: absolute;
+  top: -56px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  z-index: 1;
 }
 
 .profileCard {
@@ -461,6 +543,23 @@
   border-radius: 999px;
   overflow: hidden;
   background: #e5e5e5;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.profileAvatarCircleOverlay {
+  width: 32px;
+  height: 32px;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .profileAvatarImage {
