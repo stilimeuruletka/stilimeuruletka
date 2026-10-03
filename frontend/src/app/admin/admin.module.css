@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
-  background: #0b0b0c;
-  color: #f5f5f7;
+  background: #ffffff;
+  color: #111111;
   padding: 16px;
 }
 
@@ -12,11 +12,13 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 14px;
   padding: 16px;
-  backdrop-filter: blur(10px);
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.04),
+    0 8px 24px rgba(17, 17, 17, 0.05);
 }
 
 .titleRow {
@@ -34,7 +36,7 @@
 }
 
 .muted {
-  color: rgba(245, 245, 247, 0.72);
+  color: #6b6b75;
   font-size: 13px;
 }
 
@@ -55,18 +57,19 @@
 }
 
 .navLink {
-  color: #f5f5f7;
+  color: #111111;
   text-decoration: none;
   padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #e5e5ea;
+  background: #f2f2f7;
   font-size: 14px;
 }
 
 .navLinkActive {
   border-color: rgba(184, 31, 34, 0.7);
-  background: rgba(184, 31, 34, 0.18);
+  background: rgba(184, 31, 34, 0.12);
+  color: #8a181a;
 }
 
 .row {
@@ -82,22 +85,23 @@
 
 .label {
   font-size: 13px;
-  color: rgba(245, 245, 247, 0.75);
+  color: #6b6b75;
 }
 
 .input {
   width: 100%;
   height: 40px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.25);
-  color: #f5f5f7;
+  border: 1px solid #d1d1d6;
+  background: #ffffff;
+  color: #111111;
   padding: 0 12px;
   outline: none;
 }
 
 .input:focus {
   border-color: rgba(184, 31, 34, 0.85);
+  box-shadow: 0 0 0 3px rgba(184, 31, 34, 0.12);
 }
 
 .buttonRow {
@@ -110,56 +114,90 @@
 .button {
   height: 40px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: #f5f5f7;
+  border: 1px solid #d1d1d6;
+  background: #f2f2f7;
+  color: #111111;
   padding: 0 14px;
   cursor: pointer;
   font-weight: 600;
+  transition: transform 0.08s ease, background 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.04);
+}
+
+.button:hover:not(:disabled) {
+  background: #e5e5ea;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(17, 17, 17, 0.08);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .buttonPrimary {
   border-color: rgba(184, 31, 34, 0.8);
-  background: rgba(184, 31, 34, 0.22);
+  background: #b81f22;
+  color: #ffffff;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: #a2191b;
+  border-color: rgba(184, 31, 34, 0.9);
+  color: #ffffff;
 }
 
 .buttonDanger {
-  border-color: rgba(255, 87, 87, 0.7);
-  background: rgba(255, 87, 87, 0.14);
+  border-color: rgba(184, 31, 34, 0.45) !important;
+  background: rgba(184, 31, 34, 0.1) !important;
+  color: #8a181a !important;
+}
+
+.buttonDanger:hover:not(:disabled) {
+  background: rgba(184, 31, 34, 0.18) !important;
 }
 
 .error {
-  color: #ff7b7b;
+  color: #b0232a;
   font-size: 13px;
   margin-top: 10px;
+  background: rgba(184, 31, 34, 0.06);
+  border: 1px solid rgba(184, 31, 34, 0.2);
+  border-radius: 10px;
+  padding: 8px 10px;
 }
 
 .tableWrap {
   margin-top: 12px;
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid #e5e5ea;
+  background: #ffffff;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   min-width: 760px;
+  background: #ffffff;
 }
 
 .th,
 .td {
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #ececf0;
   font-size: 14px;
   vertical-align: middle;
 }
 
 .th {
   text-align: left;
-  color: rgba(245, 245, 247, 0.75);
+  color: #4b4b54;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.04);
+  background: #f7f7f8;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .tdRight {
@@ -169,15 +207,16 @@
 .inlineInput {
   height: 34px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.25);
-  color: #f5f5f7;
+  border: 1px solid #d1d1d6;
+  background: #ffffff;
+  color: #111111;
   padding: 0 10px;
   outline: none;
 }
 
 .inlineInput:focus {
   border-color: rgba(184, 31, 34, 0.85);
+  box-shadow: 0 0 0 3px rgba(184, 31, 34, 0.12);
 }
 
 .pill {
@@ -186,10 +225,10 @@
   gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #e5e5ea;
+  background: #f7f7f8;
   font-size: 13px;
-  color: rgba(245, 245, 247, 0.9);
+  color: #3a3a40;
 }
 
 .calGrid {
@@ -200,25 +239,34 @@
 }
 
 .calCard {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 14px;
   padding: 14px;
   display: grid;
   gap: 10px;
   cursor: pointer;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.03),
+    0 6px 18px rgba(17, 17, 17, 0.04);
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
 }
 
 .calCard:hover {
-  border-color: rgba(184, 31, 34, 0.55);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(184, 31, 34, 0.5);
+  box-shadow:
+    0 2px 4px rgba(184, 31, 34, 0.06),
+    0 12px 28px rgba(184, 31, 34, 0.1);
+  transform: translateY(-1px);
 }
 
 .calCardActive {
   border-color: rgba(184, 31, 34, 0.85);
-  background: rgba(184, 31, 34, 0.14);
+  background: rgba(184, 31, 34, 0.06);
   transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(184, 31, 34, 0.4),
+    0 8px 24px rgba(184, 31, 34, 0.15);
 }
 
 .calCardTitleRow {
@@ -236,7 +284,7 @@
 
 .calCardPeriod {
   font-size: 12px;
-  color: rgba(245, 245, 247, 0.7);
+  color: #6b6b75;
 }
 
 .statRow {
@@ -254,27 +302,27 @@
 
 .statSub {
   font-size: 12px;
-  color: rgba(245, 245, 247, 0.7);
+  color: #6b6b75;
 }
 
 .progressWrap {
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ececf0;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #e5e5ea;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, rgba(184, 31, 34, 0.95), rgba(255, 141, 85, 0.95));
+  background: linear-gradient(90deg, rgba(184, 31, 34, 0.95), rgba(255, 123, 85, 0.95));
   border-radius: 999px;
   transition: width 240ms ease;
 }
 
 .progressFillAlmost {
-  background: linear-gradient(90deg, rgba(255, 87, 87, 0.95), rgba(255, 186, 73, 0.95));
+  background: linear-gradient(90deg, rgba(255, 130, 70, 0.95), rgba(255, 186, 73, 0.95));
 }
 
 .progressFillFull {
@@ -308,21 +356,21 @@
 }
 
 .badgeOk {
-  background: rgba(84, 188, 115, 0.16);
+  background: rgba(84, 188, 115, 0.12);
   border: 1px solid rgba(84, 188, 115, 0.35);
-  color: #b9e9c6;
+  color: #1a7f43;
 }
 
 .badgeWarn {
-  background: rgba(255, 186, 73, 0.14);
-  border: 1px solid rgba(255, 186, 73, 0.35);
-  color: #ffdfa8;
+  background: rgba(255, 186, 73, 0.16);
+  border: 1px solid rgba(255, 186, 73, 0.5);
+  color: #9a5c00;
 }
 
 .badgeDanger {
-  background: rgba(255, 87, 87, 0.14);
-  border: 1px solid rgba(255, 87, 87, 0.35);
-  color: #ffc4c4;
+  background: rgba(184, 31, 34, 0.08);
+  border: 1px solid rgba(184, 31, 34, 0.35);
+  color: #8a181a;
 }
 
 .toolbarRow {
@@ -339,8 +387,8 @@
   gap: 10px;
   padding: 12px 12px 4px;
   margin: 10px -4px 0;
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f7f7f8;
+  border: 1px solid #e5e5ea;
   border-radius: 12px;
 }
 
@@ -373,12 +421,12 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #d1d1d6;
+  background: #ffffff;
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  color: #f5f5f7;
+  color: #111111;
 }
 
 .radio::before {
@@ -390,8 +438,9 @@
 
 .radioOn {
   border-color: rgba(184, 31, 34, 0.7);
-  background: rgba(184, 31, 34, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(184, 31, 34, 0.4);
+  background: rgba(184, 31, 34, 0.08);
+  color: #8a181a;
+  box-shadow: inset 0 0 0 1px rgba(184, 31, 34, 0.35);
 }
 
 .radioInput {
@@ -417,7 +466,7 @@
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  color: #f5f5f7;
+  color: #111111;
 }
 
 .checkbox::before {
@@ -447,23 +496,23 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 11px;
-  color: rgba(245, 245, 247, 0.55);
+  color: #9c9ca6;
 }
 
 .thAsc::after {
   content: "↑";
-  color: #ff8a8a;
+  color: #b81f22;
   font-weight: 800;
 }
 
 .thDesc::after {
   content: "↓";
-  color: #ff8a8a;
+  color: #b81f22;
   font-weight: 800;
 }
 
 .rowWinner {
-  background: linear-gradient(90deg, rgba(184, 31, 34, 0.18), transparent 70%);
+  background: linear-gradient(90deg, rgba(184, 31, 34, 0.08), transparent 70%);
 }
 
 .rowLoser {
@@ -471,20 +520,20 @@
 }
 
 .rowLoser:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.02);
+  background: #fbfbfc;
 }
 
 .cellWin {
-  color: #ff8a8a;
+  color: #8a181a;
   font-weight: 700;
 }
 
 .cellLose {
-  color: rgba(245, 245, 247, 0.7);
+  color: #6b6b75;
 }
 
 .linkLike {
-  color: #9fb9ff;
+  color: #1a73e8;
   font-family: monospace;
   font-size: 12px;
 }
@@ -494,9 +543,9 @@
   height: 30px;
   padding: 0 8px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.3);
-  color: #f5f5f7;
+  border: 1px solid #d1d1d6;
+  background: #ffffff;
+  color: #111111;
 }
 
 .buttonSmall {
@@ -515,15 +564,18 @@
 
 .dailyCard {
   position: relative;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 14px;
   padding: 12px 12px 10px;
   text-align: left;
-  color: #f5f5f7;
+  color: #111111;
   cursor: pointer;
   transition: transform 0.08s ease, box-shadow 0.14s ease, border-color 0.14s ease, background 0.14s ease;
   font: inherit;
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.03),
+    0 6px 16px rgba(17, 17, 17, 0.04);
 }
 
 .dailyCard::before {
@@ -535,25 +587,29 @@
 
 .dailyCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(184, 31, 34, 0.4);
+  box-shadow:
+    0 2px 4px rgba(184, 31, 34, 0.06),
+    0 12px 30px rgba(17, 17, 17, 0.1);
+  background: #fffafa;
 }
 
 .dailyCardActive {
   border-color: rgba(184, 31, 34, 0.85) !important;
-  background: rgba(184, 31, 34, 0.16) !important;
-  box-shadow: 0 0 0 1px rgba(184, 31, 34, 0.5), 0 10px 28px rgba(184, 31, 34, 0.25) !important;
+  background: rgba(184, 31, 34, 0.06) !important;
+  box-shadow:
+    0 0 0 1px rgba(184, 31, 34, 0.5),
+    0 10px 28px rgba(184, 31, 34, 0.18) !important;
 }
 
 .dailyToneHigh {
-  background: linear-gradient(180deg, rgba(184, 31, 34, 0.18), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(180deg, rgba(184, 31, 34, 0.08), #ffffff);
 }
 .dailyToneMid {
-  background: linear-gradient(180deg, rgba(255, 184, 0, 0.12), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(180deg, rgba(255, 184, 0, 0.08), #ffffff);
 }
 .dailyToneLow {
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
 }
 
 .dailyTop {
@@ -570,7 +626,7 @@
 
 .dailyWeekday {
   font-size: 12px;
-  color: rgba(245, 245, 247, 0.75);
+  color: #6b6b75;
 }
 
 .dailyStatBig {
@@ -583,7 +639,7 @@
 .dailyBarWrap {
   margin: 10px 0 8px;
   height: 6px;
-  background: rgba(255, 255, 255, 0.12);
+  background: #ececf0;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -599,23 +655,23 @@
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: rgba(245, 245, 247, 0.82);
+  color: #4b4b54;
   margin-top: 4px;
 }
 
 .dailyHint {
   margin-top: 10px;
   font-size: 11px;
-  color: rgba(245, 245, 247, 0.6);
+  color: #6b6b75;
   text-align: center;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed #e5e5ea;
   padding-top: 6px;
 }
 
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(17, 17, 17, 0.5);
   z-index: 9999;
   display: flex;
   align-items: flex-start;
@@ -628,10 +684,10 @@
 .modal {
   width: 100%;
   max-width: 1100px;
-  background: #121214;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 16px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 30px 80px rgba(17, 17, 17, 0.2);
   padding: 14px;
   max-height: 92vh;
   overflow: hidden;
@@ -645,7 +701,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 4px 6px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #ececf0;
   margin-bottom: 10px;
 }
 
@@ -666,7 +722,7 @@
 .subtitle {
   font-size: 14px;
   font-weight: 700;
-  color: #f5f5f7;
+  color: #111111;
   margin: 4px 0 0;
   padding-left: 2px;
 }
@@ -720,7 +776,7 @@
   gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #ececf0;
 }
 
 .userCardTitle {
@@ -740,27 +796,27 @@
 }
 
 .userBadgeOk {
-  background: rgba(78, 201, 132, 0.18);
-  color: #66d08f;
-  border: 1px solid rgba(78, 201, 132, 0.4);
+  background: rgba(78, 201, 132, 0.12);
+  color: #1a7f43;
+  border: 1px solid rgba(78, 201, 132, 0.35);
 }
 
 .userBadgeWarn {
-  background: rgba(255, 184, 0, 0.16);
-  color: #ffb800;
+  background: rgba(255, 184, 0, 0.12);
+  color: #9a5c00;
   border: 1px solid rgba(255, 184, 0, 0.4);
 }
 
 .userBadgeDanger {
-  background: rgba(184, 31, 34, 0.18);
-  color: #ff7b7b;
-  border: 1px solid rgba(184, 31, 34, 0.5);
+  background: rgba(184, 31, 34, 0.08);
+  color: #8a181a;
+  border: 1px solid rgba(184, 31, 34, 0.35);
 }
 
 .userBadgeDefault {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(245, 245, 247, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f2f2f7;
+  color: #4b4b54;
+  border: 1px solid #e5e5ea;
 }
 
 .userCardGrid {
@@ -771,15 +827,16 @@
 }
 
 .userMetric {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 10px;
   padding: 12px;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.03);
 }
 
 .userMetricLabel {
   font-size: 12px;
-  color: rgba(245, 245, 247, 0.68);
+  color: #6b6b75;
 }
 
 .userMetricValue {
@@ -806,44 +863,36 @@
   align-items: flex-end;
 }
 
-.buttonDanger {
-  background: rgba(184, 31, 34, 0.22) !important;
-  border: 1px solid rgba(184, 31, 34, 0.55) !important;
-  color: #ffd9d9 !important;
-}
-
-.buttonDanger:hover:not(:disabled) {
-  background: rgba(184, 31, 34, 0.36) !important;
-}
-
 .textarea {
   width: 100%;
   min-height: 70px;
   padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  border: 1px solid #d1d1d6;
   border-radius: 8px;
-  color: #f5f5f7;
+  color: #111111;
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
   box-sizing: border-box;
+  outline: none;
 }
 
 .textarea:focus {
   outline: none;
-  border-color: rgba(94, 204, 255, 0.6);
+  border-color: rgba(94, 204, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(94, 204, 255, 0.18);
 }
 
 .textarea::placeholder {
-  color: rgba(245, 245, 247, 0.4);
+  color: #9c9ca6;
 }
 
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: rgba(245, 245, 247, 0.82);
+  color: #4b4b54;
   font-size: 13px;
   text-decoration: none;
   padding: 6px 0;
@@ -857,11 +906,11 @@
 }
 
 .backLink:hover {
-  color: #5eccff;
+  color: #1a73e8;
 }
 
 .linkLikeCell {
-  color: #5eccff;
+  color: #1a73e8;
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -880,5 +929,3 @@
 .linkLikeCell:hover {
   text-decoration: underline;
 }
-
-
