@@ -243,14 +243,12 @@
 }
 
 .profileArrow {
-  width: 40px;
+  width: auto;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  display: block;
+  max-width: none;
+  padding: 0;
+  margin: 0;
   z-index: 2;
 }
 
@@ -274,25 +272,31 @@
 
 .profileArrowLeft {
   position: absolute;
-  left: 34px;
+  left: -6px;
   top: 108px;
   z-index: 2;
   transform: none;
+  width: auto;
+  height: auto;
 }
 
 .profileArrowRight {
   position: absolute;
-  right: -50px;
+  right: -6px;
   top: 2px;
   transform: scaleX(-1);
   z-index: 2;
+  width: auto;
+  height: auto;
 }
 
 .profileArrowRightNoFlip {
   position: absolute;
-  right: -50px;
+  right: -6px;
   top: 2px;
   z-index: 2;
+  width: auto;
+  height: auto;
 }
 
 .profileArrowIconRight {
@@ -300,39 +304,26 @@
 }
 
 .profileArrowLeftProfile {
-  left: 22px;
+  left: -6px;
   top: 100px;
 }
 
 .profileArrowRightProfile {
-  right: 22px;
+  right: -6px;
   top: 100px;
 }
 
 .profileArrowLeftProfileHitArea,
 .profileArrowRightProfileHitArea {
-  display: block;
-  width: 44%;
-  height: 30%;
-  top: 4%;
-  pointer-events: auto;
-  z-index: 5;
-}
-
-.profileArrowLeftProfileHitArea {
-  left: 0;
-}
-
-.profileArrowRightProfileHitArea {
-  right: 0;
-}
-
-.profileArrowLeftProfileHitArea::before,
-.profileArrowRightProfileHitArea::before {
-  content: "";
+  display: none !important;
+  visibility: hidden;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none;
   position: absolute;
-  inset: -16px;
+  inset: auto;
 }
+
 
 .profileCenterIcons {
   position: absolute;
@@ -427,24 +418,27 @@
 }
 
 .friendProfileStack .profileArrow {
-  width: 32px;
+  width: auto;
+  height: auto;
+  max-width: none;
   position: absolute;
   top: 8px;
 }
 
 .friendProfileStack .profileArrowLeft {
-  left: 20px;
+  left: -6px;
   top: 8px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: -40px;
+  right: -6px;
   top: 12px;
   transform: scaleX(-1);
 }
 
 .friendProfileStack .profileArrowRight .profileArrow {
-  width: 32px;
+  width: auto;
+  height: auto;
 }
 
 .friendProfileStack .profileOverlayImage {
@@ -783,16 +777,17 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 18px;
+  left: 6px;
 }
 
 .profileHistoryArrowRight {
-  right: 18px;
+  right: 6px;
 }
 
 .profileHistoryArrowIcon {
-  width: 64px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
 }
 
@@ -803,7 +798,7 @@
 .profileHistoryCloseButton {
   position: absolute;
   top: 108px;
-  left: 24px;
+  left: 6px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -812,8 +807,9 @@
 }
 
 .profileHistoryCloseIcon {
-  width: 52px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
 }
 
@@ -830,8 +826,9 @@
 }
 
 .profileHistoryTopRightIcon {
-  width: 52px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
   transform: rotate(180deg);
 }
@@ -944,17 +941,18 @@
 }
 
 .aboutNavArrowLeft {
-  left: 18px;
+  left: -2px;
 }
 
 .aboutNavArrowRight {
-  right: 18px;
+  right: -2px;
   transform: scaleX(-1);
 }
 
 .aboutNavArrowImage {
-  width: 40px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
   filter: invert(1) brightness(1.6);
 }
@@ -1239,8 +1237,9 @@
 }
 
 .rouletteTopMenuArrow {
-  width: 40px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
   transform: rotate(180deg);
   filter: none;
@@ -2647,7 +2646,6 @@
 .profileInviteButtonOverlay,
 .profileCenterIconWrapper,
 .profileBottomImageWrapper {
-  position: relative;
   isolation: isolate;
 }
 
