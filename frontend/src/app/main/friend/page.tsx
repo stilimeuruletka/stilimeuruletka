@@ -84,17 +84,17 @@ export default function FriendPage() {
           />
         </Link>
 
-        <div className={`${styles.profileAvatarBlockOverlay} ${styles.friendAvatarBlock}`}>
-          <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay} ${styles.friendAvatarCircle}`}>
-            {avatarSrc && (
+        <div className={`${styles.profileAvatarBlock} ${styles.friendAvatarBlock}`}>
+          <div className={`${styles.profileAvatarCircle} ${styles.friendAvatarCircle}`}>
+            {avatarSrc ? (
               <Image
                 src={avatarSrc}
                 alt="Аватар"
-                width={176}
-                height={176}
+                width={120}
+                height={120}
                 className={`${styles.profileAvatarImage} ${styles.friendAvatarImg}`}
               />
-            )}
+            ) : null}
           </div>
           <div className={`${styles.profileUsername} ${styles.friendUsername}`}>{displayName}</div>
         </div>
@@ -103,31 +103,12 @@ export default function FriendPage() {
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"
-            width={480}
-            height={144}
+            width={600}
+            height={180}
             className={`${styles.profileInviteImageOverlay} ${styles.friendInviteImg}`}
             priority
           />
         </button>
-
-        <div className={`${styles.profileCenterIcons} ${styles.friendCenterIcons}`}>
-          <Image
-            src="/рефссылка.PNG"
-            alt="Реферальная ссылка"
-            width={144}
-            height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight} ${styles.friendCenterIcon}`}
-            onClick={handleCopyReferral}
-          />
-          <Image
-            src="/стильныедрущья.PNG"
-            alt="Стильные друзья"
-            width={144}
-            height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft} ${styles.friendCenterIcon}`}
-            onClick={() => router.push("/main/friends")}
-          />
-        </div>
 
         <Link href="/main/how-to-play" className={`${styles.friendNavArrow} ${styles.friendNavArrowRight}`} aria-label="Вперёд">
           <Image
