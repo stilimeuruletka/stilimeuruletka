@@ -71,52 +71,52 @@ export default function FriendPage() {
   return (
     <div className={styles.profileScreen}>
       <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
-        <Link href="/main/profile" className={styles.profileArrowLeft} aria-label="Назад">
+        <Link href="/main/profile" className={`${styles.friendNavArrow} ${styles.friendNavArrowLeft}`} aria-label="Назад">
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"
             width={104}
             height={52}
-            className={styles.profileArrow}
+            className={`${styles.profileArrow} ${styles.friendNavArrowImg}`}
             priority
             sizes="52px"
             quality={80}
           />
         </Link>
 
-        <div className={styles.profileAvatarBlockOverlay}>
-          <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}>
+        <div className={`${styles.profileAvatarBlockOverlay} ${styles.friendAvatarBlock}`}>
+          <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay} ${styles.friendAvatarCircle}`}>
             {avatarSrc && (
               <Image
                 src={avatarSrc}
                 alt="Аватар"
                 width={176}
                 height={176}
-                className={styles.profileAvatarImage}
+                className={`${styles.profileAvatarImage} ${styles.friendAvatarImg}`}
               />
             )}
           </div>
-          <div className={styles.profileUsername}>{displayName}</div>
+          <div className={`${styles.profileUsername} ${styles.friendUsername}`}>{displayName}</div>
         </div>
 
-        <button type="button" className={styles.profileInviteButtonOverlay}>
+        <button type="button" className={`${styles.profileInviteButtonOverlay} ${styles.friendInviteButton}`}>
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"
             width={480}
             height={144}
-            className={styles.profileInviteImageOverlay}
+            className={`${styles.profileInviteImageOverlay} ${styles.friendInviteImg}`}
             priority
           />
         </button>
 
-        <div className={styles.profileCenterIcons}>
+        <div className={`${styles.profileCenterIcons} ${styles.friendCenterIcons}`}>
           <Image
             src="/рефссылка.PNG"
             alt="Реферальная ссылка"
             width={144}
             height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
+            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight} ${styles.friendCenterIcon}`}
             onClick={handleCopyReferral}
           />
           <Image
@@ -124,18 +124,18 @@ export default function FriendPage() {
             alt="Стильные друзья"
             width={144}
             height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
+            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft} ${styles.friendCenterIcon}`}
             onClick={() => router.push("/main/friends")}
           />
         </div>
 
-        <Link href="/main/how-to-play" className={styles.profileArrowRight} aria-label="Вперёд">
+        <Link href="/main/how-to-play" className={`${styles.friendNavArrow} ${styles.friendNavArrowRight}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
             width={104}
             height={52}
-            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+            className={`${styles.profileArrow} ${styles.friendNavArrowImg} ${styles.friendNavArrowImgFlip}`}
             priority
             sizes="52px"
             quality={80}
@@ -147,7 +147,7 @@ export default function FriendPage() {
           alt="Навигация профиля"
           width={1440}
           height={2560}
-          className={styles.profileOverlayImage}
+          className={`${styles.profileOverlayImage} ${styles.friendOverlayImg}`}
           priority
         />
         <Image
@@ -155,7 +155,7 @@ export default function FriendPage() {
           alt="Стильный профиль"
           width={1440}
           height={2560}
-          className={styles.profileBottomImage}
+          className={`${styles.profileBottomImage} ${styles.friendBottomImg}`}
           priority
         />
       </div>

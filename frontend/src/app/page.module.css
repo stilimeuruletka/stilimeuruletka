@@ -2751,11 +2751,219 @@
 .profileInviteButtonOverlay::before,
 .profileAvatarBlockOverlay::before,
 .profileCenterIconWrapper::before,
-.profileBottomImageWrapper::before {
+.profileBottomImageWrapper::before,
+.friendNavArrow::before {
   content: "";
   position: absolute;
   inset: -24px;
   pointer-events: auto;
   background: transparent;
   z-index: -1;
+}
+
+/* ====================== friend page ONLY ====================== */
+.friendProfileStack {
+  height: 100vh;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 520px;
+  position: relative;
+  overflow: visible;
+  transform: none;
+}
+
+.friendNavArrow {
+  position: absolute;
+  top: 8px;
+  width: 52px;
+  height: 26px;
+  display: block;
+  padding: 0;
+  margin: 0;
+  z-index: 5;
+  isolation: isolate;
+}
+
+.friendNavArrowLeft {
+  left: -6px;
+}
+
+.friendNavArrowRight {
+  right: -6px;
+}
+
+.friendNavArrowImg {
+  width: 52px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friendNavArrowImgFlip {
+  transform: scaleX(-1);
+}
+
+.friendAvatarBlock {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) scale(1.0);
+  transform-origin: top center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 6;
+  position: absolute;
+  pointer-events: none;
+}
+
+.friendAvatarCircle {
+  width: 120px;
+  height: 120px;
+}
+
+.friendAvatarImg {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.friendUsername {
+  font-size: 26px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+
+.friendInviteButton {
+  top: 20%;
+  left: 50%;
+  width: 520px;
+  height: 242px;
+  transform: translateX(-50%);
+  padding: 0;
+  margin: 0;
+  z-index: 3;
+}
+
+.friendInviteImg {
+  width: 520px;
+  height: 242px;
+  object-fit: contain;
+}
+
+.friendCenterIcons {
+  top: calc(36% + 20px);
+  z-index: 4;
+}
+
+.friendCenterIcon {
+  width: 96px;
+  height: 96px;
+  max-width: none;
+  object-fit: contain;
+}
+
+.friendOverlayImg {
+  position: absolute;
+  top: calc(-56px - 30px + 20px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  z-index: 1;
+}
+
+.friendBottomImg {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  z-index: 0;
+  object-fit: contain;
+}
+
+/* ====================== roulette page ONLY ====================== */
+.rouletteTopMenuLinkFull {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 0;
+  margin: 0;
+  width: auto;
+}
+
+.rouletteTopMenuItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: none;
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+}
+
+.rouletteTopBackBtn {
+  width: 52px;
+  height: 26px;
+  isolation: isolate;
+}
+
+.rouletteTopMenuMainLinkNew {
+  width: 220px;
+  height: auto;
+}
+
+.rouletteTopPrizesLinkNew {
+  width: 52px;
+  height: 26px;
+  isolation: isolate;
+}
+
+.rouletteTopMenuImgNew {
+  width: 220px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.rouletteTopArrowImg {
+  width: 52px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  filter: none;
+}
+
+.rouletteBackArrowImg {
+  transform: none;
+}
+
+.rouletteTopPrizesArrowFlip {
+  transform: scaleX(-1);
 }

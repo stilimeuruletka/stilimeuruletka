@@ -497,38 +497,38 @@ export default function RoulettePage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        <div className={styles.rouletteTopMenuLink}>
-          <button type="button" className={`${styles.aboutNavArrowLeft} ${styles.rouletteTopMenuBackButton}`} onClick={() => router.push("/main")} aria-label="Назад">
+        <div className={`${styles.rouletteTopMenuLink} ${styles.rouletteTopMenuLinkFull}`}>
+          <button type="button" className={`${styles.rouletteTopMenuItem} ${styles.rouletteTopBackBtn}`} onClick={() => router.push("/main")} aria-label="Назад">
             <Image
               src="/стрелканазад.PNG"
               alt=""
               width={104}
               height={52}
-              className={`${styles.aboutNavArrowImage} ${styles.rouletteBackArrowImage}`}
+              className={`${styles.rouletteTopArrowImg} ${styles.rouletteBackArrowImg}`}
               priority
               sizes="52px"
               quality={80}
             />
           </button>
-          <Link href="/main" className={styles.rouletteTopMenuMainLink} aria-label="В главное меню">
+          <Link href="/main" className={`${styles.rouletteTopMenuItem} ${styles.rouletteTopMenuMainLinkNew}`} aria-label="В главное меню">
             <Image
               src="/чернымглавноеменюистория.png"
               alt=""
               width={440}
               height={90}
-              className={styles.rouletteTopMenuImg}
+              className={styles.rouletteTopMenuImgNew}
               priority
               sizes="220px"
               quality={80}
             />
           </Link>
-          <Link href="/main/prizes" className={`${styles.rouletteTopMenuPrizesLink} ${styles.rouletteTopMenuPrizesArrow}`} aria-label="Мои выигрыши">
+          <Link href="/main/prizes" className={`${styles.rouletteTopMenuItem} ${styles.rouletteTopPrizesLinkNew}`} aria-label="Мои выигрыши">
             <Image
               src="/стрелканазад.PNG"
               alt=""
               width={104}
               height={52}
-              className={`${styles.rouletteTopMenuArrow} ${styles.rouletteTopMenuArrowFlip}`}
+              className={`${styles.rouletteTopArrowImg} ${styles.rouletteTopPrizesArrowFlip}`}
               sizes="52px"
               quality={80}
             />
