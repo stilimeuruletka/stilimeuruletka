@@ -243,13 +243,14 @@
 }
 
 .profileArrow {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   display: block;
   max-width: none;
   padding: 0;
   margin: 0;
   z-index: 2;
+  object-fit: contain;
 }
 
 .profileAvatarBlockOverlay {
@@ -276,8 +277,11 @@
   top: 108px;
   z-index: 2;
   transform: none;
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  display: block;
 }
 
 .profileArrowRight {
@@ -286,8 +290,11 @@
   top: 2px;
   transform: scaleX(-1);
   z-index: 2;
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  display: block;
 }
 
 .profileArrowRightNoFlip {
@@ -295,8 +302,11 @@
   right: -6px;
   top: 2px;
   z-index: 2;
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  display: block;
 }
 
 .profileArrowIconRight {
@@ -305,12 +315,12 @@
 
 .profileArrowLeftProfile {
   left: -6px;
-  top: 100px;
+  top: 112px;
 }
 
 .profileArrowRightProfile {
   right: -6px;
-  top: 100px;
+  top: 112px;
 }
 
 .profileArrowLeftProfileHitArea,
@@ -418,11 +428,12 @@
 }
 
 .friendProfileStack .profileArrow {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   position: absolute;
   top: 8px;
+  object-fit: contain;
 }
 
 .friendProfileStack .profileArrowLeft {
@@ -432,13 +443,13 @@
 
 .friendProfileStack .profileArrowRight {
   right: -6px;
-  top: 12px;
+  top: 8px;
   transform: scaleX(-1);
 }
 
 .friendProfileStack .profileArrowRight .profileArrow {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
 }
 
 .friendProfileStack .profileOverlayImage {
@@ -785,10 +796,11 @@
 }
 
 .profileHistoryArrowIcon {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   display: block;
+  object-fit: contain;
 }
 
 .profileHistoryArrowRight .profileHistoryArrowIcon {
@@ -807,10 +819,11 @@
 }
 
 .profileHistoryCloseIcon {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   display: block;
+  object-fit: contain;
 }
 
 .profileHistoryTopRightButton {
@@ -826,11 +839,12 @@
 }
 
 .profileHistoryTopRightIcon {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   display: block;
   transform: rotate(180deg);
+  object-fit: contain;
 }
 
 .profileHistoryTopRightLink {
@@ -950,13 +964,13 @@
 }
 
 .aboutNavArrowImage {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   display: block;
   filter: invert(1) brightness(1.6);
+  object-fit: contain;
 }
-
 .aboutHeaderImage {
   width: 150%;
 }
@@ -1083,9 +1097,11 @@
 }
 
 .friendsListBackIcon {
-  width: 40px;
-  height: auto;
+  width: 52px;
+  height: 26px;
+  max-width: none;
   display: block;
+  object-fit: contain;
 }
 
 .friendsListCount {
@@ -1220,14 +1236,21 @@
 
 .rouletteTopMenuMainLink,
 .rouletteTopMenuPrizesLink {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  align-self: center;
+  flex: 0 0 auto;
 }
 
 .rouletteTopMenuPrizesLink {
   position: relative;
-  top: -4px;
-  left: 8px;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-10px);
 }
 
 .rouletteTopMenuImg {
@@ -1237,12 +1260,13 @@
 }
 
 .rouletteTopMenuArrow {
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 26px;
   max-width: none;
   display: block;
   transform: rotate(180deg);
   filter: none;
+  object-fit: contain;
 }
 
 .prizesHeader {
@@ -1446,6 +1470,9 @@
 
 .rouletteBackArrowImage {
   filter: none;
+  width: 52px;
+  height: 26px;
+  object-fit: contain;
 }
 
 .rouletteSegmentsBg {
