@@ -103,31 +103,12 @@ export default function FriendPage() {
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"
-            width={480}
-            height={144}
+            width={600}
+            height={180}
             className={`${styles.profileInviteImageOverlay} ${styles.friendInviteImg}`}
             priority
           />
         </button>
-
-        <div className={`${styles.profileCenterIcons} ${styles.friendCenterIcons}`}>
-          <Image
-            src="/рефссылка.PNG"
-            alt="Реферальная ссылка"
-            width={144}
-            height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight} ${styles.friendCenterIcon} ${styles.friendCenterIconRight}`}
-            onClick={handleCopyReferral}
-          />
-          <Image
-            src="/стильныедрущья.PNG"
-            alt="Стильные друзья"
-            width={144}
-            height={144}
-            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft} ${styles.friendCenterIcon} ${styles.friendCenterIconLeft}`}
-            onClick={() => router.push("/main/friends")}
-          />
-        </div>
 
         <Link href="/main/how-to-play" className={`${styles.friendNavArrow} ${styles.friendNavArrowRight}`} aria-label="Вперёд">
           <Image

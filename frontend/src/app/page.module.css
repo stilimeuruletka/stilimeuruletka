@@ -2809,37 +2809,37 @@
 
 .friendAvatarBlock {
   position: absolute;
-  top: 96px;
+  top: 4px;
   left: 50%;
   transform: translateX(-50%);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
   z-index: 4;
   pointer-events: none;
 }
 
 .friendAvatarCircle {
-  width: 56px;
-  height: 56px;
+  width: 104px;
+  height: 104px;
   border-radius: 999px;
   overflow: hidden;
-  background: #e5e5e5;
+  background: transparent;
   padding: 0;
   margin: 0;
 }
 
 .friendAvatarImg {
-  width: 56px;
-  height: 56px;
+  width: 104px;
+  height: 104px;
   object-fit: cover;
   display: block;
 }
 
 .friendUsername {
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   text-align: center;
@@ -2851,10 +2851,10 @@
 }
 
 .friendInviteButton {
-  top: 46%;
+  top: 31%;
   left: 50%;
-  width: 440px;
-  height: 132px;
+  width: 260px;
+  height: 80px;
   transform: translateX(-50%);
   padding: 0;
   margin: 0;
@@ -2866,42 +2866,18 @@
 }
 
 .friendInviteImg {
-  width: 440px;
-  height: 132px;
+  width: 260px;
+  height: 80px;
   object-fit: contain;
   display: block;
 }
 
 .friendCenterIcons {
-  display: flex !important;
-  position: absolute;
-  top: 36%;
-  left: 50%;
-  transform: translateX(-50%);
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 520px;
-  gap: 260px;
-  z-index: 4;
-  pointer-events: auto;
+  display: none !important;
 }
 
 .friendCenterIcon {
-  width: 56px;
-  height: 56px;
-  max-width: none;
-  object-fit: contain;
-  cursor: pointer;
-  display: block !important;
-}
-
-.friendCenterIconLeft {
-  /* Стильные друзья */
-}
-
-.friendCenterIconRight {
-  /* Реферальная ссылка */
+  display: none !important;
 }
 
 .friendOverlayImg {
