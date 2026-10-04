@@ -71,14 +71,18 @@ export default function FriendPage() {
   return (
     <div className={styles.profileScreen}>
       <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
-        <Image
-          src="/стрелканазад.PNG"
-          alt="Назад"
-          width={52}
-          height={26}
-          className={styles.profileArrow}
-          priority
-        />
+        <Link href="/main/profile" className={styles.profileArrowLeft} aria-label="Назад">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Назад"
+            width={104}
+            height={52}
+            className={styles.profileArrow}
+            priority
+            sizes="52px"
+            quality={80}
+          />
+        </Link>
 
         <div className={styles.profileAvatarBlockOverlay}>
           <div className={`${styles.profileAvatarCircle} ${styles.profileAvatarCircleOverlay}`}>
@@ -86,8 +90,8 @@ export default function FriendPage() {
               <Image
                 src={avatarSrc}
                 alt="Аватар"
-                width={88}
-                height={88}
+                width={176}
+                height={176}
                 className={styles.profileAvatarImage}
               />
             )}
@@ -99,8 +103,8 @@ export default function FriendPage() {
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"
-            width={240}
-            height={72}
+            width={480}
+            height={144}
             className={styles.profileInviteImageOverlay}
             priority
           />
@@ -110,43 +114,47 @@ export default function FriendPage() {
           <Image
             src="/рефссылка.PNG"
             alt="Реферальная ссылка"
-            width={72}
-            height={72}
+            width={144}
+            height={144}
             className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
             onClick={handleCopyReferral}
           />
           <Image
             src="/стильныедрущья.PNG"
             alt="Стильные друзья"
-            width={72}
-            height={72}
+            width={144}
+            height={144}
             className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
-            onClick={() => router.push("/main/friend")}
+            onClick={() => router.push("/main/friends")}
           />
         </div>
 
-        <Image
-          src="/стрелканазад.PNG"
-          alt="Вперёд"
-          width={52}
-          height={26}
-          className={styles.profileArrow}
-          priority
-        />
+        <Link href="/main/how-to-play" className={styles.profileArrowRight} aria-label="Вперёд">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Вперёд"
+            width={104}
+            height={52}
+            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+            priority
+            sizes="52px"
+            quality={80}
+          />
+        </Link>
 
         <Image
           src="/IMG_2236.PNG"
           alt="Навигация профиля"
-          width={720}
-          height={1280}
+          width={1440}
+          height={2560}
           className={styles.profileOverlayImage}
           priority
         />
         <Image
           src="/IMG_2234.PNG"
           alt="Стильный профиль"
-          width={720}
-          height={1280}
+          width={1440}
+          height={2560}
           className={styles.profileBottomImage}
           priority
         />

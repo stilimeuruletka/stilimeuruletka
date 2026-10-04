@@ -404,8 +404,8 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 4px;
-  transform: translateX(-50%) scale(0.7);
+  top: -26px;
+  transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
@@ -415,16 +415,29 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 20%;
+  top: 18%;
+  left: 50%;
+  width: 520px;
+  height: 242px;
+  transform: translateX(-50%);
 }
 
 .friendProfileStack .profileInviteImageOverlay {
-  width: 260px;
+  width: 520px;
+  height: 242px;
+  object-fit: contain;
 }
 
 .friendProfileStack .profileCenterIcons {
-  top: 36%;
+  top: calc(36% + 20px);
   left: 54%;
+}
+
+.friendProfileStack .profileCenterIcon {
+  width: 128px;
+  height: 128px;
+  max-width: none;
+  object-fit: contain;
 }
 
 .friendProfileStack .profileArrow {
@@ -454,13 +467,25 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: -56px;
+  top: calc(-56px + 20px - 30px);
   left: 0;
   right: 0;
   width: 100%;
   height: auto;
   max-width: 520px;
   z-index: 1;
+}
+
+.friendProfileStack .profileBottomImage {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  z-index: 0;
+  object-fit: contain;
 }
 
 .profileCard {
@@ -1227,30 +1252,58 @@
   position: absolute;
   top: 96px;
   left: 50%;
-  transform: translateX(-50%) translateX(18px);
+  transform: translateX(-50%);
   z-index: 12;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 24px;
 }
 
 .rouletteTopMenuMainLink,
-.rouletteTopMenuPrizesLink {
+.rouletteTopMenuPrizesLink,
+.rouletteTopMenuBackButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   align-self: center;
   flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.rouletteTopMenuBackButton {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  width: 52px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  transform: none;
+}
+
+.rouletteTopMenuBackButton .aboutNavArrowImage {
+  position: static;
+  width: 52px;
+  height: 26px;
+  filter: none;
+  transform: none;
 }
 
 .rouletteTopMenuPrizesLink {
-  position: relative;
-  top: 0;
-  left: 0;
+  position: static;
+  top: auto;
+  left: auto;
   margin: 0;
   padding: 0;
-  transform: translateY(-10px);
+  transform: none;
 }
 
 .rouletteTopMenuImg {
@@ -1264,9 +1317,13 @@
   height: 26px;
   max-width: none;
   display: block;
-  transform: rotate(180deg);
   filter: none;
   object-fit: contain;
+  transform: none;
+}
+
+.rouletteTopMenuArrowFlip {
+  transform: scaleX(-1);
 }
 
 .prizesHeader {

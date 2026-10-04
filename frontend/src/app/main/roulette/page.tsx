@@ -497,19 +497,19 @@ export default function RoulettePage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        <button type="button" className={styles.aboutNavArrowLeft} onClick={() => router.push("/main")} aria-label="Назад">
-          <Image
-            src="/стрелканазад.PNG"
-            alt=""
-            width={104}
-            height={52}
-            className={`${styles.aboutNavArrowImage} ${styles.rouletteBackArrowImage}`}
-            priority
-            sizes="52px"
-            quality={80}
-          />
-        </button>
         <div className={styles.rouletteTopMenuLink}>
+          <button type="button" className={`${styles.aboutNavArrowLeft} ${styles.rouletteTopMenuBackButton}`} onClick={() => router.push("/main")} aria-label="Назад">
+            <Image
+              src="/стрелканазад.PNG"
+              alt=""
+              width={104}
+              height={52}
+              className={`${styles.aboutNavArrowImage} ${styles.rouletteBackArrowImage}`}
+              priority
+              sizes="52px"
+              quality={80}
+            />
+          </button>
           <Link href="/main" className={styles.rouletteTopMenuMainLink} aria-label="В главное меню">
             <Image
               src="/чернымглавноеменюистория.png"
@@ -522,13 +522,13 @@ export default function RoulettePage() {
               quality={80}
             />
           </Link>
-          <Link href="/main/prizes" className={styles.rouletteTopMenuPrizesLink} aria-label="Мои выигрыши">
+          <Link href="/main/prizes" className={`${styles.rouletteTopMenuPrizesLink} ${styles.rouletteTopMenuPrizesArrow}`} aria-label="Мои выигрыши">
             <Image
               src="/стрелканазад.PNG"
               alt=""
               width={104}
               height={52}
-              className={styles.rouletteTopMenuArrow}
+              className={`${styles.rouletteTopMenuArrow} ${styles.rouletteTopMenuArrowFlip}`}
               sizes="52px"
               quality={80}
             />
