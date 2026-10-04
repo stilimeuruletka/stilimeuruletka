@@ -2809,37 +2809,37 @@
 
 .friendAvatarBlock {
   position: absolute;
-  top: 4px;
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 24px;
   z-index: 4;
   pointer-events: none;
 }
 
 .friendAvatarCircle {
-  width: 104px;
-  height: 104px;
+  width: 88px;
+  height: 88px;
   border-radius: 999px;
   overflow: hidden;
-  background: transparent;
+  background: #e5e5e5;
   padding: 0;
   margin: 0;
 }
 
 .friendAvatarImg {
-  width: 104px;
-  height: 104px;
+  width: 88px;
+  height: 88px;
   object-fit: cover;
   display: block;
 }
 
 .friendUsername {
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   text-align: center;
@@ -2851,10 +2851,10 @@
 }
 
 .friendInviteButton {
-  top: 31%;
+  top: 42%;
   left: 50%;
-  width: 260px;
-  height: 80px;
+  width: 520px;
+  height: 242px;
   transform: translateX(-50%);
   padding: 0;
   margin: 0;
@@ -2866,8 +2866,8 @@
 }
 
 .friendInviteImg {
-  width: 260px;
-  height: 80px;
+  width: 520px;
+  height: 242px;
   object-fit: contain;
   display: block;
 }
