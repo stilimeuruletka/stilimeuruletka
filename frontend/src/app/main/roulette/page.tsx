@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "../../page.module.css";
-import PageTopNav from "../../../components/PageTopNav";
 
 type TelegramWebApp = {
   initData?: string;
@@ -498,9 +497,6 @@ export default function RoulettePage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        {/* ✅ ЕДИНЫЙ ХЕДЕР — стрелки + центр (top=96, center=вверхкругл.png для roulette) */}
-        <PageTopNav center="circle-top" backHref="/main/profile" nextHref="/main/how-to-play" top={96} />
-
         {subStatus.campaign && !subStatus.confirmed && (
           <div
             aria-live="polite"
