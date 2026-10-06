@@ -2077,12 +2077,12 @@
 
 .spinResultTopNavLeft {
   left: 12px;
-  top: 100px;
+  top: 70px;
 }
 
 .spinResultTopNavRight {
   right: 48px;
-  top: 100px;
+  top: 70px;
 }
 
 .spinResultTopNavIcon {
@@ -2192,12 +2192,12 @@
 
 .spinResultPrizeImageWrap {
   margin: -160px auto 0;
-  width: min(72%, 220px);
+  width: min(90%, 440px);
   aspect-ratio: 3 / 4;
   position: relative;
   border-radius: 0;
   background: transparent;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
 }
 
 .spinResultPrizeImageWrap img,
@@ -2255,7 +2255,7 @@
 }
 
 .spinResultActions {
-  margin: -120px auto 0;
+  margin: -20px auto 0;
   width: min(56vw, 240px);
   display: flex;
   flex-direction: column;
@@ -2280,7 +2280,6 @@
 .spinResultActionButtonSmall {
   width: 100%;
   align-self: center;
-  margin-top: -12px;
 }
 
 .spinResultActionButton::before {
@@ -2308,7 +2307,7 @@
 }
 
 .spinResultSpinsCounter {
-  margin: 18px auto 40px;
+  margin: 0 auto 40px;
   font-family: var(--font-uncage);
   font-size: 12px;
   font-weight: 400;
