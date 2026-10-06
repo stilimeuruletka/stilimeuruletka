@@ -533,6 +533,17 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        <Image
+          src="/цепочка.PNG"
+          alt="Цепочка декор"
+          width={120}
+          height={120}
+          className={styles.profileCustomChainImage}
+          priority
+          sizes="120px"
+          quality={80}
+        />
       </div>
     </div>
   );
