@@ -129,7 +129,7 @@
   justify-content: flex-end;
   align-items: center;
   background: linear-gradient(180deg, #f1f1f1 0%, #e8eae9 33%, #f3f5f4 66%, #e9ebea 100%);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
@@ -178,7 +178,7 @@
   width: 100%;
   max-width: 520px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .friendProfileStack .profileBottomImage {
@@ -927,7 +927,7 @@
   justify-content: center;
   align-items: center;
   background: #A80F14;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .fullScreenFrame {
@@ -1019,7 +1019,7 @@
   justify-content: center;
   align-items: center;
   background: #fff;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .placeholderFrame {
@@ -1027,7 +1027,7 @@
   height: 100vh;
   position: relative;
   background: #fff;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .placeholderImage {
