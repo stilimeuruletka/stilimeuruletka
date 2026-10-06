@@ -41,7 +41,7 @@ export default function MainPage() {
           <section className={styles.slide}>
             <div className={styles.grid}>
               <div className={styles.card}>
-                <Link href="/main/roulette" className={styles.cardLink} aria-label="Стильная рулетка">
+                <Link href="/main/spin" className={styles.cardLink} aria-label="Стильная рулетка">
                   <div className={styles.girlWrap}>
                     <Image
                       src="/1девушка.PNG"

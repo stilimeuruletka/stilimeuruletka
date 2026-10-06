@@ -63,7 +63,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/roulette" className={`${styles.cardLink} ${styles.cardLinkLower}`} aria-label="Страница в разработке">
+            <Link href="/main/spin" className={`${styles.cardLink} ${styles.cardLinkLower}`} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/8девушка.PNG"
@@ -88,7 +88,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/spin" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/9девушка.PNG"
@@ -115,7 +115,7 @@ export default function Main2Page() {
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/spin" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/10девушка.PNG"
@@ -140,7 +140,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/spin" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/11девушка.PNG"
@@ -165,7 +165,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/roulette" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/spin" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/12девушка.PNG"

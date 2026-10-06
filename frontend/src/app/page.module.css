@@ -913,7 +913,7 @@
 .profileHistoryTopRightLink {
   position: absolute;
   top: 104px;
-  left: calc(50% + 120px);
+  left: 50%;
   transform: translateX(-50%);
   z-index: 2;
   display: flex;
@@ -922,9 +922,11 @@
 }
 
 .profileHistoryTopRightImg {
-  width: 220px;
-  height: auto;
+  width: 84%;
+  max-width: none;
+  margin: 0 auto;
   display: block;
+  object-fit: contain;
 }
 
 .profileHistoryTopRightArrow {
@@ -2068,8 +2070,8 @@
 .commonTopHeaderUser {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) translateX(6px);
+  top: 0px;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2743,7 +2745,7 @@
   }
 
   .commonTopHeaderUser {
-    transform: translate(-50%, -50%) translateX(6px) translateY(-18px);
+    transform: translateX(-50%);
   }
 
   .profileArrowLeftProfile,

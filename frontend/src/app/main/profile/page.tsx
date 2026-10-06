@@ -174,12 +174,6 @@ export default function ProfilePage() {
   );
 
   const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-  const [historyItems, setHistoryItems] = useState<
-    Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>
-  >([]);
 
   const { displayName, avatarSrc } = useMemo(() => {
     if (!isClient) {
@@ -209,90 +203,6 @@ export default function ProfilePage() {
     document.addEventListener("visibilitychange", sync);
     sync();
     return () => document.removeEventListener("visibilitychange", sync);
-  }, []);
-
-  useEffect(() => {
-    if (!historyOpen) return;
-    const initData = getInitData();
-    if (!initData) {
-      const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.includes("192.168."));
-      const id = window.setTimeout(() => {
-        if (isLocalhost || process.env.NODE_ENV === "development") {
-          const now = Date.now();
-          setHistoryLoading(false);
-          setHistoryError(null);
-          setHistoryItems([
-            { spin_id: `demo-${now}-1`, created_at: new Date(now - 3_600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null },
-            { spin_id: `demo-${now}-2`, created_at: new Date(now - 2_100_000).toISOString(), win: false, prize_title: null, prize_value: null },
-            { spin_id: `demo-${now}-3`, created_at: new Date(now - 600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null }
-          ]);
-          return;
-        }
-        setHistoryError("Откройте приложение через Telegram");
-        setHistoryItems([]);
-      }, 0);
-      return () => window.clearTimeout(id);
-    }
-    const base = getBackendBase();
-    const controller = new AbortController();
-    const id = window.setTimeout(() => {
-      setHistoryLoading(true);
-      setHistoryError(null);
-      void fetch(`${base}/api/spins/history?limit=80`, {
-        headers: { "x-telegram-init-data": initData },
-        cache: "no-store",
-        signal: controller.signal
-      })
-        .then(async (res) => {
-          const json = (await res.json().catch(() => null)) as
-            | {
-                items?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>;
-                spins?: Array<{ spin_id: string; created_at: string; win: boolean; prize_title: string | null; prize_value: number | null }>;
-              }
-            | { message?: string }
-            | null;
-          if (!res.ok) {
-            const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Не удалось загрузить историю";
-            throw new Error(msg);
-          }
-          const items = (() => {
-            const fromItems = json && typeof json === "object" && Array.isArray((json as { items?: unknown }).items) ? (json as { items: typeof historyItems }).items : null;
-            if (fromItems) return fromItems;
-            const fromSpins = json && typeof json === "object" && Array.isArray((json as { spins?: unknown }).spins) ? (json as { spins: typeof historyItems }).spins : null;
-            return fromSpins ?? [];
-          })();
-          const local = items.length === 0 ? readLocalSpinHistory() : [];
-          setHistoryItems(local.length ? local : items);
-        })
-        .catch((e) => {
-          if (e instanceof DOMException && e.name === "AbortError") return;
-          const local = readLocalSpinHistory();
-          if (local.length) {
-            setHistoryError(null);
-            setHistoryItems(local);
-            return;
-          }
-          setHistoryError(e instanceof Error ? e.message : "Не удалось загрузить историю");
-          setHistoryItems([]);
-        })
-        .finally(() => setHistoryLoading(false));
-    }, 0);
-    return () => {
-      window.clearTimeout(id);
-      controller.abort();
-    };
-  }, [historyOpen]);
-
-  const formatHistoryDate = useCallback((iso: string) => {
-    const ms = Date.parse(iso);
-    if (!Number.isFinite(ms)) return iso;
-    return new Intl.DateTimeFormat("ru-RU", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit"
-    }).format(new Date(ms));
   }, []);
 
   return (
@@ -354,7 +264,7 @@ export default function ProfilePage() {
             quality={80}
           />
         </Link>
-        <Link href="/main/roulette" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+        <Link href="/main/spin" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
@@ -369,12 +279,7 @@ export default function ProfilePage() {
         <div className={styles.profileActionsOverlay}>
           <div className={styles.profileQuickButtons}>
             <div className={styles.profileQuickButtonsCenter}>
-              <button
-                type="button"
-                className={`${styles.profileQuickButtonLink} ${styles.profileQuickButtonButton}`}
-                aria-label="История стильных спинов"
-                onClick={() => setHistoryOpen(true)}
-              >
+              <Link href="/main/history" className={styles.profileQuickButtonLink} aria-label="История стильных спинов">
                 <Image
                   src="/историястильныхпинов.png"
                   alt="История стильных спинов"
@@ -384,7 +289,7 @@ export default function ProfilePage() {
                   sizes="(max-width: 520px) 44vw, 180px"
                   quality={80}
                 />
-              </button>
+              </Link>
             </div>
 
             <div className={styles.profileQuickButtonsRow}>
@@ -452,87 +357,6 @@ export default function ProfilePage() {
 
           <SpinTimer />
         </div>
-
-        {historyOpen && (
-          <div className={styles.profileHistoryOverlay} role="dialog" aria-modal="true" onClick={() => setHistoryOpen(false)}>
-            <div className={styles.profileHistoryFrame} onClick={(e) => e.stopPropagation()}>
-              <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
-
-              <div className={styles.profileHistoryContent}>
-                {historyLoading && <div className={styles.profileHistoryEmpty}>ЗАГРУЗКА...</div>}
-                {!historyLoading && historyError && <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>}
-                {!historyLoading && !historyError && historyItems.length === 0 && (
-                  <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>
-                )}
-                {!historyLoading && !historyError && historyItems.length > 0 && (
-                  <div className={styles.profileHistoryCarouselWrapper}>
-                    <div id="history-carousel" className={styles.profileHistoryCarousel}>
-                      {historyItems.map((it) => (
-                        <div key={it.spin_id} className={styles.profileHistoryCard}>
-                          <div className={styles.profileHistoryCardDate}>{formatHistoryDate(it.created_at)}</div>
-                          <div className={styles.profileHistoryCardImageWrapper}>
-                            <Image
-                              src={it.win ? "/IMG_2805.PNG" : "/проигрыш.PNG"}
-                              alt={it.win ? "Победа" : "Поражение"}
-                              fill
-                              sizes="140px"
-                              quality={75}
-                              style={{ objectFit: "cover", objectPosition: "top center" }}
-                            />
-                          </div>
-                          <div className={styles.profileHistoryCardResult}>
-                            {it.win ? "WOW! ПОБЕДА" : "OOPS...ПОРАЖЕНИЕ"}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <button
-                      type="button"
-                      className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowLeft}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        document.getElementById('history-carousel')?.scrollBy({ left: -200, behavior: 'smooth' });
-                      }}
-                      aria-label="Листать влево"
-                    >
-                      <Image src="/стрелканазад.PNG" alt="Влево" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowRight}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        document.getElementById('history-carousel')?.scrollBy({ left: 200, behavior: 'smooth' });
-                      }}
-                      aria-label="Листать вправо"
-                    >
-                      <Image src="/стрелканазад.PNG" alt="Вправо" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <button type="button" className={styles.profileHistoryCloseButton} onClick={() => setHistoryOpen(false)} aria-label="Закрыть">
-                <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.profileHistoryCloseIcon} sizes="52px" quality={80} />
-              </button>
-              <button type="button" className={styles.profileHistoryTopRightButton} aria-label="Далее">
-                <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.profileHistoryTopRightIcon} sizes="52px" quality={80} />
-              </button>
-              <Link href="/main" className={styles.profileHistoryTopRightLink} aria-label="В главное меню">
-                <Image
-                  src="/чернымглавноеменюистория.png"
-                  alt=""
-                  width={440}
-                  height={90}
-                  className={styles.profileHistoryTopRightImg}
-                  sizes="220px"
-                  quality={80}
-                />
-              </Link>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
