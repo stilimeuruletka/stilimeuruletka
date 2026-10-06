@@ -544,6 +544,32 @@ export default function ProfilePage() {
           sizes="120px"
           quality={80}
         />
+
+        {/* ✅ PERMANENT TOP MENU: [ГЛАВНОЕ МЕНЮ | ИСТОРИЯ СПИНОВ] как на скрине 1 — ВНЕ historyOpen */}
+        <div className={styles.profilePermanentTopMenu}>
+          <button
+            type="button"
+            className={styles.profilePermanentTopMenuLeftHit}
+            onClick={() => { window.location.href = "/main"; }}
+            aria-label="Главное меню"
+          />
+          <button
+            type="button"
+            className={styles.profilePermanentTopMenuRightHit}
+            onClick={() => setHistoryOpen(true)}
+            aria-label="История стильных спинов"
+          />
+          <Image
+            src="/чернымглавноеменюистория.png"
+            alt="Главное меню / История спинов"
+            width={440}
+            height={90}
+            className={styles.profilePermanentTopMenuImg}
+            priority
+            sizes="220px"
+            quality={80}
+          />
+        </div>
       </div>
     </div>
   );
