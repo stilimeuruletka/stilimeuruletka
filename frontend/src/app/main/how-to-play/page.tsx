@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../page.module.css";
+import PageTopNav from "../../../components/PageTopNav";
 
 type TelegramWebAppUser = {
   id?: number;
@@ -136,44 +137,8 @@ export default function HowToPlayPlaceholderPage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        <div className={styles.commonTopHeader} aria-hidden="true">
-          <Image
-            src="/главноеменюрулеткакрасный.png"
-            alt=""
-            width={4052}
-            height={1312}
-            className={styles.commonTopHeaderImage}
-            priority
-            sizes="(max-width: 520px) 100vw, 520px"
-            quality={90}
-          />
-          <div className={styles.commonTopHeaderUser}>
-            <div className={styles.commonTopHeaderAvatar}>
-              {avatarSrc && <img src={avatarSrc} alt="" width={44} height={44} loading="lazy" draggable="false" />}
-            </div>
-            <div className={styles.commonTopHeaderName}>{displayName}</div>
-          </div>
-        </div>
-        <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
-          <Image
-            src="/стрелканазад.PNG"
-            alt="Назад"
-            width={52}
-            height={26}
-            className={styles.profileArrow}
-            priority
-          />
-        </Link>
-        <Link href="/main/profile" className={`${styles.profileArrowRight} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
-          <Image
-            src="/стрелканазад.PNG"
-            alt="Вперёд"
-            width={52}
-            height={26}
-            className={styles.profileArrow}
-            priority
-          />
-        </Link>
+        {/* ✅ ЕДИНЫЙ ХЕДЕР — стрелки + центр (top=112, картинка красная главное меню/рулетка) */}
+        <PageTopNav center="red-main-roulette" backHref="/main" nextHref="/main/profile" top={112} />
         <Image
           src="/IMG_2381.PNG"
           alt="Как играть"

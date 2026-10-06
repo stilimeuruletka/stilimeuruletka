@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
+import PageTopNav from "../../../components/PageTopNav";
 
 type TelegramWebAppUser = {
   id?: number;
@@ -315,56 +316,8 @@ export default function ProfilePage() {
           </video>
         </div>
 
-        <div className={styles.commonTopHeader} aria-hidden="true">
-          <Image
-            src="/главноеменюрулеткакрасный.png"
-            alt=""
-            width={1040}
-            height={336}
-            className={styles.commonTopHeaderImage}
-            priority
-            sizes="(max-width: 520px) 100vw, 520px"
-            quality={80}
-          />
-          <div className={styles.commonTopHeaderUser}>
-            <div className={styles.commonTopHeaderAvatar}>
-              {avatarSrc && (
-                <Image
-                  src={avatarSrc}
-                  alt=""
-                  fill
-                  sizes="66px"
-                  quality={80}
-                  style={{ objectFit: "cover", objectPosition: "center" }}
-                />
-              )}
-            </div>
-            <div className={styles.commonTopHeaderName}>{displayName}</div>
-          </div>
-        </div>
-
-        <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
-          <Image
-            src="/стрелканазад.PNG"
-            alt="Назад"
-            width={104}
-            height={52}
-            className={styles.profileArrow}
-            sizes="52px"
-            quality={80}
-          />
-        </Link>
-        <Link href="/main/roulette" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
-          <Image
-            src="/стрелканазад.PNG"
-            alt="Вперёд"
-            width={104}
-            height={52}
-            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
-            sizes="52px"
-            quality={80}
-          />
-        </Link>
+        {/* ✅ ЕДИНЫЙ ХЕДЕР — стрелки + центр (один для всех страниц, top=112 по умолчанию) */}
+        <PageTopNav center="red-main-roulette" backHref="/main" nextHref="/main/roulette" top={112} />
 
         <div className={styles.profileActionsOverlay}>
           <div className={styles.profileQuickButtons}>
@@ -544,32 +497,6 @@ export default function ProfilePage() {
           sizes="120px"
           quality={80}
         />
-
-        {/* ✅ PERMANENT TOP MENU: [ГЛАВНОЕ МЕНЮ | ИСТОРИЯ СПИНОВ] как на скрине 1 — ВНЕ historyOpen */}
-        <div className={styles.profilePermanentTopMenu}>
-          <button
-            type="button"
-            className={styles.profilePermanentTopMenuLeftHit}
-            onClick={() => { window.location.href = "/main"; }}
-            aria-label="Главное меню"
-          />
-          <button
-            type="button"
-            className={styles.profilePermanentTopMenuRightHit}
-            onClick={() => setHistoryOpen(true)}
-            aria-label="История стильных спинов"
-          />
-          <Image
-            src="/чернымглавноеменюистория.png"
-            alt="Главное меню / История спинов"
-            width={440}
-            height={90}
-            className={styles.profilePermanentTopMenuImg}
-            priority
-            sizes="220px"
-            quality={80}
-          />
-        </div>
       </div>
     </div>
   );

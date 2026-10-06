@@ -71,52 +71,71 @@ export default function FriendPage() {
   return (
     <div className={styles.profileScreen}>
       <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
-        <Link href="/main/profile" className={`${styles.friendNavArrow} ${styles.friendNavArrowLeft}`} aria-label="Назад">
+        <Link href="/main/profile" className={`${styles.profileArrow} ${styles.profileArrowLeft}`} aria-label="Назад">
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"
             width={104}
             height={52}
-            className={`${styles.profileArrow} ${styles.friendNavArrowImg}`}
+            className={styles.profileArrow}
             priority
             sizes="52px"
             quality={80}
           />
         </Link>
 
-        <div className={`${styles.profileAvatarBlock} ${styles.friendAvatarBlock}`}>
-          <div className={`${styles.profileAvatarCircle} ${styles.friendAvatarCircle}`}>
+        <div className={`${styles.profileAvatarBlock} ${styles.profileAvatarBlockOverlay}`}>
+          <div className={styles.profileAvatarCircle}>
             {avatarSrc ? (
               <Image
                 src={avatarSrc}
                 alt="Аватар"
                 width={120}
                 height={120}
-                className={`${styles.profileAvatarImage} ${styles.friendAvatarImg}`}
+                className={styles.profileAvatarImage}
               />
             ) : null}
           </div>
-          <div className={`${styles.profileUsername} ${styles.friendUsername}`}>{displayName}</div>
+          <div className={styles.profileUsername}>{displayName}</div>
         </div>
 
-        <button type="button" className={`${styles.profileInviteButtonOverlay} ${styles.friendInviteButton}`}>
+        <button type="button" className={styles.profileInviteButtonOverlay}>
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"
             width={600}
             height={180}
-            className={`${styles.profileInviteImageOverlay} ${styles.friendInviteImg}`}
+            className={styles.profileInviteImageOverlay}
             priority
           />
         </button>
 
-        <Link href="/main/how-to-play" className={`${styles.friendNavArrow} ${styles.friendNavArrowRight}`} aria-label="Вперёд">
+        <div className={styles.profileCenterIcons}>
+          <Image
+            src="/рефссылка.PNG"
+            alt="Реферальная ссылка"
+            width={144}
+            height={144}
+            className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
+            onClick={handleCopyReferral}
+          />
+          <Image
+            src="/стильныедрущья.PNG"
+            alt="Стильные друзья"
+            width={144}
+            height={144}
+            className={`${styles.profileCenterIcon} ${styles.profileCenterIconLeft}`}
+            onClick={() => router.push("/main/friends")}
+          />
+        </div>
+
+        <Link href="/main/how-to-play" className={`${styles.profileArrow} ${styles.profileArrowRight}`} aria-label="Вперёд">
           <Image
             src="/стрелканазад.PNG"
             alt="Вперёд"
             width={104}
             height={52}
-            className={`${styles.profileArrow} ${styles.friendNavArrowImg} ${styles.friendNavArrowImgFlip}`}
+            className={styles.profileArrow}
             priority
             sizes="52px"
             quality={80}
@@ -128,7 +147,7 @@ export default function FriendPage() {
           alt="Навигация профиля"
           width={1440}
           height={2560}
-          className={`${styles.profileOverlayImage} ${styles.friendOverlayImg}`}
+          className={styles.profileOverlayImage}
           priority
         />
         <Image
@@ -136,7 +155,7 @@ export default function FriendPage() {
           alt="Стильный профиль"
           width={1440}
           height={2560}
-          className={`${styles.profileBottomImage} ${styles.friendBottomImg}`}
+          className={styles.profileBottomImage}
           priority
         />
       </div>
