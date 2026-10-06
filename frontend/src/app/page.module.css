@@ -1482,7 +1482,9 @@
 }
 
 .rouletteStageBlurred {
-  filter: blur(0);
+  filter: blur(10px) saturate(0.85);
+  pointer-events: none;
+  transition: filter 240ms ease;
 }
 
 .roulettePointer {
@@ -2032,6 +2034,290 @@
   gap: 4px;
   text-align: center;
   pointer-events: none;
+}
+
+.spinResultOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background: rgba(230, 220, 210, 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.spinResultTopNav {
+  position: absolute;
+  top: 94px;
+  left: 16px;
+  right: 16px;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.spinResultTopNavLink {
+  position: absolute;
+  top: 6px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  display: block;
+  z-index: 61;
+}
+
+.spinResultTopNavLink::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+}
+
+.spinResultTopNavLeft {
+  left: 12px;
+  top: 100px;
+}
+
+.spinResultTopNavRight {
+  right: 48px;
+  top: 100px;
+}
+
+.spinResultTopNavIcon {
+  width: 104px;
+  height: 52px;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.spinResultTopNavIconMirrored {
+  transform: scaleX(-1);
+}
+
+.spinResultTopHeader {
+  position: absolute;
+  top: 94px;
+  left: 16px;
+  right: 16px;
+  z-index: 58;
+  pointer-events: none;
+}
+
+.spinResultTopHeaderImg {
+  width: 84%;
+  max-width: none;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.spinResultTicketPlatform {
+  margin: 148px auto 0;
+  width: min(70vw, 340px);
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 55;
+}
+
+.spinResultTicketPlatformImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.spinResultTicket {
+  width: min(66vw, 320px);
+  margin: -8px auto 0;
+  background: transparent;
+  border-radius: 0;
+  position: relative;
+  z-index: 56;
+  padding: 2px 14px 16px;
+  box-shadow: none;
+}
+
+.spinResultTicket::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  bottom: -6px;
+  height: 12px;
+  background:
+    radial-gradient(circle at 8px 0, transparent 6px, rgba(251, 250, 247, 0.85) 6.5px) 0 0 / 16px 100% repeat-x;
+  z-index: -1;
+  opacity: 0.25;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.06));
+}
+
+.spinResultTicketDate {
+  font-family: var(--font-uncage);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.78);
+  text-align: center;
+  margin-top: 2px;
+}
+
+.spinResultTicketTitle {
+  margin-top: 6px;
+  font-family: var(--font-uncage);
+  font-size: 15px;
+  line-height: 1.12;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #000;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.spinResultTicketTitleLoss {
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.spinResultPrizeImageWrap {
+  margin: -160px auto 0;
+  width: min(72%, 220px);
+  aspect-ratio: 3 / 4;
+  position: relative;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.spinResultPrizeImageWrap img,
+.spinResultPrizeImageWrap > span {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.spinResultPrizeImage {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.spinResultPrizeName {
+  margin-top: 10px;
+  font-family: var(--font-uncage);
+  font-size: 14px;
+  line-height: 1.16;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #000;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.spinResultBarcode {
+  margin: 10px auto 0;
+  width: 130px;
+  height: 24px;
+  display: block;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      #000 0,
+      #000 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #000 0,
+      #000 1px,
+      transparent 1px,
+      transparent 5px
+    );
+  background-size: 130px 14px, 130px 10px;
+  background-position: 0 0, 0 14px;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+
+.spinResultActions {
+  margin: -120px auto 0;
+  width: min(56vw, 240px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  position: relative;
+  z-index: 59;
+}
+
+.spinResultActionButton {
+  width: 100%;
+  aspect-ratio: 4456 / 1148;
+  height: auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  position: relative;
+}
+
+.spinResultActionButtonSmall {
+  width: 100%;
+  align-self: center;
+  margin-top: -12px;
+}
+
+.spinResultActionButton::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+}
+
+.spinResultActionButton img,
+.spinResultActionButton > span {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.spinResultActionImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.spinResultSpinsCounter {
+  margin: 18px auto 40px;
+  font-family: var(--font-uncage);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+  text-align: center;
+  position: relative;
+  z-index: 57;
 }
 
 .howToPlayNavLeft {

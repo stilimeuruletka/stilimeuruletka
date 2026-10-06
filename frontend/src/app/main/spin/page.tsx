@@ -51,6 +51,41 @@ type SubStatusState = {
   checkError: string | null;
 };
 
+type PrizeDef = {
+  key: string;
+  title: string;
+  value: number | null;
+  prize_type: "certificate" | "bonus_spins" | "secret_product" | "secret_general" | "loss";
+  image: string;
+  extra_spins: number;
+  weight: number;
+};
+
+const PRIZES: PrizeDef[] = [
+  { key: "secret_prize", title: "Секретный приз", value: null, prize_type: "secret_general", image: "/CЕКРбп.png", extra_spins: 0, weight: 2 },
+  { key: "bonus_2", title: "+2 спина", value: null, prize_type: "bonus_spins", image: "/2спин.png", extra_spins: 2, weight: 4 },
+  { key: "bonus_3", title: "+3 спина", value: null, prize_type: "bonus_spins", image: "/3спин.png", extra_spins: 3, weight: 3 },
+  { key: "zy_500", title: "Сертификат ЗЯ 500₽", value: 500, prize_type: "certificate", image: "/СЕРТзя500.png", extra_spins: 0, weight: 4 },
+  { key: "zy_1000", title: "Сертификат ЗЯ 1000₽", value: 1000, prize_type: "certificate", image: "/СЕРТзя1000.png", extra_spins: 0, weight: 2 },
+  { key: "secret_brand", title: "Секретный бью продукт от бренда", value: null, prize_type: "secret_product", image: "/СЕКРЕТбпотбренда.png", extra_spins: 0, weight: 2 },
+  { key: "wb_500", title: "Сертификат WB 500₽", value: 500, prize_type: "certificate", image: "/СЕРТwb500.png", extra_spins: 0, weight: 3 },
+  { key: "zy_300", title: "Сертификат ЗЯ 300₽", value: 300, prize_type: "certificate", image: "/СЕРТзя300.png", extra_spins: 0, weight: 4 },
+  { key: "bonus_1", title: "+1 спин", value: null, prize_type: "bonus_spins", image: "/1СПИН.png", extra_spins: 1, weight: 5 },
+  { key: "secret_beauty", title: "Секретный бьюти продукт", value: null, prize_type: "secret_product", image: "/CЕКРбп.png", extra_spins: 0, weight: 3 }
+];
+
+type ResolvedPrize = PrizeDef | null;
+
+function pickWeightedPrize(): PrizeDef {
+  const total = PRIZES.reduce((sum, p) => sum + p.weight, 0);
+  let r = Math.random() * total;
+  for (const p of PRIZES) {
+    if (r < p.weight) return p;
+    r -= p.weight;
+  }
+  return PRIZES[PRIZES.length - 1];
+}
+
 const SEGMENT_IMAGES = [
   "/1колесо.png",
   "/2колесо.png",
@@ -207,6 +242,8 @@ export default function RoulettePage() {
   const [durationMs, setDurationMs] = useState(0);
   const [result, setResult] = useState<SpinResult | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [resolvedPrize, setResolvedPrize] = useState<ResolvedPrize>(null);
+  const [availableSpins, setAvailableSpins] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
   const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
@@ -353,6 +390,9 @@ export default function RoulettePage() {
 
   const startSpin = useCallback(async () => {
     if (spinning) return;
+    if (availableSpins > 0) {
+      // use local bonus spins pool first (no 24h cooldown)
+    }
     if (subStatus.campaign && !subStatus.confirmed) {
       setError("Чтобы крутить — подпишитесь на канал и нажмите «Проверить».");
       void fetchSubStatus();
@@ -362,6 +402,7 @@ export default function RoulettePage() {
     setModalOpen(false);
     setWonSegmentIndex(null);
     setSpinAtIso(null);
+    setResolvedPrize(null);
 
     const initData = getInitData();
     const base = getBackendBase();
@@ -371,53 +412,81 @@ export default function RoulettePage() {
       const segCount = 10;
       let data: SpinResult;
       let sectorIndex: number;
+      let localPrize: PrizeDef | null = null;
 
       if (!initData) {
         if (!isLocalDevHost()) {
           throw new Error("Откройте приложение через Telegram");
         }
+        const hasBonus = availableSpins > 0;
+        const win = hasBonus ? true : Math.random() < 0.75;
+        const prize = win ? pickWeightedPrize() : null;
+        localPrize = prize;
         data = {
           spin_id: `local-${Date.now()}`,
-          win: Math.random() < 0.5,
-          prize_title: null,
-          prize_value: null,
+          win,
+          prize_title: prize?.title ?? null,
+          prize_value: prize?.value ?? null,
           balance_after: 0,
           segments_count: segCount,
           sector_index: Math.floor(Math.random() * segCount)
         };
         sectorIndex = data.sector_index ?? 0;
       } else {
-        const tzOffset = new Date().getTimezoneOffset();
-        const res = await fetch(`${base}/api/spin?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
-          method: "POST",
-          headers: { "x-telegram-init-data": initData }
-        });
-        const json = (await res.json().catch(() => null)) as
-          | SpinResult
-          | { message?: string; code?: string; campaign?: SubCampaign; progress?: SubProgress }
-          | null;
-        if (!res.ok || !json || typeof json !== "object") {
-          if (json && "code" in json && json.code === "MUST_SUBSCRIBE_FIRST") {
-            setSubStatus((prev) => ({
-              ...prev,
-              campaign: "campaign" in json && json.campaign ? json.campaign : prev.campaign,
-              confirmed: false,
-              progress: "progress" in json && json.progress ? json.progress : prev.progress
-            }));
-            setSpinning(false);
-            setDurationMs(0);
-            setError("Чтобы крутить — сначала подпишитесь на канал и подтвердите подписку.");
-            return;
+        const hasBonus = availableSpins > 0;
+        if (hasBonus) {
+          const win = true;
+          const prize = pickWeightedPrize();
+          localPrize = prize;
+          data = {
+            spin_id: `bonus-${Date.now()}`,
+            win,
+            prize_title: prize.title,
+            prize_value: prize.value,
+            balance_after: 0,
+            segments_count: segCount,
+            sector_index: Math.floor(Math.random() * segCount)
+          };
+          sectorIndex = data.sector_index ?? 0;
+        } else {
+          const tzOffset = new Date().getTimezoneOffset();
+          const res = await fetch(`${base}/api/spin?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+            method: "POST",
+            headers: { "x-telegram-init-data": initData }
+          });
+          const json = (await res.json().catch(() => null)) as
+            | SpinResult
+            | { message?: string; code?: string; campaign?: SubCampaign; progress?: SubProgress }
+            | null;
+          if (!res.ok || !json || typeof json !== "object") {
+            if (json && "code" in json && json.code === "MUST_SUBSCRIBE_FIRST") {
+              setSubStatus((prev) => ({
+                ...prev,
+                campaign: "campaign" in json && json.campaign ? json.campaign : prev.campaign,
+                confirmed: false,
+                progress: "progress" in json && json.progress ? json.progress : prev.progress
+              }));
+              setSpinning(false);
+              setDurationMs(0);
+              setError("Чтобы крутить — сначала подпишитесь на канал и подтвердите подписку.");
+              return;
+            }
+            const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
+            throw new Error(msg);
           }
-          const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
-          throw new Error(msg);
+          if (!("win" in json)) {
+            const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
+            throw new Error(msg);
+          }
+          data = json as SpinResult;
+          sectorIndex = typeof data.sector_index === "number" && data.sector_index >= 0 ? data.sector_index : Math.floor(Math.random() * segCount);
+          if (data.win && data.prize_title) {
+            const byTitle = PRIZES.find((p) => p.title.toLowerCase() === (data.prize_title as string).toLowerCase());
+            localPrize = byTitle ?? null;
+          } else if (data.win) {
+            localPrize = pickWeightedPrize();
+          }
         }
-        if (!("win" in json)) {
-          const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
-          throw new Error(msg);
-        }
-        data = json as SpinResult;
-        sectorIndex = typeof data.sector_index === "number" && data.sector_index >= 0 ? data.sector_index : Math.floor(Math.random() * segCount);
       }
 
       const segmentAngle = 360 / segCount;
@@ -433,6 +502,10 @@ export default function RoulettePage() {
       setWonSegmentIndex(sectorIndex);
       setDurationMs(ms);
       setSpinAtIso(nowIso);
+      setResolvedPrize(localPrize);
+      if (availableSpins > 0) {
+        setAvailableSpins((prev) => Math.max(0, prev - 1));
+      }
       appendLocalSpinHistoryItem({
         spin_id: data.spin_id,
         created_at: nowIso,
@@ -453,7 +526,7 @@ export default function RoulettePage() {
       setDurationMs(0);
       setError(e instanceof Error ? e.message : "Спин недоступен");
     }
-  }, [spinning, subStatus.campaign, subStatus.confirmed, fetchSubStatus]);
+  }, [spinning, availableSpins, subStatus.campaign, subStatus.confirmed, fetchSubStatus]);
 
   const onWheelTransitionEnd = useCallback(() => {
     if (!spinning) return;
@@ -470,29 +543,42 @@ export default function RoulettePage() {
     return /спин/i.test(title);
   }, [result?.prize_title, result?.win]);
 
+  useEffect(() => {
+    if (!modalOpen || !resolvedPrize) return;
+    if (resolvedPrize.prize_type !== "bonus_spins" || !resolvedPrize.extra_spins) return;
+    setAvailableSpins((prev) => prev + resolvedPrize.extra_spins);
+  }, [modalOpen, resolvedPrize]);
+
   const claimPrize = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
     if (initData && result?.spin_id) {
-      await fetch(`${base}/api/prize/claim`, {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-telegram-init-data": initData },
-        body: JSON.stringify({
-          spin_id: result.spin_id,
-          prize_title: result.prize_title,
-          prize_value: result.prize_value
-        })
-      }).catch(() => {});
+      try {
+        await fetch(`${base}/api/prize/claim`, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-telegram-init-data": initData },
+          body: JSON.stringify({
+            spin_id: result.spin_id,
+            prize_title: result.prize_title,
+            prize_value: result.prize_value
+          })
+        });
+      } catch {
+        /* no-op */
+      }
     }
-
-    const w = window as TelegramSdkWindow;
-    const link = "https://t.me/stilimeuruletkasos";
-    if (typeof w.Telegram?.WebApp?.openTelegramLink === "function") {
-      w.Telegram.WebApp.openTelegramLink(link);
-      return;
-    }
-    window.open(link, "_blank", "noopener,noreferrer");
+    setModalOpen(false);
   }, [result?.prize_title, result?.prize_value, result?.spin_id]);
+
+  const closeResultModal = useCallback(() => {
+    setModalOpen(false);
+  }, []);
+
+  const rerunFromModal = useCallback(() => {
+    if (spinning) return;
+    setModalOpen(false);
+    window.setTimeout(() => void startSpin(), 0);
+  }, [startSpin, spinning]);
 
   return (
     <div className={styles.placeholderPage}>
@@ -708,71 +794,115 @@ export default function RoulettePage() {
         </div>
 
         {modalOpen && result && (
-          <div
-            className={`${styles.rouletteResultInline} ${!result.win ? styles.rouletteResultInlineLoss : ""}`}
-          >
-            {!result.win ? (
-              <div className={styles.rouletteLossSingleWrap} aria-hidden="true">
-                <Image
-                  src="/telegram-cloud-document-2-5411623505508734699 1.png"
-                  alt=""
-                  fill
-                  className={styles.rouletteLossSingleImage}
-                  sizes="(max-width: 520px) 22vw, 105px"
-                  quality={80}
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            ) : (
-              <>
-                <div className={styles.rouletteResultTitle}>Wow! Сегодня вам крупно повезло 💗</div>
-                {spinAtIso && <div className={styles.rouletteResultMeta}>{formatRuDateTime(spinAtIso)}</div>}
-                {typeof wonSegmentIndex === "number" && (
-                  <Link href="/main/prizes" className={styles.roulettePrizeLink} aria-label="Открыть выигранные призы">
-                    <div className={styles.rouletteResultPrizeWrap}>
-                      <Image
-                        src={getSegmentImageByIndex(wonSegmentIndex)}
-                        alt=""
-                        fill
-                        className={styles.rouletteResultPrizeImg}
-                        sizes="(max-width: 520px) 68vw, 240px"
-                        quality={80}
-                        style={{ objectFit: "contain" }}
-                      />
-                      <div className={styles.rouletteResultPrizeLabel}>{result.prize_title || "Приз"}</div>
-                    </div>
-                  </Link>
-                )}
-                <div className={styles.rouletteResultActions}>
-                  {isBonusSpinPrize ? (
-                    <button
-                      type="button"
-                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
-                      onClick={() => {
-                        setModalOpen(false);
-                        void startSpin();
-                      }}
-                    >
-                      Повторный спин
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className={`${styles.rouletteResultButton} ${styles.rouletteResultButtonPrimary}`}
-                      onClick={() => void claimPrize()}
-                    >
-                      Забрать приз
-                    </button>
-                  )}
-                  <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/prizes")}>
-                    Мои выигрыши
-                  </button>
-                  <button type="button" className={styles.rouletteResultButton} onClick={() => router.push("/main/profile")}>
-                    История стильных спинов
-                  </button>
+          <div className={`${styles.spinResultOverlay} ${!result.win ? styles.rouletteResultOverlayLoss : ""}`}>
+            <div className={styles.spinResultTopHeader}>
+              <Image
+                src="/главноеменюрулеткакрасный.png"
+                alt=""
+                width={440}
+                height={90}
+                className={styles.spinResultTopHeaderImg}
+                sizes="(max-width: 520px) 84vw, 370px"
+                quality={80}
+              />
+            </div>
+            <Link
+              href="/main"
+              className={`${styles.spinResultTopNavLink} ${styles.spinResultTopNavLeft}`}
+              aria-label="В главное меню"
+            >
+              <Image
+                src="/стрелканазад.PNG"
+                alt="Назад"
+                width={104}
+                height={52}
+                className={styles.spinResultTopNavIcon}
+                sizes="52px"
+                quality={80}
+              />
+            </Link>
+            <Link
+              href="/main/history"
+              className={`${styles.spinResultTopNavLink} ${styles.spinResultTopNavRight}`}
+              aria-label="История стильных спинов"
+            >
+              <Image
+                src="/стрелканазад.PNG"
+                alt="Далее"
+                width={104}
+                height={52}
+                className={`${styles.spinResultTopNavIcon} ${styles.spinResultTopNavIconMirrored}`}
+                sizes="52px"
+                quality={80}
+              />
+            </Link>
+
+            <div className={styles.spinResultTicketPlatform} aria-hidden="true">
+              <Image
+                src="/розыгрышверхк 2.png"
+                alt=""
+                width={440}
+                height={180}
+                className={styles.spinResultTicketPlatformImg}
+                sizes="(max-width: 520px) 90vw, 440px"
+                quality={85}
+              />
+            </div>
+
+            <div className={styles.spinResultTicket}>
+              {resolvedPrize && (
+                <div className={styles.spinResultPrizeImageWrap}>
+                  <Image
+                    src={resolvedPrize.image}
+                    alt=""
+                    fill
+                    className={styles.spinResultPrizeImage}
+                    sizes="(max-width: 520px) 80vw, 320px"
+                    quality={90}
+                  />
                 </div>
-              </>
-            )}
+              )}
+            </div>
+
+            <div className={styles.spinResultActions}>
+              <button
+                type="button"
+                className={styles.spinResultActionButton}
+                onClick={() => void claimPrize()}
+                aria-label="Забрать приз"
+              >
+                <Image
+                  src="/забрать приз.png"
+                  alt="Забрать приз"
+                  width={4456}
+                  height={1148}
+                  className={styles.spinResultActionImage}
+                  sizes="(max-width: 520px) 56vw, 240px"
+                  quality={85}
+                />
+              </button>
+              <button
+                type="button"
+                className={`${styles.spinResultActionButton} ${styles.spinResultActionButtonSmall}`}
+                onClick={rerunFromModal}
+                disabled={spinning}
+                aria-label="Запустить рулетку"
+              >
+                <Image
+                  src="/запустить рулетку.png"
+                  alt="Запустить рулетку"
+                  width={4456}
+                  height={1148}
+                  className={styles.spinResultActionImage}
+                  sizes="(max-width: 520px) 52vw, 220px"
+                  quality={85}
+                />
+              </button>
+            </div>
+
+            <div className={styles.spinResultSpinsCounter}>
+              КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ: {availableSpins}
+            </div>
           </div>
         )}
       </div>
