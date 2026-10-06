@@ -2994,24 +2994,3 @@
   pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FREE-POSITIONING MODE — ВСЕ ЭЛЕМЕНТЫ СВОБОДНО ДВИГАЮТСЯ МЫШКОЙ В TRAE
-   inset: auto = элементы остаются на том же месте где и были,
-   но position:absolute + inset: auto позволяет TRAE двигать их.
-   ═══════════════════════════════════════════════════════════════ */
-.placeholderFrame > *,
-.profileStack > *,
-.fullScreenFrame > *,
-.placeholderFrame > * > *,
-.profileStack > * > *,
-.fullScreenFrame > * > *,
-.placeholderFrame > * > * > *,
-.profileStack > * > * > *,
-.fullScreenFrame > * > * > * {
-  position: absolute;
-  top: auto;
-  right: auto;
-  bottom: auto;
-  left: auto;
-}
-
