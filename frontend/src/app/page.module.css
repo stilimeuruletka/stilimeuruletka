@@ -1255,6 +1255,173 @@
   display: block;
 }
 
+/* ══════════ СТРАНИЦА ПОДРОБНОЙ ИСТОРИИ (/main/historyspin) ══════════ */
+.historySpinPage {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.historySpinPage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 0;
+}
+
+.historySpinFrame {
+  width: min(520px, calc(100vh * 9 / 16));
+  height: 100dvh;
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.historySpinTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  z-index: 2;
+}
+
+.historySpinTopImage {
+  width: 84%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.historySpinBackButton {
+  position: absolute;
+  top: 34px;
+  left: -20px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.historySpinBackIcon {
+  width: 104px;
+  height: 52px;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+}
+
+.historySpinNextButton {
+  position: absolute;
+  top: 34px;
+  right: -20px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.historySpinNextIcon {
+  width: 104px;
+  height: 52px;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+
+.historySpinContent {
+  position: absolute;
+  top: 150px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.historySpinNavButton {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.historySpinNavButtonDown {
+  width: 44px;
+  height: 22px;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  transform: rotate(180deg);
+  margin-top: 2px;
+}
+
+.historySpinNavButtonUp {
+  width: 44px;
+  height: 22px;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+
+.historySpinGrid {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 6px;
+  row-gap: 0;
+  padding: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.historySpinTile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: transparent;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.historySpinTileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.35);
+  transform-origin: center;
+}
+
+.historySpinTileImageSpin {
+  transform: scale(1.55) translateY(-6%);
+  transform-origin: center;
+}
+
+.historySpinTileEmpty {
+  background: #efe6d8;
+  transform: none;
+}
+
 .rouletteOverlay {
   position: absolute;
   left: 16px;

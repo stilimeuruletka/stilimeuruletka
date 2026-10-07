@@ -69,13 +69,34 @@ function readLocalSpinHistory(): SpinHistoryItem[] {
           typeof (x as Record<string, unknown>).win === "boolean"
       )
       .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
-      .slice(0, 80);
+      .slice(0, 120);
   } catch {
     return [];
   }
 }
 
-export default function HistoryPage() {
+const PRIZE_IMAGES: Array<{ match: (t: string) => boolean; src: string }> = [
+  { match: (t) => t.includes("wb 500"), src: "/историясертвб500.jpg" },
+  { match: (t) => t.includes("зя 300"), src: "/историязя300.jpg" },
+  { match: (t) => t.includes("зя 500"), src: "/историяподарочныйсерт500.jpg" },
+  { match: (t) => t.includes("зя 1000") || t.includes("1.000"), src: "/историяЗЯ1000.jpg" },
+  { match: (t) => t.includes("бренда"), src: "/историясекретныйпотбренда.jpg" },
+  { match: (t) => t.includes("бьюти") || t.includes("бью"), src: "/историясекретбп.jpg" },
+  { match: (t) => t.includes("+3") || t.includes("3 спина"), src: "/история3спина.jpg" },
+  { match: (t) => t.includes("+2") || t.includes("2 спина"), src: "/2спина.jpg" },
+  { match: (t) => t.includes("+1") || t.includes("1 спин"), src: "/история1спин.jpg" }
+];
+
+function getPrizeImage(it: SpinHistoryItem): string | null {
+  if (!it.win || !it.prize_title) return null;
+  const t = it.prize_title.toLowerCase();
+  for (const p of PRIZE_IMAGES) {
+    if (p.match(t)) return p.src;
+  }
+  return null;
+}
+
+export default function HistorySpinPage() {
   const isClient = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -96,9 +117,12 @@ export default function HistoryPage() {
           setHistoryLoading(false);
           setHistoryError(null);
           setHistoryItems([
-            { spin_id: `demo-${now}-1`, created_at: new Date(now - 3_600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null },
-            { spin_id: `demo-${now}-2`, created_at: new Date(now - 2_100_000).toISOString(), win: false, prize_title: null, prize_value: null },
-            { spin_id: `demo-${now}-3`, created_at: new Date(now - 600_000).toISOString(), win: true, prize_title: "Демо", prize_value: null }
+            { spin_id: `demo-1-${now}`, created_at: new Date(now - 3_600_000).toISOString(), win: true, prize_title: "Сертификат WB 500₽", prize_value: 500 },
+            { spin_id: `demo-2-${now}`, created_at: new Date(now - 3_550_000).toISOString(), win: true, prize_title: "+3 спина", prize_value: null },
+            { spin_id: `demo-3-${now}`, created_at: new Date(now - 3_500_000).toISOString(), win: false, prize_title: null, prize_value: null },
+            { spin_id: `demo-4-${now}`, created_at: new Date(now - 2_100_000).toISOString(), win: true, prize_title: "Сертификат ЗЯ 300₽", prize_value: 300 },
+            { spin_id: `demo-5-${now}`, created_at: new Date(now - 2_050_000).toISOString(), win: true, prize_title: "Секретный бьюти продукт от бренда", prize_value: null },
+            { spin_id: `demo-6-${now}`, created_at: new Date(now - 600_000).toISOString(), win: true, prize_title: "+1 спин", prize_value: null }
           ]);
           return;
         }
@@ -112,7 +136,7 @@ export default function HistoryPage() {
     const id = window.setTimeout(() => {
       setHistoryLoading(true);
       setHistoryError(null);
-      void fetch(`${base}/api/spins/history?limit=80`, {
+      void fetch(`${base}/api/spins/history?limit=120`, {
         headers: { "x-telegram-init-data": initData },
         cache: "no-store",
         signal: controller.signal
@@ -154,95 +178,83 @@ export default function HistoryPage() {
     };
   }, []);
 
-  const formatHistoryDate = useCallback((iso: string) => {
-    const ms = Date.parse(iso);
-    if (!Number.isFinite(ms)) return iso;
-    return new Intl.DateTimeFormat("ru-RU", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit"
-    }).format(new Date(ms));
-  }, []);
-
   const _ = useMemo(() => isClient, [isClient]);
 
   return (
-    <div className={styles.placeholderPage}>
-      <div className={styles.placeholderFrame}>
-        <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
+    <div className={styles.historySpinPage}>
+      <div className={styles.historySpinFrame}>
+        <div className={styles.historySpinTop}>
+          <Image
+            src="/историяспиноввверх.png"
+            alt=""
+            width={540}
+            height={220}
+            priority
+            sizes="(max-width: 520px) 84vw, 84vw"
+            className={styles.historySpinTopImage}
+          />
+        </div>
 
-        <div className={styles.profileHistoryContent}>
+        <Link href="/main/history" className={styles.historySpinBackButton} aria-label="Назад к истории">
+          <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.historySpinBackIcon} sizes="52px" quality={80} />
+        </Link>
+        <Link href="/main/spin" className={styles.historySpinNextButton} aria-label="К рулетке">
+          <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.historySpinNextIcon} sizes="52px" quality={80} />
+        </Link>
+
+        <div className={styles.historySpinContent}>
           {historyLoading && <div className={styles.profileHistoryEmpty}>ЗАГРУЗКА...</div>}
           {!historyLoading && historyError && <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>}
           {!historyLoading && !historyError && historyItems.length === 0 && (
-            <div className={styles.profileHistoryEmpty}>НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИСТОРИЮ</div>
+            <div className={styles.profileHistoryEmpty}>ПОКА НЕТ ЗАПИСЕЙ</div>
           )}
           {!historyLoading && !historyError && historyItems.length > 0 && (
-            <div className={styles.profileHistoryCarouselWrapper}>
-              <div id="history-carousel" className={styles.profileHistoryCarousel}>
-                {historyItems.map((it) => (
-                  <div key={it.spin_id} className={styles.profileHistoryCard}>
-                    <div className={styles.profileHistoryCardDate}>{formatHistoryDate(it.created_at)}</div>
-                    <div className={styles.profileHistoryCardImageWrapper}>
-                      <Image
-                        src={it.win ? "/IMG_2805.PNG" : "/проигрыш.PNG"}
-                        alt={it.win ? "Победа" : "Поражение"}
-                        fill
-                        sizes="140px"
-                        quality={75}
-                        style={{ objectFit: "cover", objectPosition: "top center" }}
-                      />
+            <>
+              <button
+                type="button"
+                className={styles.historySpinNavButton}
+                onClick={() => {
+                  document.getElementById("history-spin-scroll")?.scrollBy({ top: -520, behavior: "smooth" });
+                }}
+                aria-label="Прокрутить вверх"
+              >
+                <Image src="/стрелкаистория.png" alt="Вверх" width={44} height={22} className={styles.historySpinNavButtonUp} sizes="22px" quality={80} />
+              </button>
+              <div id="history-spin-scroll" className={styles.historySpinGrid}>
+                {historyItems.map((it) => {
+                  const prizeImg = getPrizeImage(it);
+                  return (
+                    <div
+                      key={it.spin_id}
+                      className={`${styles.historySpinTile} ${prizeImg ? "" : styles.historySpinTileEmpty}`}
+                    >
+                      {prizeImg ? (
+                        <Image
+                          src={prizeImg}
+                          alt={it.prize_title ?? ""}
+                          fill
+                          sizes="(max-width: 520px) 100vw, 520px"
+                          quality={95}
+                          className={`${styles.historySpinTileImage} ${it.prize_title && /спин/i.test(it.prize_title) ? styles.historySpinTileImageSpin : ""}`}
+                        />
+                      ) : null}
                     </div>
-                    <div className={styles.profileHistoryCardResult}>
-                      {it.win ? "WOW! ПОБЕДА" : "OOPS...ПОРАЖЕНИЕ"}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-
               <button
                 type="button"
-                className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowLeft}`}
+                className={styles.historySpinNavButton}
                 onClick={() => {
-                  document.getElementById('history-carousel')?.scrollBy({ left: -200, behavior: 'smooth' });
+                  document.getElementById("history-spin-scroll")?.scrollBy({ top: 520, behavior: "smooth" });
                 }}
-                aria-label="Листать влево"
+                aria-label="Прокрутить вниз"
               >
-                <Image src="/стрелканазад.PNG" alt="Влево" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
+                <Image src="/стрелкаистория.png" alt="Вниз" width={44} height={22} className={styles.historySpinNavButtonDown} sizes="22px" quality={80} />
               </button>
-
-              <button
-                type="button"
-                className={`${styles.profileHistoryArrow} ${styles.profileHistoryArrowRight}`}
-                onClick={() => {
-                  document.getElementById('history-carousel')?.scrollBy({ left: 200, behavior: 'smooth' });
-                }}
-                aria-label="Листать вправо"
-              >
-                <Image src="/стрелканазад.PNG" alt="Вправо" width={80} height={40} className={styles.profileHistoryArrowIcon} sizes="40px" quality={80} />
-              </button>
-            </div>
+            </>
           )}
         </div>
-        <Link href="/main/profile" className={styles.profileHistoryCloseButton} aria-label="Назад в профиль">
-          <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.profileHistoryCloseIcon} sizes="52px" quality={80} />
-        </Link>
-        <Link href="/main/historyspin" className={styles.profileHistoryTopRightButton} aria-label="Подробная история">
-          <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.profileHistoryTopRightIcon} sizes="52px" quality={80} />
-        </Link>
-        <Link href="/main" className={styles.profileHistoryTopRightLink} aria-label="В главное меню">
-          <Image
-            src="/чернымглавноеменюистория.png"
-            alt=""
-            width={440}
-            height={90}
-            className={styles.profileHistoryTopRightImg}
-            sizes="220px"
-            quality={80}
-          />
-        </Link>
       </div>
     </div>
   );
