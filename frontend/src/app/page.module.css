@@ -179,6 +179,16 @@
   max-width: 520px;
   position: relative;
   overflow: visible;
+  background: linear-gradient(180deg, #f1f1f1 0%, #e8eae9 33%, #f3f5f4 66%, #e9ebea 100%);
+}
+
+.friendProfileStack .profileAvatarCircle {
+  width: 60px;
+  height: 60px;
+}
+
+.friendProfileStack .profileUsername {
+  font-size: 11px;
 }
 
 .friendProfileStack .profileBottomImage {
@@ -394,7 +404,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 42%;
+  top: 30%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -447,22 +457,23 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: -26px;
+  top: 32px;
   transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  z-index: 2;
+  z-index: 3;
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
   top: 19%;
   left: 50%;
-  width: 430px;
-  height: 129px;
+  width: 360px;
+  height: 108px;
   transform: translateX(-50%);
+  z-index: 3;
   padding: 0;
   margin: 0;
   background: transparent;
@@ -506,7 +517,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: calc(-56px + 20px - 30px);
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
@@ -839,7 +850,7 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(60px);
+  transform: translateY(64px);
   bottom: auto;
   background: transparent;
   border: none;
@@ -852,11 +863,11 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 36px;
+  left: 32px;
 }
 
 .profileHistoryArrowRight {
-  right: 36px;
+  right: 32px;
 }
 
 .profileHistoryArrowIcon {
@@ -912,7 +923,7 @@
 
 .profileHistoryTopRightLink {
   position: absolute;
-  top: 104px;
+  top: 72px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -922,7 +933,7 @@
 }
 
 .profileHistoryTopRightImg {
-  width: 84%;
+  width: 96%;
   max-width: none;
   margin: 0 auto;
   display: block;
@@ -1020,11 +1031,11 @@
 }
 
 .aboutNavArrowLeft {
-  left: 120px;
+  left: 80px;
 }
 
 .aboutNavArrowRight {
-  right: 120px;
+  right: 80px;
   transform: scaleX(-1);
 }
 
@@ -1102,7 +1113,7 @@
   background-image: url("/IMG_2234.PNG");
   background-size: cover;
   background-position: center;
-  filter: blur(14px) brightness(1.5) saturate(0.8);
+  filter: blur(14px) brightness(0.75) saturate(0.6);
   transform: scale(1.06);
   z-index: 0;
 }
@@ -1111,7 +1122,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(120, 120, 120, 0.55);
   z-index: 0;
 }
 
@@ -1132,13 +1143,13 @@
 
 .friendsListBackgroundImage {
   object-fit: cover;
-  filter: blur(14px) brightness(1.5) saturate(0.8);
+  filter: blur(14px) brightness(0.75) saturate(0.6);
   transform: scale(1.05);
 }
 
 .friendsListHeader {
   position: absolute;
-  top: 128px;
+  top: 20px;
   left: 0;
   right: 0;
   height: 200px;
@@ -1152,8 +1163,8 @@
 
 .friendsListBackButton {
   position: absolute;
-  top: 198px;
-  left: 20px;
+  top: 34px;
+  left: 38px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1161,9 +1172,15 @@
   z-index: 3;
 }
 
+.friendsListBackButton::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+}
+
 .friendsListBackIcon {
-  width: 52px;
-  height: 26px;
+  width: 56px;
+  height: 28px;
   max-width: none;
   display: block;
   object-fit: contain;
@@ -1171,11 +1188,11 @@
 
 .friendsListCount {
   position: absolute;
-  top: 226px;
-  right: 54px;
+  top: 43px;
+  right: 90px;
   font-family: var(--font-uncage);
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: 0.06em;
   color: #000;
   text-transform: uppercase;
@@ -1185,7 +1202,7 @@
 .friendsListScroll {
   position: absolute;
   inset: 0;
-  padding: 350px 16px 22px;
+  padding: 80px 16px 22px;
   overflow-y: auto;
   z-index: 1;
 }
@@ -1195,7 +1212,7 @@
   width: 100%;
   max-width: 520px;
   margin: 0 auto 14px;
-  aspect-ratio: 1248 / 674;
+  aspect-ratio: 1248 / 685;
 }
 
 .friendsListCardImage {
@@ -1204,11 +1221,11 @@
 
 .friendsListCardName {
   position: absolute;
-  left: 10%;
+  left: 18%;
   top: 32%;
   width: 54%;
   font-family: var(--font-uncage);
-  font-size: clamp(4px, 0.9vw, 6px);
+  font-size: clamp(6px, 1.6vw, 12px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #000;
@@ -1221,9 +1238,9 @@
 
 .friendsListCardAvatar {
   position: absolute;
-  right: 16%;
-  top: 22%;
-  width: 22%;
+  right: 15%;
+  top: 33%;
+  width: 26%;
   aspect-ratio: 1;
   border-radius: 999px;
   overflow: hidden;
@@ -2102,7 +2119,7 @@
 
 .spinResultTopHeader {
   position: absolute;
-  top: 94px;
+  top: 60px;
   left: 16px;
   right: 16px;
   z-index: 58;
@@ -2119,7 +2136,7 @@
 }
 
 .spinResultTicketPlatform {
-  margin: 148px auto 0;
+  margin: 120px auto 0;
   width: min(70vw, 340px);
   height: auto;
   display: block;
@@ -3189,7 +3206,7 @@
 /* ← → СТРЕЛКИ: top=12px относительно .pageTopNav = на одной высоте с серединой центральной картинки */
 .pageTopNavArrow {
   position: absolute;
-  top: 0;
+  top: -40px;
   width: 104px;
   height: 52px;
   display: block;
@@ -3215,11 +3232,11 @@
 /* ══════════ ЦЕНТРАЛЬНАЯ КАРТИНКА: строго 0 от лева/права, max-width 520px, ровно по центру ══════════ */
 .pageTopNavCenterImg {
   position: absolute;
-  top: 0;
+  top: -40px;
   left: 0;
   right: 0;
-  width: 100%;
-  max-width: 520px;
+  width: 50%;
+  max-width: 260px;
   height: auto;
   margin: 0 auto;
   object-fit: contain;

@@ -33,7 +33,7 @@ begin
   from public.ticket_ledger
   where user_id = v_user_id;
 
-  if v_balance <= 0 then
+  if not coalesce(p_test_mode, false) and v_balance <= 0 then
     raise exception 'Not enough tickets';
   end if;
 

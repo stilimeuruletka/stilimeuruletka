@@ -114,15 +114,17 @@ export async function POST(req: NextRequest) {
       return jsonError("Спин временно недоступен", 500, { code: "ENSURE_FREE_SPIN_FAILED" });
     }
 
+    const testMode = getTestMode();
+
     const canSpin = !!(cooldown as { can_spin?: boolean } | null)?.can_spin;
     const nextSpinAt = (cooldown as { next_spin_at?: string | null } | null)?.next_spin_at ?? null;
     const balance = (cooldown as { balance?: number } | null)?.balance ?? null;
 
-    if (!canSpin) {
+    if (!testMode && !canSpin) {
       return jsonError("Спин пока недоступен (подождите)", 429, { code: "COOLDOWN_ACTIVE", next_spin_at: nextSpinAt, balance });
     }
 
-    if ((balance ?? 0) <= 0) {
+    if (!testMode && (balance ?? 0) <= 0) {
       const repair = await repairDailyTicketIfMissing(supabase, extracted.userId);
       if (repair.error) {
         console.error("[api/spin] repairDailyTicketIfMissing failed", repair.error);

@@ -69,8 +69,9 @@ export default function FriendPage() {
   };
 
   return (
-    <div className={styles.profileScreen}>
-      <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
+    <div className={styles.placeholderPage}>
+      <div className={styles.placeholderFrame}>
+        <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
         <Link href="/main/profile" className={`${styles.profileArrow} ${styles.profileArrowLeft}`} aria-label="Назад">
           <Image
             src="/стрелканазад.PNG"
@@ -158,6 +159,7 @@ export default function FriendPage() {
           className={styles.profileBottomImage}
           priority
         />
+      </div>
       </div>
     </div>
   );

@@ -797,7 +797,7 @@ export default function RoulettePage() {
           <div className={`${styles.spinResultOverlay} ${!result.win ? styles.rouletteResultOverlayLoss : ""}`}>
             <div className={styles.spinResultTopHeader}>
               <Image
-                src="/главноеменюрулеткакрасный.png"
+                src="/чернымглавноеменюистория.png"
                 alt=""
                 width={440}
                 height={90}
@@ -807,9 +807,9 @@ export default function RoulettePage() {
               />
             </div>
             <Link
-              href="/main"
+              href="/main/profile"
               className={`${styles.spinResultTopNavLink} ${styles.spinResultTopNavLeft}`}
-              aria-label="В главное меню"
+              aria-label="В профиль"
             >
               <Image
                 src="/стрелканазад.PNG"
@@ -822,9 +822,9 @@ export default function RoulettePage() {
               />
             </Link>
             <Link
-              href="/main/history"
+              href="/main/spin"
               className={`${styles.spinResultTopNavLink} ${styles.spinResultTopNavRight}`}
-              aria-label="История стильных спинов"
+              aria-label="Запустить рулетку"
             >
               <Image
                 src="/стрелканазад.PNG"
