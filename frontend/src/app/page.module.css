@@ -1031,17 +1031,17 @@
 }
 
 .aboutNavArrowLeft {
-  left: 40px;
+  left: 70px;
 }
 
 .aboutNavArrowRight {
-  right: 40px;
+  right: 70px;
   transform: scaleX(-1);
 }
 
 .aboutNavArrowImage {
-  width: 60px;
-  height: 30px;
+  width: 72px;
+  height: 36px;
   max-width: none;
   display: block;
   filter: invert(1) brightness(1.6);
