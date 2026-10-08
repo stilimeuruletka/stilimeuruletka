@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -20,17 +21,28 @@ type TelegramWebApp = {
 type TelegramSdkWindow = Window & {
   Telegram?: {
     WebApp?: TelegramWebApp & {
+      initData?: string;
       showAlert?: (message: string) => void;
     };
   };
 };
+
+function getBackendBase() {
+  const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
+  return raw ? raw.replace(/\/+$/, "") : "";
+}
+
+function getInitData() {
+  const w = window as TelegramSdkWindow;
+  const initData = w.Telegram?.WebApp?.initData;
+  return typeof initData === "string" && initData.length > 10 ? initData : null;
+}
 
 export default function FriendPage() {
   const router = useRouter();
 
   let displayName = "@username";
   let avatarSrc: string | null = null;
-  let referralLink = "";
 
   if (typeof window !== "undefined") {
     const w = window as TelegramSdkWindow;
@@ -43,15 +55,33 @@ export default function FriendPage() {
     if (tgUser?.photo_url) {
       avatarSrc = tgUser.photo_url;
     }
-
-    const userIdPart = tgUser?.id ? String(tgUser.id) : tgUser?.username ?? "";
-    if (userIdPart) {
-      referralLink = `${window.location.origin}/?ref=${encodeURIComponent(userIdPart)}`;
-    }
   }
+
+  const [referralLink, setReferralLink] = useState<string>("");
+
+  useEffect(() => {
+    const initData = getInitData();
+    const base = getBackendBase();
+    if (!base || !initData) return;
+
+    let cancelled = false;
+    fetch(`${base}/api/referral/link`, {
+      headers: { "x-telegram-init-data": initData }
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!cancelled && json && typeof json.link === "string") setReferralLink(json.link);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCopyReferral = async () => {
     if (!referralLink || typeof window === "undefined") {
+      const w = window as TelegramSdkWindow;
+      w.Telegram?.WebApp?.showAlert?.("Не удалось получить ссылку");
       return;
     }
 
