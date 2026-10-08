@@ -863,11 +863,11 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 20px;
+  left: 8px;
 }
 
 .profileHistoryArrowRight {
-  right: 20px;
+  right: 8px;
 }
 
 .profileHistoryArrowIcon {
@@ -1188,8 +1188,8 @@
 
 .friendsListCount {
   position: absolute;
-  top: 52px;
-  right: 100px;
+  top: 58px;
+  right: 116px;
   font-family: var(--font-uncage);
   font-size: 14px;
   font-weight: 400;
