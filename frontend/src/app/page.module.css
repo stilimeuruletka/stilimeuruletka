@@ -404,7 +404,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 38%;
+  top: 26%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -468,7 +468,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 18%;
+  top: 16%;
   left: 50%;
   width: 360px;
   height: 108px;
@@ -517,7 +517,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: 0;
+  top: 40px;
   left: 0;
   right: 0;
   width: 100%;
@@ -3373,7 +3373,7 @@
 /* ← → СТРЕЛКИ: top=12px относительно .pageTopNav = на одной высоте с серединой центральной картинки */
 .pageTopNavArrow {
   position: absolute;
-  top: -40px;
+  top: 20px;
   width: 104px;
   height: 52px;
   display: block;
@@ -3399,7 +3399,7 @@
 /* ══════════ ЦЕНТРАЛЬНАЯ КАРТИНКА: строго 0 от лева/права, max-width 520px, ровно по центру ══════════ */
 .pageTopNavCenterImg {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 0;
   right: 0;
   width: 50%;
