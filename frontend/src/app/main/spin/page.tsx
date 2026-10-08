@@ -32,6 +32,12 @@ type SpinResult = {
   sector_index?: number;
 };
 
+type MeResponse = {
+  balance?: number;
+  can_spin?: boolean;
+  next_spin_at?: string | null;
+};
+
 type SubCampaign = {
   id: string;
   blogger_name: string | null;
@@ -243,6 +249,7 @@ export default function RoulettePage() {
   const [result, setResult] = useState<SpinResult | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [resolvedPrize, setResolvedPrize] = useState<ResolvedPrize>(null);
+  const [databaseSpins, setDatabaseSpins] = useState<number>(0);
   const [availableSpins, setAvailableSpins] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
@@ -312,6 +319,32 @@ export default function RoulettePage() {
       setSubStatus({ loading: false, campaign: null, confirmed: true, progress: null, checking: false, checkError: null });
     }
   }, []);
+
+  const fetchDatabaseBalance = useCallback(async () => {
+    const initData = getInitData();
+    const base = getBackendBase();
+    if (!base || !initData) return;
+    try {
+      const res = await fetch(`${base}/api/me?tz_offset=${encodeURIComponent(String(new Date().getTimezoneOffset()))}`, {
+        method: "GET",
+        headers: { "x-telegram-init-data": initData }
+      });
+      if (!res.ok) return;
+      const json = (await res.json().catch(() => null)) as MeResponse | null;
+      if (json && typeof json.balance === "number") {
+        setDatabaseSpins(json.balance);
+      }
+    } catch {
+      /* no-op */
+    }
+  }, []);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void fetchDatabaseBalance();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [fetchDatabaseBalance]);
 
   const checkSubNow = useCallback(async () => {
     const initData = getInitData();
@@ -506,6 +539,7 @@ export default function RoulettePage() {
       if (availableSpins > 0) {
         setAvailableSpins((prev) => Math.max(0, prev - 1));
       }
+      void fetchDatabaseBalance();
       appendLocalSpinHistoryItem({
         spin_id: data.spin_id,
         created_at: nowIso,
@@ -526,7 +560,7 @@ export default function RoulettePage() {
       setDurationMs(0);
       setError(e instanceof Error ? e.message : "Спин недоступен");
     }
-  }, [spinning, availableSpins, subStatus.campaign, subStatus.confirmed, fetchSubStatus]);
+  }, [spinning, availableSpins, subStatus.campaign, subStatus.confirmed, fetchSubStatus, fetchDatabaseBalance]);
 
   const onWheelTransitionEnd = useCallback(() => {
     if (!spinning) return;
@@ -901,7 +935,7 @@ export default function RoulettePage() {
             </div>
 
             <div className={styles.spinResultSpinsCounter}>
-              КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ: {availableSpins}
+              КОЛИЧЕСТВО ДОСТУПНЫХ СПИНОВ: {databaseSpins + availableSpins}
             </div>
           </div>
         )}
