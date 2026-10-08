@@ -404,7 +404,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 26%;
+  top: 34%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -468,7 +468,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 16%;
+  top: 23%;
   left: 50%;
   width: 360px;
   height: 108px;
@@ -499,13 +499,13 @@
 }
 
 .friendProfileStack .profileArrowLeft {
-  left: 36px;
-  top: 32px;
+  left: 24px;
+  top: 72px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 36px;
-  top: 32px;
+  right: 24px;
+  top: 72px;
   transform: scaleX(-1);
 }
 
@@ -1031,11 +1031,11 @@
 }
 
 .aboutNavArrowLeft {
-  left: 70px;
+  left: 30px;
 }
 
 .aboutNavArrowRight {
-  right: 70px;
+  right: 30px;
   transform: scaleX(-1);
 }
 
