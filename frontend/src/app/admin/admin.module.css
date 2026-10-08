@@ -356,21 +356,21 @@
 }
 
 .badgeOk {
-  background: rgba(84, 188, 115, 0.12);
-  border: 1px solid rgba(84, 188, 115, 0.35);
-  color: #1a7f43;
+  background: linear-gradient(180deg, rgba(112, 214, 145, 0.28), rgba(84, 188, 115, 0.10));
+  border: 1px solid rgba(84, 188, 115, 0.45);
+  color: #14693a;
 }
 
 .badgeWarn {
-  background: rgba(255, 186, 73, 0.16);
-  border: 1px solid rgba(255, 186, 73, 0.5);
-  color: #9a5c00;
+  background: linear-gradient(180deg, rgba(255, 204, 102, 0.30), rgba(255, 186, 73, 0.10));
+  border: 1px solid rgba(255, 186, 73, 0.55);
+  color: #8a5400;
 }
 
 .badgeDanger {
-  background: rgba(184, 31, 34, 0.08);
-  border: 1px solid rgba(184, 31, 34, 0.35);
-  color: #8a181a;
+  background: linear-gradient(180deg, rgba(219, 66, 70, 0.22), rgba(184, 31, 34, 0.08));
+  border: 1px solid rgba(184, 31, 34, 0.45);
+  color: #7e1416;
 }
 
 .toolbarRow {
