@@ -1149,7 +1149,7 @@
 
 .friendsListHeader {
   position: absolute;
-  top: 20px;
+  top: 100px;
   left: 0;
   right: 0;
   height: 200px;
@@ -1202,7 +1202,7 @@
 .friendsListScroll {
   position: absolute;
   inset: 0;
-  padding: 80px 16px 22px;
+  padding: 186px 16px 22px;
   overflow-y: auto;
   z-index: 1;
 }
