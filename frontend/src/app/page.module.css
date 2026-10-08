@@ -528,7 +528,7 @@
 
 .friendProfileStack .profileBottomImage {
   position: absolute;
-  top: 60px;
+  top: 140px;
   left: 0;
   right: 0;
   width: 100%;
@@ -1022,7 +1022,7 @@
 .aboutNavArrowLeft,
 .aboutNavArrowRight {
   position: absolute;
-  top: 96px;
+  top: 116px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1031,11 +1031,11 @@
 }
 
 .aboutNavArrowLeft {
-  left: 80px;
+  left: 60px;
 }
 
 .aboutNavArrowRight {
-  right: 80px;
+  right: 60px;
   transform: scaleX(-1);
 }
 
