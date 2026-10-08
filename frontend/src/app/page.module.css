@@ -404,7 +404,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 34%;
+  top: 30%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -468,7 +468,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 23%;
+  top: 20%;
   left: 50%;
   width: 360px;
   height: 108px;
