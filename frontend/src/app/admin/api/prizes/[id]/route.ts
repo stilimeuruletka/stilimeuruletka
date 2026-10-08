@@ -53,13 +53,13 @@ function normalizePrizePatch(input: unknown) {
     patch.weight = weight;
   }
 
-  if (obj.value !== undefined) {
-    if (obj.value === null || obj.value === "") {
-      patch.value = null;
+  if (obj.spins !== undefined) {
+    if (obj.spins === null || obj.spins === "") {
+      patch.spins = null;
     } else {
-      const n = typeof obj.value === "number" ? obj.value : Number(obj.value);
+      const n = typeof obj.spins === "number" ? obj.spins : Number(obj.spins);
       if (!Number.isFinite(n) || n < 0) return null;
-      patch.value = n;
+      patch.spins = n;
     }
   }
 
@@ -88,7 +88,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
     .from("prizes")
     .update(patch)
     .eq("id", id)
-    .select("id,title,weight,value,active,created_at")
+    .select("id,title,weight,spins,active,created_at")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

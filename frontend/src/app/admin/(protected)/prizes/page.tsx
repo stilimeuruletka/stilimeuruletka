@@ -8,7 +8,7 @@ type Prize = {
   id: string;
   title: string;
   weight: number;
-  value: number | null;
+  spins: number | null;
   active: boolean;
   created_at: string;
 };
@@ -16,10 +16,10 @@ type Prize = {
 function demoPrizes(): Prize[] {
   const now = new Date().toISOString();
   return [
-    { id: "demo-1", title: "Ничего", weight: 7000, value: 0, active: true, created_at: now },
-    { id: "demo-2", title: "Малый приз", weight: 2500, value: 10, active: true, created_at: now },
-    { id: "demo-3", title: "Средний приз", weight: 450, value: 50, active: true, created_at: now },
-    { id: "demo-4", title: "Большой приз", weight: 50, value: 500, active: true, created_at: now }
+    { id: "demo-1", title: "Ничего", weight: 7000, spins: null, active: true, created_at: now },
+    { id: "demo-2", title: "1 крутка", weight: 2500, spins: 1, active: true, created_at: now },
+    { id: "demo-3", title: "Рандомный бьюти-продукт", weight: 450, spins: null, active: true, created_at: now },
+    { id: "demo-4", title: "Сертификат WB 500₽", weight: 50, spins: null, active: true, created_at: now }
   ];
 }
 
@@ -30,7 +30,7 @@ export default function AdminPrizesPage() {
 
   const [newTitle, setNewTitle] = useState("");
   const [newWeight, setNewWeight] = useState("100");
-  const [newValue, setNewValue] = useState<string>("");
+  const [newSpins, setNewSpins] = useState<string>("");
   const [newActive, setNewActive] = useState(true);
 
   const load = useCallback(async () => {
@@ -67,7 +67,7 @@ export default function AdminPrizesPage() {
     const payload = {
       title: newTitle,
       weight: Number(newWeight),
-      value: newValue === "" ? null : Number(newValue),
+      spins: newSpins === "" ? null : Number(newSpins),
       active: newActive
     };
     const res = await fetch("/admin/api/prizes", {
@@ -82,12 +82,12 @@ export default function AdminPrizesPage() {
     }
     setNewTitle("");
     setNewWeight("100");
-    setNewValue("");
+    setNewSpins("");
     setNewActive(true);
     await load();
   };
 
-  const updatePrize = async (id: string, patch: Partial<Pick<Prize, "title" | "weight" | "value" | "active">>) => {
+  const updatePrize = async (id: string, patch: Partial<Pick<Prize, "title" | "weight" | "spins" | "active">>) => {
     setError(null);
     const res = await fetch(`/admin/api/prizes/${encodeURIComponent(id)}`, {
       method: "PATCH",
@@ -135,8 +135,8 @@ export default function AdminPrizesPage() {
           <input className={styles.input} value={newWeight} onChange={(e) => setNewWeight(e.target.value)} inputMode="numeric" />
         </div>
         <div className={styles.field}>
-          <div className={styles.label}>Значение</div>
-          <input className={styles.input} value={newValue} onChange={(e) => setNewValue(e.target.value)} inputMode="decimal" placeholder="0" />
+          <div className={styles.label}>Крутки</div>
+          <input className={styles.input} value={newSpins} onChange={(e) => setNewSpins(e.target.value)} inputMode="numeric" placeholder="0" />
         </div>
         <div className={styles.field}>
           <div className={styles.label}>Активен</div>
@@ -164,7 +164,7 @@ export default function AdminPrizesPage() {
             <tr>
               <th className={styles.th}>Название</th>
               <th className={styles.th}>Вес</th>
-              <th className={styles.th}>Значение</th>
+              <th className={styles.th}>Крутки</th>
               <th className={styles.th}>Активен</th>
               <th className={`${styles.th} ${styles.tdRight}`}>Действия</th>
             </tr>
@@ -196,12 +196,12 @@ export default function AdminPrizesPage() {
                 <td className={styles.td}>
                   <input
                     className={styles.inlineInput}
-                    defaultValue={p.value == null ? "" : String(p.value)}
-                    inputMode="decimal"
+                    defaultValue={p.spins == null ? "" : String(p.spins)}
+                    inputMode="numeric"
                     onBlur={(e) => {
                       const raw = e.target.value.trim();
                       const next = raw === "" ? null : Number(raw);
-                      if ((raw === "" && p.value !== null) || (raw !== "" && Number.isFinite(next) && next !== p.value)) void updatePrize(p.id, { value: next });
+                      if ((raw === "" && p.spins !== null) || (raw !== "" && Number.isFinite(next) && next !== p.spins)) void updatePrize(p.id, { spins: next });
                     }}
                   />
                 </td>

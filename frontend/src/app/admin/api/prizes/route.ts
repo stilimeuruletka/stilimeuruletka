@@ -37,7 +37,7 @@ function normalizePrizeInput(input: unknown) {
 
   const titleRaw = obj.title;
   const weightRaw = obj.weight;
-  const valueRaw = obj.value;
+  const spinsRaw = obj.spins;
   const activeRaw = obj.active;
 
   if (typeof titleRaw !== "string") return null;
@@ -47,15 +47,15 @@ function normalizePrizeInput(input: unknown) {
   const weight = typeof weightRaw === "number" ? weightRaw : Number(weightRaw);
   if (!Number.isFinite(weight) || !Number.isInteger(weight) || weight <= 0 || weight > 1_000_000) return null;
 
-  let value: number | null = null;
-  if (valueRaw !== null && valueRaw !== undefined && valueRaw !== "") {
-    const n = typeof valueRaw === "number" ? valueRaw : Number(valueRaw);
+  let spins: number | null = null;
+  if (spinsRaw !== null && spinsRaw !== undefined && spinsRaw !== "") {
+    const n = typeof spinsRaw === "number" ? spinsRaw : Number(spinsRaw);
     if (!Number.isFinite(n) || n < 0) return null;
-    value = n;
+    spins = n;
   }
 
   const active = typeof activeRaw === "boolean" ? activeRaw : activeRaw === undefined ? true : Boolean(activeRaw);
-  return { title, weight, value, active };
+  return { title, weight, spins, active };
 }
 
 export async function GET(req: Request) {
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
   const supabase = getAdminSupabase();
   const { data, error } = await supabase
     .from("prizes")
-    .select("id,title,weight,value,active,created_at")
+    .select("id,title,weight,spins,active,created_at")
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
   const { data, error } = await supabase
     .from("prizes")
     .insert(normalized)
-    .select("id,title,weight,value,active,created_at")
+    .select("id,title,weight,spins,active,created_at")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
