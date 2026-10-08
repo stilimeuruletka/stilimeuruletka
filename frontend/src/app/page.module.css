@@ -404,7 +404,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 30%;
+  top: 38%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -457,7 +457,7 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 32px;
+  top: 62px;
   transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
@@ -468,7 +468,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 19%;
+  top: 18%;
   left: 50%;
   width: 360px;
   height: 108px;
@@ -500,12 +500,12 @@
 
 .friendProfileStack .profileArrowLeft {
   left: 36px;
-  top: 8px;
+  top: 32px;
 }
 
 .friendProfileStack .profileArrowRight {
   right: 36px;
-  top: 8px;
+  top: 32px;
   transform: scaleX(-1);
 }
 
@@ -528,7 +528,7 @@
 
 .friendProfileStack .profileBottomImage {
   position: absolute;
-  top: 140px;
+  top: 180px;
   left: 0;
   right: 0;
   width: 100%;
@@ -850,7 +850,7 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(64px);
+  transform: translateY(80px);
   bottom: auto;
   background: transparent;
   border: none;
@@ -863,11 +863,11 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 32px;
+  left: 20px;
 }
 
 .profileHistoryArrowRight {
-  right: 32px;
+  right: 20px;
 }
 
 .profileHistoryArrowIcon {
@@ -884,8 +884,8 @@
 
 .profileHistoryCloseButton {
   position: absolute;
-  top: 108px;
-  left: 36px;
+  top: 96px;
+  left: 24px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -903,8 +903,8 @@
 
 .profileHistoryTopRightButton {
   position: absolute;
-  top: 108px;
-  right: 36px;
+  top: 96px;
+  right: 24px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1031,17 +1031,17 @@
 }
 
 .aboutNavArrowLeft {
-  left: 60px;
+  left: 40px;
 }
 
 .aboutNavArrowRight {
-  right: 60px;
+  right: 40px;
   transform: scaleX(-1);
 }
 
 .aboutNavArrowImage {
-  width: 52px;
-  height: 26px;
+  width: 60px;
+  height: 30px;
   max-width: none;
   display: block;
   filter: invert(1) brightness(1.6);
@@ -1188,8 +1188,8 @@
 
 .friendsListCount {
   position: absolute;
-  top: 65px;
-  right: 130px;
+  top: 52px;
+  right: 100px;
   font-family: var(--font-uncage);
   font-size: 14px;
   font-weight: 400;
