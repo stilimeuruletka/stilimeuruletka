@@ -1163,8 +1163,8 @@
 
 .friendsListBackButton {
   position: absolute;
-  top: 34px;
-  left: 38px;
+  top: 42px;
+  left: 65px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1179,8 +1179,8 @@
 }
 
 .friendsListBackIcon {
-  width: 56px;
-  height: 28px;
+  width: 64px;
+  height: 32px;
   max-width: none;
   display: block;
   object-fit: contain;
@@ -1188,8 +1188,8 @@
 
 .friendsListCount {
   position: absolute;
-  top: 43px;
-  right: 90px;
+  top: 65px;
+  right: 130px;
   font-family: var(--font-uncage);
   font-size: 14px;
   font-weight: 400;
