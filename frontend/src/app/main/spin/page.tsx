@@ -282,13 +282,39 @@ export default function RoulettePage() {
   const fetchSubStatus = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
+
+    // Локальный тест: показываем демо-экран подписки даже без бэкенда,
+    // чтобы визуально проверить гейт в браузере.
+    if (!initData && isLocalDevHost()) {
+      setSubStatus({
+        loading: false,
+        campaigns: [
+          {
+            campaign_id: "local-demo",
+            blogger_name: "stilimeu",
+            channel_id: "@stilimeu",
+            telegram_link: "https://t.me/stilimeu",
+            goal_subscribers: 100,
+            confirmed_count: 0,
+            percent: 0,
+            user_confirmed: false
+          }
+        ],
+        confirmed: false,
+        progress: { confirmed: 0, goal: 100, percent: 0 },
+        checking: false,
+        checkError: null
+      });
+      return;
+    }
+
     if (!base) {
       setSubStatus((s) => ({ ...s, loading: false }));
       return;
     }
     if (!initData) {
       if (isLocalDevHost()) {
-        setSubStatus({ loading: false, campaigns: [], confirmed: true, progress: null, checking: false, checkError: null });
+        setSubStatus((s) => ({ ...s, loading: false }));
       } else {
         setSubStatus((s) => ({ ...s, loading: false }));
       }
@@ -672,10 +698,7 @@ export default function RoulettePage() {
               {subStatus.campaigns.map((c, idx) => {
                 const stateText = c.user_confirmed
                   ? "✓ Подписка подтверждена"
-                  : `Нужно: ${Number(c.goal_subscribers).toLocaleString("ru-RU")} подписчиков` +
-                    (Number(c.confirmed_count) > 0
-                      ? ` · уже ${Number(c.confirmed_count).toLocaleString("ru-RU")}`
-                      : "");
+                  : "Подписаться и нажать «Проверить»";
                 return (
                   <div
                     key={c.campaign_id ?? idx}
