@@ -30,6 +30,7 @@ type RecentSpin = {
 type RealtimePayload = {
   now: string;
   online_users: number;
+  online_list: OnlineUser[];
   today: {
     spins: number;
     wins: number;
@@ -37,6 +38,8 @@ type RealtimePayload = {
     delta_wins_percent: number;
     coupons_issued: number;
   };
+  today_spinners: SpinnerRow[];
+  today_win_list: TodayWinEvent[];
   yesterday: {
     spins: number;
     wins: number;
@@ -114,6 +117,27 @@ type DailyDetail = {
     new_users: number;
   };
 };
+
+type OnlineUser = {
+  tg_user_id: number;
+  username: string | null;
+  last_seen_at: string;
+};
+
+type SpinnerRow = {
+  tg_user_id: number;
+  spins: number;
+  wins: number;
+  losses: number;
+};
+
+type TodayWinEvent = {
+  created_at: string;
+  tg_user_id: number;
+  prize_title: string;
+};
+
+type DrillKind = "online" | "spins" | "wins" | null;
 
 function yyyyMmDd(d: Date) {
   const y = d.getFullYear();
@@ -194,6 +218,8 @@ export default function AdminDashboardPage() {
   const [dayDetail, setDayDetail] = useState<DailyDetail | null>(null);
   const [dayLoading, setDayLoading] = useState(false);
   const [dayError, setDayError] = useState<string | null>(null);
+
+  const [drill, setDrill] = useState<DrillKind>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -336,13 +362,16 @@ export default function AdminDashboardPage() {
   }, [loadRealtime]);
 
   useEffect(() => {
-    if (!activeDate) return;
+    if (!activeDate && !drill) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDayModal();
+      if (e.key === "Escape") {
+        setDrill(null);
+        closeDayModal();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeDate, closeDayModal]);
+  }, [activeDate, drill, closeDayModal]);
 
   const winRate = useMemo(() => {
     if (!payload.overview.total_spins) return 0;
@@ -383,7 +412,8 @@ export default function AdminDashboardPage() {
               label: "Онлайн (были за 5 мин)",
               v: realtime?.online_users ?? 0,
               tone: "green" as const,
-              icon: "👥"
+              icon: "👥",
+              drillKey: "online" as DrillKind
             },
             {
               label: "Сегодня · Спинов",
@@ -393,7 +423,8 @@ export default function AdminDashboardPage() {
                 : undefined,
               tone: "default" as const,
               icon: "🎯",
-              good: realtime ? realtime.today.delta_spins_percent >= 0 : undefined
+              good: realtime ? realtime.today.delta_spins_percent >= 0 : undefined,
+              drillKey: "spins" as DrillKind
             },
             {
               label: "Сегодня · Выигрышей",
@@ -403,7 +434,8 @@ export default function AdminDashboardPage() {
                 : undefined,
               tone: "red" as const,
               icon: "🏆",
-              good: realtime ? realtime.today.delta_wins_percent >= 0 : undefined
+              good: realtime ? realtime.today.delta_wins_percent >= 0 : undefined,
+              drillKey: "wins" as DrillKind
             },
             {
               label: "Купонов выдано сегодня",
@@ -457,9 +489,23 @@ export default function AdminDashboardPage() {
                 : c.tone === "cyan"
                 ? "rgba(94,204,255,0.45)"
                 : "rgba(255,255,255,0.12)";
+            const clickable = Boolean((c as { drillKey?: DrillKind }).drillKey);
             return (
               <div
                 key={i}
+                onClick={clickable ? () => setDrill((c as { drillKey: DrillKind }).drillKey) : undefined}
+                role={clickable ? "button" : undefined}
+                tabIndex={clickable ? 0 : undefined}
+                onKeyDown={
+                  clickable
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setDrill((c as { drillKey: DrillKind }).drillKey);
+                        }
+                      }
+                    : undefined
+                }
                 style={{
                   background: toneBg,
                   border: `1px solid ${toneBorder}`,
@@ -468,7 +514,8 @@ export default function AdminDashboardPage() {
                   minHeight: 96,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
+                  cursor: clickable ? "pointer" : "default"
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -488,6 +535,17 @@ export default function AdminDashboardPage() {
                     }}
                   >
                     {c.sub}
+                  </div>
+                )}
+                {clickable && (
+                  <div
+                    style={{
+                      marginTop: 6,
+                      fontSize: 11,
+                      color: "#8aa3c4"
+                    }}
+                  >
+                    Нажми для деталей ▾
                   </div>
                 )}
               </div>
@@ -853,6 +911,128 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {drill && (
+        <div className={styles.modalBackdrop} onClick={() => setDrill(null)} role="presentation">
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Детализация">
+            <div className={styles.modalHeader}>
+              <div>
+                <div className={styles.modalTitle}>
+                  {drill === "online" && "Кто был онлайн (за 5 минут)"}
+                  {drill === "spins" && "Кто сегодня крутил"}
+                  {drill === "wins" && "Выигрыши за сегодня"}
+                </div>
+                <div className={styles.muted}>
+                  {drill === "online" && `сейчас онлайн: ${realtime?.online_users ?? 0}`}
+                  {drill === "spins" && `всего круток сегодня: ${realtime?.today.spins ?? 0}`}
+                  {drill === "wins" && `выигрышей сегодня: ${realtime?.today.wins ?? 0}`}
+                </div>
+              </div>
+              <button className={styles.button} type="button" onClick={() => setDrill(null)}>
+                Закрыть
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              {drill === "online" && (
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th className={styles.th}>TG ID</th>
+                        <th className={styles.th}>Username</th>
+                        <th className={styles.th}>Последняя активность</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {realtime?.online_list.map((u) => (
+                        <tr key={u.tg_user_id}>
+                          <td className={styles.td}><code>{u.tg_user_id}</code></td>
+                          <td className={styles.td}>{u.username ? `@${u.username}` : "—"}</td>
+                          <td className={styles.td}>{formatRu(u.last_seen_at)}</td>
+                        </tr>
+                      ))}
+                      {realtime && realtime.online_list.length === 0 && (
+                        <tr>
+                          <td className={styles.td} colSpan={3}>
+                            Сейчас никто не онлайн
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {drill === "spins" && (
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th className={styles.th}>TG ID</th>
+                        <th className={`${styles.th} ${styles.tdRight}`}>Круток</th>
+                        <th className={`${styles.th} ${styles.tdRight}`}>Выигрышей</th>
+                        <th className={`${styles.th} ${styles.tdRight}`}>Проигрышей</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {realtime?.today_spinners.map((s) => (
+                        <tr key={s.tg_user_id}>
+                          <td className={styles.td}><code>{s.tg_user_id}</code></td>
+                          <td className={`${styles.td} ${styles.tdRight}`}><b>{s.spins}</b></td>
+                          <td className={`${styles.td} ${styles.tdRight} ${styles.cellWin}`}>
+                            {s.wins > 0 ? `+${s.wins}` : 0}
+                          </td>
+                          <td className={`${styles.td} ${styles.tdRight} ${styles.cellLose}`}>{s.losses}</td>
+                        </tr>
+                      ))}
+                      {realtime && realtime.today_spinners.length === 0 && (
+                        <tr>
+                          <td className={styles.td} colSpan={4}>
+                            Сегодня ещё никто не крутил
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {drill === "wins" && (
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th className={styles.th}>Время</th>
+                        <th className={styles.th}>Кто</th>
+                        <th className={styles.th}>Приз</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {realtime?.today_win_list.map((w, i) => (
+                        <tr key={`${w.created_at}-${w.tg_user_id}-${i}`}>
+                          <td className={styles.td}>{formatRuTime(w.created_at)}</td>
+                          <td className={styles.td}><code>{w.tg_user_id}</code></td>
+                          <td className={styles.td}>
+                            <span className={styles.badgeOk}>{w.prize_title}</span>
+                          </td>
+                        </tr>
+                      ))}
+                      {realtime && realtime.today_win_list.length === 0 && (
+                        <tr>
+                          <td className={styles.td} colSpan={3}>
+                            Сегодня выигрышей пока нет
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

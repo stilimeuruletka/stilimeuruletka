@@ -43,6 +43,7 @@ function endOfDay(d: Date, msOffset = 0): string {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const LIMIT_LIST = 50;
 
 export async function GET(req: Request) {
   const fail = await requireAdmin(req);
@@ -66,7 +67,10 @@ export async function GET(req: Request) {
       last24hSpinsQ,
       todayCouponsQ,
       last24hPrizeBreakdownQ,
-      topBloggerQ
+      topBloggerQ,
+      onlineListQ,
+      todaySpinnersQ,
+      todayWinListQ
     ] = await Promise.all([
       supabase
         .from("users")
@@ -103,7 +107,8 @@ export async function GET(req: Request) {
         .from("spins")
         .select("win, prize_id, prizes!inner(id,title)")
         .gte("created_at", last24hStart)
-        .lte("created_at", nowIso),
+        .lte("created_at", nowIso)
+        .limit(2000),
       (async () => {
         try {
           const { data: clicks, error } = await supabase
@@ -135,7 +140,31 @@ export async function GET(req: Request) {
         } catch {
           return { data: null };
         }
-      })()
+      })(),
+      // Кто был онлайн за последние 5 минут (список)
+      supabase
+        .from("users")
+        .select("tg_user_id, username, last_seen_at")
+        .gte("last_seen_at", fiveMinAgo)
+        .lte("last_seen_at", nowIso)
+        .order("last_seen_at", { ascending: false })
+        .limit(LIMIT_LIST),
+      // Кто сегодня крутил (агрегат по пользователю)
+      supabase
+        .from("spins")
+        .select("tg_user_id, win")
+        .gte("created_at", todayStart)
+        .lte("created_at", todayEnd)
+        .limit(5000),
+      // Выигрышные спины за сегодня (лента)
+      supabase
+        .from("spins")
+        .select("created_at, tg_user_id, win, prize_id, prizes!inner(id,title)")
+        .eq("win", true)
+        .gte("created_at", todayStart)
+        .lte("created_at", todayEnd)
+        .order("created_at", { ascending: false })
+        .limit(80)
     ]);
 
     const todaySpins = Number(todaySpinsQ.count ?? 0);
@@ -176,9 +205,52 @@ export async function GET(req: Request) {
     const topPrize =
       Array.from(prizeMap.values()).sort((a, b) => b.count - a.count)[0] ?? null;
 
+    // Список онлайн-пользователей
+    const onlineList = Array.isArray(onlineListQ.data)
+      ? (onlineListQ.data as Array<{ tg_user_id: number; username: string | null; last_seen_at: string }>)
+      : [];
+
+    // Кто сегодня крутил (агрегат)
+    const spinnerMap = new Map<
+      number,
+      { tg_user_id: number; spins: number; wins: number; losses: number }
+    >();
+    if (Array.isArray(todaySpinnersQ.data)) {
+      for (const s of todaySpinnersQ.data as Array<{ tg_user_id: number; win: boolean }>) {
+        const cur = spinnerMap.get(s.tg_user_id) ?? {
+          tg_user_id: s.tg_user_id,
+          spins: 0,
+          wins: 0,
+          losses: 0
+        };
+        cur.spins += 1;
+        if (s.win) cur.wins += 1;
+        else cur.losses += 1;
+        spinnerMap.set(s.tg_user_id, cur);
+      }
+    }
+    const todaySpinners = Array.from(spinnerMap.values())
+      .sort((a, b) => b.spins - a.spins)
+      .slice(0, LIMIT_LIST);
+
+    // Лента выигрышей за сегодня
+    const todayWinList = Array.isArray(todayWinListQ.data)
+      ? (todayWinListQ.data as unknown as Array<{
+          created_at: string;
+          tg_user_id: number;
+          prize_id: string | null;
+          prizes: Array<{ id: string; title: string }> | null;
+        }>).map((w) => ({
+          created_at: w.created_at,
+          tg_user_id: w.tg_user_id,
+          prize_title: w.prizes?.[0]?.title ?? (w.prize_id ? "Приз" : "Ничего")
+        }))
+      : [];
+
     return NextResponse.json({
       now: nowIso,
       online_users: Number(onlineQ.count ?? 0),
+      online_list: onlineList,
       today: {
         spins: todaySpins,
         wins: todayWins,
@@ -186,6 +258,8 @@ export async function GET(req: Request) {
         delta_wins_percent: winsDelta,
         coupons_issued: todayCoupons
       },
+      today_spinners: todaySpinners,
+      today_win_list: todayWinList,
       yesterday: {
         spins: yesterdaySpins,
         wins: yesterdayWins
