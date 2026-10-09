@@ -26,24 +26,16 @@ describe("Home", () => {
     delete (window as unknown as Record<string, unknown>).Telegram;
   });
 
-  it("renders splash tap-to-main (poster fallback when no video)", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ splash_video_url: null }), {
-          status: 200,
-          headers: { "content-type": "application/json" }
-        })
-      )
-    );
-
+  it("renders splash tap-to-main", async () => {
     render(<Home />);
 
-    const splash = await screen.findByRole("button", { name: "анимация" });
+    // картинка-плашка + подпись «анимация»
+    expect(await screen.findByAltText("анимация")).toBeInTheDocument();
+    expect(screen.getByText("анимация")).toBeInTheDocument();
+
+    const splash = screen.getByRole("button");
     splash.click();
     expect(pushMock).toHaveBeenCalledWith("/main");
-
-    vi.unstubAllGlobals();
   });
 
   it("renders main screen layout", async () => {
