@@ -180,10 +180,6 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const supabase = getAdminSupabase();
 
-  if (activateNow) {
-    await supabase.from("subscription_campaigns").update({ active: false }).eq("active", true);
-  }
-
   const payload: Record<string, unknown> = {
     blogger_id: bloggerId,
     channel_id: channelId,

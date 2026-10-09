@@ -116,8 +116,8 @@ export default function AdminSubscriptionPage() {
     return () => window.clearInterval(id);
   }, [loadCampaigns]);
 
-  const activeCampaign = useMemo(
-    () => campaigns.find((c) => c.active) ?? null,
+  const activeCampaigns = useMemo(
+    () => campaigns.filter((c) => c.active),
     [campaigns]
   );
 
@@ -214,80 +214,92 @@ export default function AdminSubscriptionPage() {
     <>
       <div className={styles.card}>
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>Текущая кампания подписки</h1>
+          <h1 className={styles.title}>Активные аккаунты подписки</h1>
           <div className={styles.pill}>
             <span>Всего кампаний: {campaigns.length}</span>
             <span>
-              Активна:{" "}
-              <span style={{ color: activeCampaign ? "#1c8a3b" : "#777" }}>
-                {activeCampaign ? "ДА" : "НЕТ"}
+              Активно:{" "}
+              <span style={{ color: activeCampaigns.length > 0 ? "#1c8a3b" : "#777" }}>
+                {activeCampaigns.length > 0 ? `${activeCampaigns.length}` : "НЕТ"}
               </span>
             </span>
           </div>
         </div>
 
-        {activeCampaign ? (
-          <>
-            <div className={styles.metricRow} style={{ marginTop: 10 }}>
-              <div className={styles.metric}>
-                <div className={styles.metricLabel}>Блогер</div>
-                <div className={styles.metricValue}>{activeCampaign.blogger_name ?? "—"}</div>
-              </div>
-              <div className={styles.metric}>
-                <div className={styles.metricLabel}>Канал</div>
-                <div className={styles.metricValue} style={{ fontSize: 14, wordBreak: "break-all" }}>
-                  {activeCampaign.channel_id}
+        {activeCampaigns.length > 0 ? (
+          <div>
+            {activeCampaigns.map((activeCampaign) => (
+              <div
+                key={activeCampaign.id}
+                style={{
+                  border: "1px solid rgba(184,31,34,0.2)",
+                  borderRadius: 14,
+                  padding: "14px 16px",
+                  marginTop: 12
+                }}
+              >
+                <div className={styles.metricRow} style={{ marginTop: 0 }}>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Блогер</div>
+                    <div className={styles.metricValue}>{activeCampaign.blogger_name ?? "—"}</div>
+                  </div>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Канал</div>
+                    <div className={styles.metricValue} style={{ fontSize: 14, wordBreak: "break-all" }}>
+                      {activeCampaign.channel_id}
+                    </div>
+                  </div>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Цель</div>
+                    <div className={styles.metricValue}>{activeCampaign.goal_subscribers.toLocaleString("ru-RU")}</div>
+                  </div>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Подписалось</div>
+                    <div className={styles.metricValue}>{activeCampaign.confirmed_count.toLocaleString("ru-RU")}</div>
+                  </div>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Заполнено</div>
+                    <div className={styles.metricValue}>{activeCampaign.percent.toFixed(2)}%</div>
+                  </div>
+                </div>
+
+                <div className={styles.progressWrap} style={{ marginTop: 14 }}>
+                  <div
+                    className={progressClass(activeCampaign.percent)}
+                    style={{ width: `${Math.min(100, activeCampaign.percent)}%` }}
+                  />
+                </div>
+                <div className={styles.muted} style={{ marginTop: 6, fontSize: 13 }}>
+                  {activeCampaign.confirmed_count} / {activeCampaign.goal_subscribers} человек уже подписалось и
+                  подтвердило
+                </div>
+
+                <div className={styles.buttonRow} style={{ marginTop: 14 }}>
+                  {activeCampaign.telegram_link && (
+                    <a
+                      className={`${styles.button} ${styles.buttonPrimary}`}
+                      href={activeCampaign.telegram_link}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ textDecoration: "none", display: "inline-flex" }}
+                    >
+                      Открыть канал →
+                    </a>
+                  )}
+                  <button
+                    className={styles.button}
+                    type="button"
+                    onClick={() => activateCampaign(activeCampaign.id, true)}
+                  >
+                    Деактивировать
+                  </button>
+                  <button className={styles.button} type="button" onClick={() => void loadCampaigns()}>
+                    {loading ? "Обновление..." : "Обновить"}
+                  </button>
                 </div>
               </div>
-              <div className={styles.metric}>
-                <div className={styles.metricLabel}>Цель</div>
-                <div className={styles.metricValue}>{activeCampaign.goal_subscribers.toLocaleString("ru-RU")}</div>
-              </div>
-              <div className={styles.metric}>
-                <div className={styles.metricLabel}>Подписалось</div>
-                <div className={styles.metricValue}>{activeCampaign.confirmed_count.toLocaleString("ru-RU")}</div>
-              </div>
-              <div className={styles.metric}>
-                <div className={styles.metricLabel}>Заполнено</div>
-                <div className={styles.metricValue}>{activeCampaign.percent.toFixed(2)}%</div>
-              </div>
-            </div>
-
-            <div className={styles.progressWrap} style={{ marginTop: 14 }}>
-              <div
-                className={progressClass(activeCampaign.percent)}
-                style={{ width: `${Math.min(100, activeCampaign.percent)}%` }}
-              />
-            </div>
-            <div className={styles.muted} style={{ marginTop: 6, fontSize: 13 }}>
-              {activeCampaign.confirmed_count} / {activeCampaign.goal_subscribers} человек уже подписалось и
-              подтвердило
-            </div>
-
-            <div className={styles.buttonRow} style={{ marginTop: 14 }}>
-              {activeCampaign.telegram_link && (
-                <a
-                  className={`${styles.button} ${styles.buttonPrimary}`}
-                  href={activeCampaign.telegram_link}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ textDecoration: "none", display: "inline-flex" }}
-                >
-                  Открыть канал →
-                </a>
-              )}
-              <button
-                className={styles.button}
-                type="button"
-                onClick={() => activateCampaign(activeCampaign.id, true)}
-              >
-                Деактивировать
-              </button>
-              <button className={styles.button} type="button" onClick={() => void loadCampaigns()}>
-                {loading ? "Обновление..." : "Обновить"}
-              </button>
-            </div>
-          </>
+            ))}
+          </div>
         ) : (
           <div
             className={styles.muted}
@@ -298,7 +310,7 @@ export default function AdminSubscriptionPage() {
               marginTop: 10
             }}
           >
-            {loading ? "Загрузка..." : "Сейчас нет активной кампании — пользователи могут крутить рулетку без подписки."}
+            {loading ? "Загрузка..." : "Сейчас нет активных аккаунтов — пользователи могут крутить рулетку без подписки."}
           </div>
         )}
       </div>

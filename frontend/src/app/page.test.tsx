@@ -26,11 +26,24 @@ describe("Home", () => {
     delete (window as unknown as Record<string, unknown>).Telegram;
   });
 
-  it("renders splash link to main", async () => {
+  it("renders splash tap-to-main (poster fallback when no video)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ splash_video_url: null }), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        })
+      )
+    );
+
     render(<Home />);
 
-    const link = await screen.findByRole("link", { name: "анимация" });
-    expect(link).toHaveAttribute("href", "/main");
+    const splash = await screen.findByRole("button", { name: "анимация" });
+    splash.click();
+    expect(pushMock).toHaveBeenCalledWith("/main");
+
+    vi.unstubAllGlobals();
   });
 
   it("renders main screen layout", async () => {

@@ -570,11 +570,11 @@ export function buildApp(
       });
       if (!gateState.ok) {
         req.log.warn({ gateState }, "spin_gate_db_failed");
-      } else if (gateState.campaign && !gateState.confirmed) {
+      } else if ((gateState.campaigns?.length ?? 0) > 0 && !gateState.confirmed) {
         return reply.code(403).send({
           code: "MUST_SUBSCRIBE_FIRST",
-          message: "Сначала подпишитесь на канал.",
-          campaign: gateState.campaign,
+          message: "Сначала подпишитесь на каналы.",
+          campaigns: gateState.campaigns,
           progress: gateState.progress
         });
       }
@@ -755,16 +755,19 @@ export function buildApp(
   });
 
   type GateCampaignRow = {
-      has_campaign: boolean;
-      campaign_id: string | null;
+      campaign_id: string;
       blogger_name: string | null;
-      channel_id: string | null;
+      channel_id: string;
       telegram_link: string | null;
       goal_subscribers: number;
       confirmed_count: number;
       percent: number;
       user_confirmed: boolean;
     };
+    type GateProg = { confirmed: number; goal: number; percent: number };
+    type GateState =
+      | { ok: true; campaigns: GateCampaignRow[]; progress: GateProg | null; confirmed: boolean; check: { ok: boolean; status?: string; code?: number } | null }
+      | { ok: false; error: string; raw?: unknown; campaign: null; confirmed: boolean; progress: null; check: { ok: boolean; status?: string; code?: number } | null };
     const loadGateState = async (
       tgUserId: number,
       opts?: { forceCheckTelegram?: boolean; log?: { info: (o: Record<string, unknown>, m?: string) => void; warn: (o: Record<string, unknown>, m?: string) => void } }
@@ -774,98 +777,98 @@ export function buildApp(
         info: () => undefined,
         warn: () => undefined
       };
-      let row: GateCampaignRow | null = null;
+      let rows: GateCampaignRow[] = [];
       try {
-        const r = await supabase.rpc("check_user_has_active_subscription", { p_tg_user_id: tgUserId });
-        if (!r.error && Array.isArray(r.data) && r.data.length > 0) {
-          row = r.data[0] as unknown as GateCampaignRow;
+        const r = await supabase.rpc("list_active_subscriptions", { p_tg_user_id: tgUserId });
+        if (!r.error && Array.isArray(r.data)) {
+          rows = r.data as unknown as GateCampaignRow[];
+        } else if (r.error) {
+          subLog.warn && subLog.warn({ code: r.error.code, message: r.error.message }, "list_active_subscriptions_db_error_hint");
         }
       } catch (e) {
         return { ok: false, error: "subscription_db_error", raw: e, campaign: null, confirmed: true, progress: null, check: null };
       }
 
-    if (!row || !row.has_campaign || !row.campaign_id || !row.channel_id) {
-      return {
-        ok: true,
-        campaign: null,
-        confirmed: true,
-        progress: { confirmed: row?.confirmed_count ?? 0, goal: row?.goal_subscribers ?? 0, percent: row?.percent ?? 0 },
-        check: null
-      };
-    }
+      // Если активных кампаний нет — гейт открыт
+      if (rows.length === 0) {
+        return {
+          ok: true,
+          campaigns: [],
+          progress: null,
+          confirmed: true,
+          check: null
+        };
+      }
 
-    let needsTelegramCheck = forceCheck;
-    if (!row.user_confirmed) needsTelegramCheck = true;
+      let lastCheck: { ok: boolean; status?: string; code?: number } | null = null;
+      let confirmed = true;
 
-    let checkResult: { ok: boolean; status?: string; code?: number } | null = null;
-    if (needsTelegramCheck) {
-      const cacheKey = `${row.campaign_id}:${row.channel_id}:${tgUserId}`;
-      const fromCache = membershipCache.get(cacheKey);
-      if (fromCache !== undefined && !forceCheck) {
-        checkResult = { ok: fromCache, status: fromCache ? "member" : "left" };
-      } else {
-        try {
-          const res = await checkChannelSubscription({
-            telegram,
-            channelId: row.channel_id,
-            userId: tgUserId,
-            log: subLog
-          } as Parameters<typeof checkChannelSubscription>[0]);
-          checkResult = { ok: res.ok };
-          if (res.status !== undefined) checkResult.status = res.status;
-          if (checkResult.ok) membershipCache.set(cacheKey, true);
-        } catch (e) {
-          if (e instanceof TelegramError) {
-            checkResult = { ok: false };
-            if (e.code !== undefined) (checkResult as { code?: number }).code = e.code;
-          } else {
-            return { ok: false, error: "subscription_check_error", raw: e, campaign: row, confirmed: false, progress: null, check: null };
+      for (const row of rows) {
+        const needsTelegramCheck = forceCheck || !row.user_confirmed;
+        if (!needsTelegramCheck) continue;
+
+        const cacheKey = `${row.campaign_id}:${row.channel_id}:${tgUserId}`;
+        const fromCache = membershipCache.get(cacheKey);
+        let checkResult: { ok: boolean; status?: string; code?: number } | null = null;
+        if (fromCache !== undefined && !forceCheck) {
+          checkResult = { ok: fromCache, status: fromCache ? "member" : "left" };
+        } else {
+          try {
+            const res = await checkChannelSubscription({
+              telegram,
+              channelId: row.channel_id,
+              userId: tgUserId,
+              log: subLog
+            } as Parameters<typeof checkChannelSubscription>[0]);
+            checkResult = { ok: res.ok };
+            if (res.status !== undefined) checkResult.status = res.status;
+            if (checkResult.ok) membershipCache.set(cacheKey, true);
+          } catch (e) {
+            if (e instanceof TelegramError) {
+              checkResult = { ok: false };
+              if (e.code !== undefined) (checkResult as { code?: number }).code = e.code;
+            } else {
+              return { ok: false, error: "subscription_check_error", raw: e, campaign: row, confirmed: false, progress: null, check: null };
+            }
           }
         }
+
+        lastCheck = checkResult;
+
+        if (checkResult?.ok && !row.user_confirmed) {
+          try {
+            await supabase.rpc("upsert_user_subscription_confirmation", {
+              p_campaign_id: row.campaign_id,
+              p_tg_user_id: tgUserId,
+              p_verified_via: "bot_api_check",
+              p_meta: { status: checkResult.status ?? "member", checked_at: new Date().toISOString() }
+            });
+            confirmed = confirmed && true;
+          } catch (e) {
+            return { ok: false, error: "subscription_confirm_db_error", raw: e, campaign: row, confirmed: false, progress: null, check: checkResult };
+          }
+        } else {
+          confirmed = confirmed && !!row.user_confirmed;
+        }
       }
-    }
 
-    let finalConfirmed = !!row.user_confirmed;
-    if (checkResult?.ok && !finalConfirmed) {
-      try {
-        await supabase.rpc("upsert_user_subscription_confirmation", {
-          p_campaign_id: row.campaign_id,
-          p_tg_user_id: tgUserId,
-          p_verified_via: "bot_api_check",
-          p_meta: { status: checkResult.status ?? "member", checked_at: new Date().toISOString() }
-        });
-        finalConfirmed = true;
-      } catch (e) {
-        return { ok: false, error: "subscription_confirm_db_error", raw: e, campaign: row, confirmed: false, progress: null, check: checkResult };
-      }
-    }
+      // Суммарный прогресс по всем кампаниям
+      const goal = rows.reduce((s, r) => s + (Number(r.goal_subscribers) || 0), 0);
+      const confirmedCount = rows.reduce((s, r) => s + (Number(r.confirmed_count) || 0), 0);
+      const progress: GateProg = {
+        confirmed: confirmedCount,
+        goal,
+        percent: goal > 0 ? Math.round((confirmedCount / goal) * 10000) / 100 : 0
+      };
 
-    let newProgress = {
-      confirmed: row.confirmed_count,
-      goal: row.goal_subscribers,
-      percent: row.percent
+      return {
+        ok: true,
+        campaigns: rows,
+        progress,
+        confirmed,
+        check: lastCheck
+      };
     };
-    if (finalConfirmed && !row.user_confirmed && checkResult?.ok) {
-      newProgress.confirmed = row.confirmed_count + 1;
-      newProgress.percent = row.goal_subscribers > 0
-        ? Math.round((newProgress.confirmed / row.goal_subscribers) * 10000) / 100
-        : 0;
-    }
-
-    return {
-      ok: true,
-      campaign: {
-        id: row.campaign_id,
-        blogger_name: row.blogger_name,
-        channel_id: row.channel_id,
-        telegram_link: row.telegram_link,
-        goal_subscribers: row.goal_subscribers
-      },
-      confirmed: finalConfirmed,
-      progress: newProgress,
-      check: checkResult
-    };
-  };
 
   app.get("/api/subscription/status", async (req: FastifyRequest, reply: FastifyReply) => {
     const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
@@ -884,7 +887,7 @@ export function buildApp(
       });
     }
     const payload: Record<string, unknown> = {
-      campaign: res.campaign,
+      campaigns: res.campaigns,
       confirmed: res.confirmed,
       progress: res.progress
     };
@@ -924,30 +927,20 @@ export function buildApp(
         progress: res.progress
       });
     }
-    const campaign = res.campaign;
-    if (!campaign) {
-      return {
-        ok: true,
-        campaign: null,
-        confirmed: true,
-        status: "no_active_campaign",
-        progress: res.progress
-      };
-    }
     if (!res.confirmed) {
       return {
         ok: true,
-        campaign,
+        campaigns: res.campaigns,
         confirmed: false,
         status: res.check?.status ?? "not_subscribed",
-        message: "Вы пока не подписаны на канал. Подпишитесь, подождите 5 секунд и нажмите «Проверить» ещё раз.",
+        message: "Не видим подписки, к сожалению, без нее нельзя крутить. Подпишись на все каналы, подожди 5 секунд и нажми «Проверить» ещё раз.",
         progress: res.progress,
         last_check: res.check ?? null
       };
     }
     return {
       ok: true,
-      campaign,
+      campaigns: res.campaigns,
       confirmed: true,
       status: res.check?.status ?? "member",
       progress: res.progress,

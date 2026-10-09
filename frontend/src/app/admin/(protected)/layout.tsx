@@ -32,6 +32,12 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
               Призы
             </Link>
             <Link
+              href="/admin/splash"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/splash") ? styles.navLinkActive : ""}`}
+            >
+              Обложка
+            </Link>
+            <Link
               href="/admin/bloggers"
               className={`${styles.navLink} ${pathname.startsWith("/admin/bloggers") ? styles.navLinkActive : ""}`}
             >

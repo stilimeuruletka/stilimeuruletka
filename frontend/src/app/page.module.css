@@ -36,6 +36,20 @@
   letter-spacing: 0.2px;
 }
 
+.splashVideo {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.splashImage {
+  width: min(60vw, 260px);
+  height: auto;
+  display: block;
+}
+
 .screen {
   width: 100%;
   min-height: 100vh;
