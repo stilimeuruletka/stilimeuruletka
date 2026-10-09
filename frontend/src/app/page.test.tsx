@@ -29,9 +29,8 @@ describe("Home", () => {
   it("renders splash tap-to-main", async () => {
     render(<Home />);
 
-    // картинка-плашка + подпись «анимация»
-    expect(await screen.findByAltText("анимация")).toBeInTheDocument();
-    expect(screen.getByText("анимация")).toBeInTheDocument();
+    // подпись «анимация» без картинки-заставки
+    expect(await screen.findByText("анимация")).toBeInTheDocument();
 
     const splash = screen.getByRole("button");
     splash.click();

@@ -926,7 +926,7 @@ export default function RoulettePage() {
             </div>
 
             <div className={styles.spinResultTicket}>
-              {resolvedPrize && (
+              {resolvedPrize ? (
                 <div className={styles.spinResultPrizeImageWrap}>
                   <Image
                     src={resolvedPrize.image}
@@ -937,7 +937,18 @@ export default function RoulettePage() {
                     quality={90}
                   />
                 </div>
-              )}
+              ) : !result.win ? (
+                <div className={styles.spinResultPrizeImageWrap}>
+                  <Image
+                    src="/карточкапроигрыш.png"
+                    alt=""
+                    fill
+                    className={styles.spinResultPrizeImage}
+                    sizes="(max-width: 520px) 80vw, 320px"
+                    quality={90}
+                  />
+                </div>
+              ) : null}
             </div>
 
             <div className={styles.spinResultActions}>
