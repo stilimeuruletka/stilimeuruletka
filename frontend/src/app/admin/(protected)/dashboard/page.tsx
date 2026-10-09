@@ -823,7 +823,7 @@ export default function AdminDashboardPage() {
                         <th className={`${styles.th} ${styles.tdRight}`}>Круток</th>
                         <th className={`${styles.th} ${styles.tdRight}`}>Выигрышей</th>
                         <th className={`${styles.th} ${styles.tdRight}`}>Проигрышей</th>
-                        <th className={`${styles.th} ${styles.tdRight}`}>Купоны</th>
+                        <th className={`${styles.th} ${styles.tdRight}`}>Призы</th>
                         <th className={styles.th}>Первый заход</th>
                         <th className={styles.th}>Последний спин</th>
                         <th className={styles.th}>Новый</th>

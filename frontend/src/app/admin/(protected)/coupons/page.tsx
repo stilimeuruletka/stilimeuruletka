@@ -303,7 +303,7 @@ export default function AdminCouponsPage() {
       <section className={styles.card}>
         <div className={styles.toolbarRow}>
           <div>
-            <h2 className={styles.title}>Календарь купонов</h2>
+            <h2 className={styles.title}>Календарь призового фонда</h2>
             <div className={styles.muted}>
               Автообновление каждые 5 сек. Каждый выигрыш в рулетке автоматически списывает купон текущего месяца.
             </div>
@@ -460,7 +460,7 @@ export default function AdminCouponsPage() {
         <div className={styles.toolbarRow}>
           <div>
             <h2 className={styles.title} style={{ margin: 0 }}>
-              Журнал выдачи купонов
+              Журнал выдачи
               {selectedSet ? (
                 <span className={styles.pill} style={{ marginLeft: 10 }}>
                   набор: {selectedSet.title}

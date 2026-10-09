@@ -53,7 +53,7 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
               href="/admin/coupons"
               className={`${styles.navLink} ${pathname.startsWith("/admin/coupons") ? styles.navLinkActive : ""}`}
             >
-              Купоны
+              Призовой фонд
             </Link>
             <Link
               href="/admin/subscription"
