@@ -418,7 +418,7 @@
 
 .friendProfileStack .profileCenterIcons {
   position: absolute;
-  top: 30%;
+  top: 34%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -471,7 +471,7 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 62px;
+  top: 150px;
   transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
@@ -482,7 +482,7 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 20%;
+  top: 24%;
   left: 50%;
   width: 360px;
   height: 108px;
@@ -514,12 +514,12 @@
 
 .friendProfileStack .profileArrowLeft {
   left: 24px;
-  top: 72px;
+  top: 152px;
 }
 
 .friendProfileStack .profileArrowRight {
   right: 24px;
-  top: 72px;
+  top: 152px;
   transform: scaleX(-1);
 }
 
@@ -531,7 +531,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: 40px;
+  top: 120px;
   left: 0;
   right: 0;
   width: 100%;
@@ -864,7 +864,7 @@
 .profileHistoryArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(80px);
+  transform: translateY(88px);
   bottom: auto;
   background: transparent;
   border: none;
@@ -1311,13 +1311,13 @@
   width: 84%;
   height: auto;
   object-fit: contain;
-  margin: 0 auto;
+  margin: 12px auto 0;
   display: block;
 }
 
 .historySpinBackButton {
   position: absolute;
-  top: 34px;
+  top: 44px;
   left: -20px;
   border: 0;
   background: transparent;
@@ -1336,7 +1336,7 @@
 
 .historySpinNextButton {
   position: absolute;
-  top: 34px;
+  top: 44px;
   right: -20px;
   border: 0;
   background: transparent;
@@ -2242,7 +2242,7 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  background: rgba(230, 220, 210, 0.42);
+  background: rgba(90, 85, 80, 0.55);
   backdrop-filter: blur(2px);
 }
 
@@ -2274,13 +2274,13 @@
 }
 
 .spinResultTopNavLeft {
-  left: 12px;
-  top: 70px;
+  left: -20px;
+  top: 40px;
 }
 
 .spinResultTopNavRight {
-  right: 48px;
-  top: 70px;
+  right: -20px;
+  top: 40px;
 }
 
 .spinResultTopNavIcon {
@@ -2300,7 +2300,7 @@
 
 .spinResultTopHeader {
   position: absolute;
-  top: 60px;
+  top: 30px;
   left: 16px;
   right: 16px;
   z-index: 58;
@@ -2317,11 +2317,12 @@
 }
 
 .spinResultTicketPlatform {
-  margin: 120px auto 0;
+  margin: 112px auto 0;
   width: min(70vw, 340px);
   height: auto;
   display: block;
   position: relative;
+  transform: translateX(0);
   z-index: 55;
 }
 
@@ -2389,10 +2390,11 @@
 }
 
 .spinResultPrizeImageWrap {
-  margin: -160px auto 0;
-  width: min(90%, 440px);
+  margin: -46px auto 0;
+  width: min(96%, 480px);
   aspect-ratio: 3 / 4;
   position: relative;
+  transform: translateX(-4px);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -2453,13 +2455,14 @@
 }
 
 .spinResultActions {
-  margin: -20px auto 0;
-  width: min(56vw, 240px);
+  margin: -14px auto 0;
+  width: min(51vw, 214px);
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 9px;
+  gap: 2px;
   position: relative;
+  transform: translateX(-7px);
   z-index: 59;
 }
 
@@ -2476,8 +2479,9 @@
 }
 
 .spinResultActionButtonSmall {
-  width: 100%;
+  width: 96%;
   align-self: center;
+  transform: translate(3px, -6px);
 }
 
 .spinResultActionButton::before {
