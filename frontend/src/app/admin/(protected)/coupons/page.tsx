@@ -422,9 +422,10 @@ export default function AdminCouponsPage() {
             <tbody>
               {prizes.map((p) => (
                 <tr key={p.id}>
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ width: "100%" }}>
                     <input
                       className={styles.inlineInput}
+                      style={{ width: "100%" }}
                       defaultValue={p.title}
                       onBlur={(e) => {
                         const next = e.target.value;
@@ -432,9 +433,10 @@ export default function AdminCouponsPage() {
                       }}
                     />
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} style={{ width: 90, textAlign: "center" }}>
                     <input
                       className={styles.inlineInput}
+                      style={{ width: 64, textAlign: "center" }}
                       defaultValue={p.spins == null ? "" : String(p.spins)}
                       inputMode="numeric"
                       onBlur={(e) => {
