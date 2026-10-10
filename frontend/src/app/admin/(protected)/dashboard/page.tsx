@@ -30,6 +30,8 @@ type RecentSpin = {
 type RealtimePayload = {
   now: string;
   online_users: number;
+  total_users: number;
+  total_bot_users: number;
   online_list: OnlineUser[];
   today: {
     spins: number;
@@ -400,6 +402,36 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Итого: чёрным по центру, без плашек */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 32,
+            padding: "14px 0 18px",
+            flexWrap: "wrap"
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1, color: "#0f172a" }}>
+              {realtime?.total_users ?? 0}
+            </div>
+            <div className={styles.muted} style={{ fontSize: 13, marginTop: 6 }}>
+              человек в приложении
+            </div>
+          </div>
+          <div style={{ width: 1, height: 44, background: "rgba(15,23,42,0.15)" }} />
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1, color: "#0f172a" }}>
+              {realtime?.total_bot_users ?? 0}
+            </div>
+            <div className={styles.muted} style={{ fontSize: 13, marginTop: 6 }}>
+              человек в боте
+            </div>
+          </div>
+        </div>
+
         <div
           style={{
             display: "grid",
@@ -436,33 +468,6 @@ export default function AdminDashboardPage() {
               icon: "🏆",
               good: realtime ? realtime.today.delta_wins_percent >= 0 : undefined,
               drillKey: "wins" as DrillKind
-            },
-            {
-              label: "Купонов выдано сегодня",
-              v: `${realtime?.today.coupons_issued ?? 0}`,
-              tone: "purple" as const,
-              icon: "🎟️"
-            },
-            {
-              label: "Win rate · 24ч",
-              v: `${realtime?.last_24h.win_rate_percent ?? 0}%`,
-              sub: realtime ? `спинов ${realtime.last_24h.spins}, побед ${realtime.last_24h.wins}` : undefined,
-              tone: "amber" as const,
-              icon: "📈"
-            },
-            {
-              label: "Топ приз · 24ч",
-              v: realtime?.last_24h.top_prize?.title ?? "—",
-              sub: realtime?.last_24h.top_prize ? `выпал ${realtime.last_24h.top_prize.count} раз` : undefined,
-              tone: "cyan" as const,
-              icon: "🎁"
-            },
-            {
-              label: "Топ блогер · 24ч",
-              v: realtime?.top_blogger_24h?.name ?? realtime?.top_blogger_24h?.code ?? "—",
-              sub: realtime?.top_blogger_24h ? `кликов ${realtime.top_blogger_24h.clicks}` : "нет кликов за сутки",
-              tone: "default" as const,
-              icon: "📣"
             }
           ].map((c, i) => {
             const toneBg =
@@ -470,24 +475,12 @@ export default function AdminDashboardPage() {
                 ? "rgba(78,201,132,0.12)"
                 : c.tone === "red"
                 ? "rgba(184,31,34,0.14)"
-                : c.tone === "purple"
-                ? "rgba(155,114,255,0.14)"
-                : c.tone === "amber"
-                ? "rgba(255,184,0,0.12)"
-                : c.tone === "cyan"
-                ? "rgba(94,204,255,0.12)"
                 : "rgba(255,255,255,0.04)";
             const toneBorder =
               c.tone === "green"
                 ? "rgba(78,201,132,0.45)"
                 : c.tone === "red"
                 ? "rgba(184,31,34,0.55)"
-                : c.tone === "purple"
-                ? "rgba(155,114,255,0.45)"
-                : c.tone === "amber"
-                ? "rgba(255,184,0,0.45)"
-                : c.tone === "cyan"
-                ? "rgba(94,204,255,0.45)"
                 : "rgba(255,255,255,0.12)";
             const clickable = Boolean((c as { drillKey?: DrillKind }).drillKey);
             return (
@@ -870,7 +863,7 @@ export default function AdminDashboardPage() {
                     <thead>
                       <tr>
                         <th className={styles.th}>Время</th>
-                        <th className={styles.th}>Кто</th>
+                        <th className={styles.th}>Ник пользователя</th>
                         <th className={styles.th}>Событие</th>
                       </tr>
                     </thead>
@@ -1007,7 +1000,7 @@ export default function AdminDashboardPage() {
                     <thead>
                       <tr>
                         <th className={styles.th}>Время</th>
-                        <th className={styles.th}>Кто</th>
+                        <th className={styles.th}>Ник пользователя</th>
                         <th className={styles.th}>Приз</th>
                       </tr>
                     </thead>

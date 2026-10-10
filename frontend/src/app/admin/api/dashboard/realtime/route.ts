@@ -62,6 +62,8 @@ export async function GET(req: Request) {
   try {
     const [
       onlineQ,
+      totalUsersQ,
+      totalBotUsersQ,
       todaySpinsQ,
       yesterdaySpinsQ,
       last24hSpinsQ,
@@ -74,9 +76,27 @@ export async function GET(req: Request) {
     ] = await Promise.all([
       supabase
         .from("users")
-        .select("id", { count: "exact", head: false })
+        .select("id", { count: "exact", head: true })
         .gte("last_seen_at", fiveMinAgo)
         .lte("last_seen_at", nowIso),
+      supabase
+        .from("users")
+        .select("id", { count: "exact", head: true }),
+      (async () => {
+        try {
+          const { data: botStarted, error: botErr } = await supabase
+            .from("audit_events")
+            .select("tg_user_id")
+            .eq("event_type", "bot_start")
+            .limit(10000);
+          if (botErr) return { data: null };
+          const unique = new Set<number>();
+          for (const row of (botStarted ?? []) as Array<{ tg_user_id: number }>) unique.add(row.tg_user_id);
+          return { data: unique.size };
+        } catch {
+          return { data: 0 };
+        }
+      })(),
       supabase
         .from("spins")
         .select("id,win", { count: "exact" })
@@ -250,6 +270,8 @@ export async function GET(req: Request) {
     return NextResponse.json({
       now: nowIso,
       online_users: Number(onlineQ.count ?? 0),
+      total_users: Number(totalUsersQ.count ?? 0),
+      total_bot_users: typeof totalBotUsersQ.data === "number" ? totalBotUsersQ.data : 0,
       online_list: onlineList,
       today: {
         spins: todaySpins,
