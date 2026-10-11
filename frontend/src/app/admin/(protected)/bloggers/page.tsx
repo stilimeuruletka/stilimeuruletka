@@ -199,17 +199,20 @@ export default function AdminBloggersPage() {
   }, [stats]);
 
   const buildBloggerLink = useCallback(
-    (code: string) => {
+    (b: { code: string; telegram_link: string | null }) => {
+      // Если задана своя готовая ссылка — копируем/показываем именно её.
+      const custom = b.telegram_link?.trim();
+      if (custom) return custom;
       const bot = linkConfig?.bot_username || "<BOT>";
       const slug = linkConfig?.app_slug || "app";
-      const cleanCode = String(code || "").trim().replace(/^blog_/i, "");
+      const cleanCode = String(b.code || "").trim().replace(/^blog_/i, "");
       return `https://t.me/${bot}/${slug}?startapp=blog_${cleanCode}&mode=fullscreen`;
     },
     [linkConfig]
   );
 
-  const handleCopyLink = async (code: string) => {
-    const link = buildBloggerLink(code);
+  const handleCopyLink = async (b: { code: string; telegram_link: string | null }) => {
+    const link = buildBloggerLink(b);
     const ok = await copyToClipboardFallback(link);
     showToast(ok ? `Ссылка скопирована: ${link}` : "Не удалось скопировать", ok ? "ok" : "error");
   };
@@ -326,12 +329,12 @@ export default function AdminBloggersPage() {
             />
           </div>
           <div className={styles.field}>
-            <div className={styles.label}>Ссылка на Telegram (канал/группа)</div>
+            <div className={styles.label}>Своя готовая ссылка (опционально)</div>
             <input
               className={styles.input}
               value={newTelegramLink}
               onChange={(e) => setNewTelegramLink(e.target.value)}
-              placeholder="https://t.me/... или @username"
+              placeholder="https://t.me/... (если есть готовая ссылка)"
             />
           </div>
           <div className={styles.field}>
@@ -368,7 +371,7 @@ export default function AdminBloggersPage() {
               <tr>
                 <th className={styles.th}>Код</th>
                 <th className={styles.th}>Имя</th>
-                <th className={styles.th}>Ссылка Telegram</th>
+                <th className={styles.th}>Готовая ссылка</th>
                 <th className={styles.th}>Активен</th>
                 <th className={styles.th}>Создан</th>
                 <th className={styles.th}>Действия</th>
@@ -377,7 +380,7 @@ export default function AdminBloggersPage() {
             <tbody>
               {bloggers.map((b) => {
                 const e = editing[b.id];
-                const link = buildBloggerLink(b.code);
+                const link = buildBloggerLink(b);
                 return (
                   <tr key={b.id}>
                     <td className={styles.td}>
@@ -458,7 +461,7 @@ export default function AdminBloggersPage() {
                     </td>
                     <td className={styles.td}>
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        <button className={styles.button} type="button" onClick={() => handleCopyLink(b.code)}>
+                        <button className={styles.button} type="button" onClick={() => handleCopyLink(b)}>
                           Копировать ссылку
                         </button>
                         {e ? (

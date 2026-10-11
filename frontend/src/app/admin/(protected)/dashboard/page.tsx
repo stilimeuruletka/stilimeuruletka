@@ -693,43 +693,6 @@ export default function AdminDashboardPage() {
 
       <div className={styles.card} style={{ marginTop: 16 }}>
         <div className={styles.titleRow}>
-          <h2 className={styles.title}>Распределение призов</h2>
-          <div className={styles.pill}>
-            <span>Позиций: {payload.prize_breakdown.length}</span>
-          </div>
-        </div>
-
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.th}>Приз</th>
-                <th className={`${styles.th} ${styles.tdRight}`}>Выпало раз</th>
-                <th className={`${styles.th} ${styles.tdRight}`}>Доля, %</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payload.prize_breakdown.map((b, idx) => (
-                <tr key={b.prize_id || `null-${idx}`}>
-                  <td className={styles.td}>{b.prize_title}</td>
-                  <td className={`${styles.td} ${styles.tdRight}`}>{b.count}</td>
-                  <td className={`${styles.td} ${styles.tdRight}`}>{b.win_count_share_percent.toFixed(2)}%</td>
-                </tr>
-              ))}
-              {payload.prize_breakdown.length === 0 && (
-                <tr>
-                  <td className={styles.td} colSpan={3}>
-                    {loading ? "Загрузка..." : "Нет данных за период"}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className={styles.card} style={{ marginTop: 16 }}>
-        <div className={styles.titleRow}>
           <h2 className={styles.title}>Последние 100 круток</h2>
           <div className={styles.pill}>
             <span>Показано: {payload.recent_spins.length}</span>
