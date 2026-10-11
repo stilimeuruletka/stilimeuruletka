@@ -45,6 +45,18 @@ export async function GET(req: NextRequest) {
       return jsonError("Не удалось создать пользователя", 500);
     }
 
+    if (extracted.startParam?.startsWith("blog_")) {
+      try {
+        await supabase.rpc("track_blogger_click", {
+          p_tg_user_id: extracted.userId,
+          p_blogger_code: extracted.startParam.slice(5),
+          p_meta: { via: "start_param" }
+        });
+      } catch (clickErr) {
+        console.error("[api/me] track_blogger_click failed", clickErr);
+      }
+    }
+
     if (tzOffsetMinutes != null) {
       try {
         await supabase.rpc("set_user_tz_offset", {
