@@ -199,9 +199,10 @@ export default function AdminUsersPage() {
         acc.losses += Number(s.losses) || 0;
         acc.coupons += Number(s.coupons) || 0;
         acc.refs += Number(s.referrals) || 0;
+        if ((Number(s.wins) || 0) > 0) acc.winnerPeople += 1;
         return acc;
       },
-      { total: 0, wins: 0, losses: 0, coupons: 0, refs: 0 }
+      { total: 0, wins: 0, losses: 0, coupons: 0, refs: 0, winnerPeople: 0 }
     );
   }, [stats]);
 
@@ -255,8 +256,11 @@ export default function AdminUsersPage() {
           <span>Игры: {totals.total}</span>
           <span>Выигрыши: {totals.wins}</span>
           <span>Проигрыши: {totals.losses}</span>
-          <span>Купоны: {totals.coupons}</span>
-          <span>Рефералы: {totals.refs}</span>
+          <span>Призы: {totals.coupons}</span>
+          <span>Приглашенных друзей: {totals.refs}</span>
+          <span style={{ fontWeight: 700, color: "#1c8a3b" }}>
+            Итого выиграло человек: {totals.winnerPeople}
+          </span>
         </div>
       </div>
 
@@ -299,9 +303,9 @@ export default function AdminUsersPage() {
               {(
                 [
                   { v: "", label: "Все" },
-                  { v: "winners", label: "Только выиграли 🏆" },
-                  { v: "losers", label: "Только проиграли 😥" },
-                  { v: "zero", label: "Нет спинов 🙅" }
+                  { v: "winners", label: "Выигрыши" },
+                  { v: "losers", label: "Проигрыши" },
+                  { v: "zero", label: "Нет спинов" }
                 ] as Array<{ v: Filters["winFilter"]; label: string }>
               ).map((opt) => (
                 <label key={opt.v || "all"} className={`${styles.radio} ${filters.winFilter === opt.v ? styles.radioOn : ""}`}>
@@ -349,7 +353,7 @@ export default function AdminUsersPage() {
                 checked={filters.hasRef}
                 onChange={(e) => setFilters((prev) => ({ ...prev, hasRef: e.target.checked }))}
               />
-              <span>Пригласили кого-то</span>
+              <span>Пригласили друзей</span>
             </label>
             <label className={styles.checkbox}>
               <input
@@ -357,7 +361,7 @@ export default function AdminUsersPage() {
                 checked={filters.invited}
                 onChange={(e) => setFilters((prev) => ({ ...prev, invited: e.target.checked }))}
               />
-              <span>Приглашены рефералкой</span>
+              <span>Зашли по реферальной ссылке</span>
             </label>
             <label className={styles.checkbox}>
               <input
@@ -365,7 +369,7 @@ export default function AdminUsersPage() {
                 checked={filters.hasCoupons}
                 onChange={(e) => setFilters((prev) => ({ ...prev, hasCoupons: e.target.checked }))}
               />
-              <span>Получили купоны</span>
+              <span>Получили призы</span>
             </label>
           </div>
         </div>
@@ -410,12 +414,12 @@ export default function AdminUsersPage() {
                 Проигрыши
               </th>
               <th className={`${styles.th} ${styles.tdRight} ${sortButtonClass("coupons")}`} onClick={() => setSort("coupons")}>
-                Купоны
+                Призы
               </th>
               <th className={`${styles.th} ${styles.tdRight} ${sortButtonClass("referrals")}`} onClick={() => setSort("referrals")}>
-                Рефералы
+                Приглашенных друзей
               </th>
-              <th className={styles.th}>Кто пригласил</th>
+              <th className={styles.th}>Источник перехода</th>
               <th className={`${styles.th} ${sortButtonClass("created_at")}`} onClick={() => setSort("created_at")}>
                 Регистрация
               </th>

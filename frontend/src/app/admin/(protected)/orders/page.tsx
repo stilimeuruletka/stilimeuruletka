@@ -22,6 +22,21 @@ type BloggerRow = {
   created_at: string;
 };
 
+type CampaignRow = {
+  id: string;
+  blogger_id: string;
+  blogger_name: string | null;
+  channel_id: string;
+  telegram_link: string | null;
+  goal_subscribers: number;
+  starts_at: string;
+  ends_at: string | null;
+  active: boolean;
+  created_at: string;
+  confirmed_count: number;
+  percent: number;
+};
+
 type ToastState = { message: string; variant: "ok" | "error" } | null;
 
 function demoStats(): BloggerStat[] {
@@ -47,6 +62,12 @@ function toIsoStartOfDayLocal(dateStr: string) {
 function toIsoEndOfDayLocal(dateStr: string) {
   const d = new Date(`${dateStr}T23:59:59.999`);
   return Number.isFinite(d.getTime()) ? d.toISOString() : null;
+}
+
+function progressClass(p: number) {
+  if (p >= 100) return `${styles.progressFill} ${styles.progressFillFull}`;
+  if (p >= 85) return `${styles.progressFill} ${styles.progressFillAlmost}`;
+  return styles.progressFill;
 }
 
 async function copyToClipboardFallback(text: string): Promise<boolean> {
@@ -76,7 +97,7 @@ async function copyToClipboardFallback(text: string): Promise<boolean> {
   }
 }
 
-export default function AdminBloggersPage() {
+export default function AdminOrdersPage() {
   const today = useMemo(() => new Date(), []);
   const defaultTo = useMemo(() => yyyyMmDd(today), [today]);
   const defaultFrom = useMemo(() => {
@@ -85,24 +106,29 @@ export default function AdminBloggersPage() {
     return yyyyMmDd(d);
   }, [today]);
 
+  // ---- Общее состояние ----
+  const [toast, setToast] = useState<ToastState>(null);
+  const toastTimerRef = useRef<number | null>(null);
+
+  // ---- Заказы (блогеры) ----
+  const [bloggers, setBloggers] = useState<BloggerRow[]>([]);
+  const [bloggersLoading, setBloggersLoading] = useState(false);
+  const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
+  const [newCode, setNewCode] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newTelegramLink, setNewTelegramLink] = useState("");
+  const [newActive, setNewActive] = useState(true);
+  const [editing, setEditing] = useState<Record<string, { name: string; telegram_link: string; active: boolean }>>(
+    {}
+  );
+
+  // ---- Реклама (аналитика) ----
   const [from, setFrom] = useState(defaultFrom);
   const [to, setTo] = useState(defaultTo);
   const [stats, setStats] = useState<BloggerStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [bloggers, setBloggers] = useState<BloggerRow[]>([]);
-  const [bloggersLoading, setBloggersLoading] = useState(false);
-
-  const [newCode, setNewCode] = useState("");
-  const [newName, setNewName] = useState("");
-  const [newTelegramLink, setNewTelegramLink] = useState("");
-  const [newActive, setNewActive] = useState(true);
-
-  const [editing, setEditing] = useState<Record<string, { name: string; telegram_link: string; active: boolean }>>({});
-
-  const [toast, setToast] = useState<ToastState>(null);
-  const toastTimerRef = useRef<number | null>(null);
   const [linkConfig, setLinkConfig] = useState<{
     bot_username: string;
     app_slug: string;
@@ -124,6 +150,16 @@ export default function AdminBloggersPage() {
       setBloggers(Array.isArray(json?.bloggers) ? json!.bloggers! : []);
     }
     setBloggersLoading(false);
+  }, []);
+
+  const loadCampaigns = useCallback(async () => {
+    const res = await fetch("/admin/api/subscription/campaigns", { cache: "no-store" }).catch(() => null);
+    if (!res || !res.ok) {
+      setCampaigns([]);
+      return;
+    }
+    const json = (await res.json().catch(() => null)) as { campaigns?: CampaignRow[] } | null;
+    setCampaigns(Array.isArray(json?.campaigns) ? json!.campaigns! : []);
   }, []);
 
   const loadConfig = useCallback(async () => {
@@ -168,9 +204,10 @@ export default function AdminBloggersPage() {
 
   const loadAll = useCallback(() => {
     void loadBloggers();
+    void loadCampaigns();
     void loadStats();
     void loadConfig();
-  }, [loadBloggers, loadStats, loadConfig]);
+  }, [loadBloggers, loadCampaigns, loadStats, loadConfig]);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -181,28 +218,27 @@ export default function AdminBloggersPage() {
 
   useEffect(() => {
     const id = window.setInterval(() => {
+      void loadCampaigns();
       void loadStats();
     }, 5000);
     return () => window.clearInterval(id);
-  }, [loadStats]);
+  }, [loadCampaigns, loadStats]);
 
-  const totals = useMemo(() => {
-    return stats.reduce(
-      (acc, s) => {
-        acc.clicks += Number(s.clicks) || 0;
-        acc.registrations += Number(s.registrations) || 0;
-        acc.spins += Number(s.spins) || 0;
-        return acc;
-      },
-      { clicks: 0, registrations: 0, spins: 0 }
-    );
-  }, [stats]);
+  const bloggerProgress = useMemo(() => {
+    const map = new Map<string, { got: number; goal: number }>();
+    for (const c of campaigns) {
+      if (!c.blogger_id) continue;
+      const cur = map.get(c.blogger_id) ?? { got: 0, goal: 0 };
+      cur.got += Number(c.confirmed_count) || 0;
+      cur.goal += Number(c.goal_subscribers) || 0;
+      map.set(c.blogger_id, cur);
+    }
+    return map;
+  }, [campaigns]);
 
   const buildBloggerLink = useCallback(
     (b: { code: string; telegram_link: string | null }) => {
       // Своя ссылка используется, только если это полноценный URL.
-      // Если впиcано что-то не-ссылочное (например @username) — игнорируем
-      // и генерируем уникальную автоссылку с меткой блогера.
       const custom = b.telegram_link?.trim();
       if (custom && /^https?:\/\//i.test(custom)) return custom;
       const bot = linkConfig?.bot_username || "<BOT>";
@@ -234,7 +270,7 @@ export default function AdminBloggersPage() {
     }).catch(() => null);
     if (!res || !res.ok) {
       const msg = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(msg?.error || "Не удалось создать блогера");
+      setError(msg?.error || "Не удалось создать заказ");
       return;
     }
     setNewCode("");
@@ -285,7 +321,7 @@ export default function AdminBloggersPage() {
 
   const deleteBlogger = async (id: string) => {
     setError(null);
-    const ok = window.confirm("Удалить блогера? Статистика кликов останется.");
+    const ok = window.confirm("Удалить заказ? Статистика кликов останется.");
     if (!ok) return;
     const res = await fetch(`/admin/api/bloggers/${encodeURIComponent(id)}`, {
       method: "DELETE",
@@ -302,9 +338,10 @@ export default function AdminBloggersPage() {
 
   return (
     <>
+      {/* ============ ЗАКАЗЫ (покупка подписчиков) ============ */}
       <div className={styles.card}>
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>Блогеры: реферальные ссылки</h1>
+          <h1 className={styles.title}>Заказы</h1>
           <div className={styles.pill}>
             <span>Всего: {bloggers.length}</span>
             <span>Активных: {bloggers.filter((b) => b.active).length}</span>
@@ -322,7 +359,7 @@ export default function AdminBloggersPage() {
             />
           </div>
           <div className={styles.field}>
-            <div className={styles.label}>Имя блогера</div>
+            <div className={styles.label}>Имя</div>
             <input
               className={styles.input}
               value={newName}
@@ -353,12 +390,8 @@ export default function AdminBloggersPage() {
         </div>
 
         <div className={styles.buttonRow}>
-          <button
-            className={`${styles.button} ${styles.buttonPrimary}`}
-            type="button"
-            onClick={createBlogger}
-          >
-            Создать ссылку
+          <button className={`${styles.button} ${styles.buttonPrimary}`} type="button" onClick={createBlogger}>
+            Создать заказ
           </button>
           <button className={styles.button} type="button" onClick={loadBloggers} disabled={bloggersLoading}>
             {bloggersLoading ? "Обновление..." : "Обновить список"}
@@ -373,9 +406,9 @@ export default function AdminBloggersPage() {
               <tr>
                 <th className={styles.th}>Код</th>
                 <th className={styles.th}>Имя</th>
+                <th className={styles.th}>Выполнение</th>
                 <th className={styles.th}>Готовая ссылка</th>
                 <th className={styles.th}>Активен</th>
-                <th className={styles.th}>Создан</th>
                 <th className={styles.th}>Действия</th>
               </tr>
             </thead>
@@ -383,8 +416,13 @@ export default function AdminBloggersPage() {
               {bloggers.map((b) => {
                 const e = editing[b.id];
                 const link = buildBloggerLink(b);
+                const prog = bloggerProgress.get(b.id);
+                const got = prog?.got ?? 0;
+                const goal = prog?.goal ?? 0;
+                const percent = goal > 0 ? (got / goal) * 100 : 0;
+                const done = goal > 0 && percent >= 100;
                 return (
-                  <tr key={b.id}>
+                  <tr key={b.id} style={done ? { opacity: 0.55 } : undefined}>
                     <td className={styles.td}>
                       <div style={{ fontFamily: "monospace", fontSize: 13 }}>{b.code}</div>
                       <div className={styles.muted} style={{ fontSize: 11, wordBreak: "break-all" }}>
@@ -406,6 +444,31 @@ export default function AdminBloggersPage() {
                       ) : (
                         b.name
                       )}
+                    </td>
+                    <td className={styles.td} style={{ minWidth: 170 }}>
+                      <div className={styles.progressWrap} style={{ marginBottom: 4 }}>
+                        <div className={progressClass(percent)} style={{ width: `${Math.min(100, percent)}%` }} />
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        {done ? (
+                          <span
+                            style={{
+                              padding: "2px 8px",
+                              borderRadius: 999,
+                              background: "rgba(28,138,59,0.15)",
+                              color: "#1c8a3b",
+                              fontWeight: 700
+                            }}
+                          >
+                            ЗАКАЗ ВЫПОЛНЕН
+                          </span>
+                        ) : (
+                          <>
+                            <strong>{got}</strong>
+                            <span className={styles.muted}> / {goal} подписчиков</span>
+                          </>
+                        )}
+                      </div>
                     </td>
                     <td className={styles.td}>
                       {e ? (
@@ -455,13 +518,6 @@ export default function AdminBloggersPage() {
                       )}
                     </td>
                     <td className={styles.td}>
-                      {new Intl.DateTimeFormat("ru-RU", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit"
-                      }).format(new Date(b.created_at))}
-                    </td>
-                    <td className={styles.td}>
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                         <button className={styles.button} type="button" onClick={() => handleCopyLink(b)}>
                           Копировать ссылку
@@ -484,13 +540,15 @@ export default function AdminBloggersPage() {
                             Редактировать
                           </button>
                         )}
-                        <button
-                          className={`${styles.button} ${styles.buttonDanger}`}
-                          type="button"
-                          onClick={() => deleteBlogger(b.id)}
-                        >
-                          Удалить
-                        </button>
+                        {!e && (
+                          <button
+                            className={`${styles.button} ${styles.buttonDanger}`}
+                            type="button"
+                            onClick={() => deleteBlogger(b.id)}
+                          >
+                            Удалить
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -499,7 +557,7 @@ export default function AdminBloggersPage() {
               {bloggers.length === 0 && (
                 <tr>
                   <td className={styles.td} colSpan={6}>
-                    {bloggersLoading ? "Загрузка..." : "Нет ссылок — создайте первую выше"}
+                    {bloggersLoading ? "Загрузка..." : "Нет заказов — создайте первый выше"}
                   </td>
                 </tr>
               )}
@@ -508,14 +566,17 @@ export default function AdminBloggersPage() {
         </div>
       </div>
 
+      {/* ============ РЕКЛАМА (аналитика по купленным рекламам / реферальным ссылкам) ============ */}
       <div className={styles.card} style={{ marginTop: 16 }}>
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>Аналитика по блогерам</h1>
+          <h1 className={styles.title}>Реклама</h1>
           <div className={styles.pill}>
-            <span>Переходы: {totals.clicks}</span>
-            <span>Регистрации: {totals.registrations}</span>
-            <span>Спины: {totals.spins}</span>
+            <span>Период: {from} → {to}</span>
           </div>
+        </div>
+
+        <div className={styles.muted} style={{ marginBottom: 12, lineHeight: 1.5 }}>
+          Аналитика по купленным рекламам и реферальным ссылкам: переходы, регистрации, спины.
         </div>
 
         <div className={styles.row}>
@@ -573,9 +634,80 @@ export default function AdminBloggersPage() {
         </div>
 
         <div className={styles.muted} style={{ marginTop: 12 }}>
-          Автообновление аналитики: каждые 5 секунд
+          Автообновление: каждые 5 секунд
         </div>
       </div>
+
+      {/* ============ КАМПАНИИ ПОДПИСОК (сводно по заказам) ============ */}
+      {campaigns.length > 0 && (
+        <div className={styles.card} style={{ marginTop: 16 }}>
+          <div className={styles.titleRow}>
+            <h2 className={styles.title}>Кампании подписки</h2>
+            <div className={styles.pill}>
+              <span>Всего: {campaigns.length}</span>
+            </div>
+          </div>
+
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th className={styles.th}>Блогер</th>
+                  <th className={styles.th}>Канал</th>
+                  <th className={styles.th}>Прогресс</th>
+                  <th className={styles.th}>Активна</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((c) => {
+                  const pct = c.percent;
+                  return (
+                    <tr key={c.id}>
+                      <td className={styles.td}>{c.blogger_name ?? "—"}</td>
+                      <td className={styles.td}>
+                        <div style={{ fontFamily: "monospace", fontSize: 13, wordBreak: "break-all" }}>
+                          {c.channel_id}
+                        </div>
+                      </td>
+                      <td className={styles.td} style={{ minWidth: 180 }}>
+                        <div className={styles.progressWrap} style={{ marginBottom: 4 }}>
+                          <div
+                            className={progressClass(pct)}
+                            style={{ width: `${Math.min(100, pct)}%` }}
+                          />
+                        </div>
+                        <div style={{ fontSize: 12 }}>
+                          <strong>{c.confirmed_count}</strong> / {c.goal_subscribers} · {pct.toFixed(1)}%
+                        </div>
+                      </td>
+                      <td className={styles.td}>
+                        {c.active ? (
+                          <span
+                            style={{
+                              padding: "3px 8px",
+                              borderRadius: 999,
+                              background: "rgba(28,138,59,0.15)",
+                              color: "#1c8a3b",
+                              fontWeight: 700,
+                              fontSize: 12
+                            }}
+                          >
+                            АКТИВНА
+                          </span>
+                        ) : (
+                          <span className={styles.muted} style={{ fontSize: 12 }}>
+                            Нет
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div

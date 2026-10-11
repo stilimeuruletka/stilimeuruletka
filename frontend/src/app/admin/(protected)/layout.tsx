@@ -32,10 +32,10 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
               Preview
             </Link>
             <Link
-              href="/admin/bloggers"
-              className={`${styles.navLink} ${pathname.startsWith("/admin/bloggers") ? styles.navLinkActive : ""}`}
+              href="/admin/orders"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/orders") ? styles.navLinkActive : ""}`}
             >
-              Блогеры
+              Заказы
             </Link>
             <Link
               href="/admin/users"
@@ -48,12 +48,6 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
               className={`${styles.navLink} ${pathname.startsWith("/admin/coupons") ? styles.navLinkActive : ""}`}
             >
               Призовой фонд
-            </Link>
-            <Link
-              href="/admin/subscription"
-              className={`${styles.navLink} ${pathname.startsWith("/admin/subscription") ? styles.navLinkActive : ""}`}
-            >
-              Подписки
             </Link>
           </div>
           <button className={styles.button} type="button" onClick={logout}>
