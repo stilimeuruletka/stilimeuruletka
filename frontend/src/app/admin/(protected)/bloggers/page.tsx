@@ -200,12 +200,14 @@ export default function AdminBloggersPage() {
 
   const buildBloggerLink = useCallback(
     (b: { code: string; telegram_link: string | null }) => {
-      // Если задана своя готовая ссылка — копируем/показываем именно её.
+      // Своя ссылка используется, только если это полноценный URL.
+      // Если впиcано что-то не-ссылочное (например @username) — игнорируем
+      // и генерируем уникальную автоссылку с меткой блогера.
       const custom = b.telegram_link?.trim();
-      if (custom) return custom;
+      if (custom && /^https?:\/\//i.test(custom)) return custom;
       const bot = linkConfig?.bot_username || "<BOT>";
       const slug = linkConfig?.app_slug || "app";
-      const cleanCode = String(b.code || "").trim().replace(/^blog_/i, "");
+      const cleanCode = String(b.code || "").trim().replace(/^blog_/i, "") || "blog";
       return `https://t.me/${bot}/${slug}?startapp=blog_${cleanCode}&mode=fullscreen`;
     },
     [linkConfig]
