@@ -29,6 +29,11 @@ export async function GET(req: NextRequest) {
     const extracted = extractTelegramInitData(initDataHeader);
     if (!extracted) return jsonError("Invalid Telegram data", 401);
 
+    const startParamHeaderRaw = (req.headers.get("x-tg-start-param") ?? "").trim();
+    const startParamHeader =
+      /^(ref|blog)_[a-z0-9_]{1,80}$/i.test(startParamHeaderRaw) ? startParamHeaderRaw : null;
+    const startParam = extracted.startParam || startParamHeader;
+
     const tzOffsetRaw = req.nextUrl.searchParams.get("tz_offset");
     const tzOffset = tzOffsetRaw != null ? Number(tzOffsetRaw) : Number.NaN;
     const tzOffsetMinutes = Number.isFinite(tzOffset) ? Math.trunc(tzOffset) : null;
@@ -38,18 +43,18 @@ export async function GET(req: NextRequest) {
     const { error: startError } = await supabase.rpc("handle_start", {
       p_tg_user_id: extracted.userId,
       p_username: extracted.username,
-      p_ref_code: extracted.startParam
+      p_ref_code: startParam
     });
     if (startError) {
       console.error("[api/me] handle_start failed", startError);
       return jsonError("Не удалось создать пользователя", 500);
     }
 
-    if (extracted.startParam?.startsWith("blog_")) {
+    if (startParam?.startsWith("blog_")) {
       try {
         await supabase.rpc("track_blogger_click", {
           p_tg_user_id: extracted.userId,
-          p_blogger_code: extracted.startParam.slice(5),
+          p_blogger_code: startParam.slice(5),
           p_meta: { via: "start_param" }
         });
       } catch (clickErr) {
@@ -83,4 +88,3 @@ export async function GET(req: NextRequest) {
     return jsonError("Не удалось загрузить статус", 500);
   }
 }
-
