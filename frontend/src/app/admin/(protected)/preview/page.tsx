@@ -19,7 +19,7 @@ type Ad = {
   created_at: string;
 };
 
-const DEFAULT_OWN = "/IMG_2304.MP4";
+const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
 
 function formatRu(iso: string | null | undefined) {
   if (!iso) return "—";

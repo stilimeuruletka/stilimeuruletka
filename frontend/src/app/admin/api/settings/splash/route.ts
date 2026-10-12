@@ -6,6 +6,7 @@ import { verifyAdminSession } from "../../../../../lib/adminSession";
 export const runtime = "nodejs";
 
 const SETTINGS_KEY = "splash_video_url";
+const DEFAULT_SPLASH = "/ГЛАВНОЕВИДЕО.mp4";
 
 function parseAdminCookie(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null;
@@ -57,7 +58,7 @@ export async function GET(req: Request) {
   const supabase = getAdminSupabase();
   const url = await getSettingValue(supabase, SETTINGS_KEY);
   return NextResponse.json({
-    splash_video_url: url ?? "/IMG_2304.MP4"
+    splash_video_url: url ?? DEFAULT_SPLASH
   });
 }
 
@@ -73,10 +74,10 @@ export async function POST(req: Request) {
     const body = (await req.json().catch(() => null)) as { reset?: boolean } | null;
     if (body?.reset) {
       await supabase.from("app_settings").upsert(
-        { key: SETTINGS_KEY, value: "/IMG_2304.MP4", updated_at: new Date().toISOString() },
+        { key: SETTINGS_KEY, value: DEFAULT_SPLASH, updated_at: new Date().toISOString() },
         { onConflict: "key" }
       );
-      return NextResponse.json({ splash_video_url: "/IMG_2304.MP4" });
+      return NextResponse.json({ splash_video_url: DEFAULT_SPLASH });
     }
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
