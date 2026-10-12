@@ -3,6 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 
+const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
+
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
@@ -37,13 +39,15 @@ export async function GET() {
     own && typeof (own as { value?: string }).value === "string"
       ? (own as { value: string }).value
       : null;
+  const effectiveOwn =
+    ownUrl && ownUrl.trim() ? ownUrl.trim() : DEFAULT_OWN;
 
   // 2) Активный рекламный ролик (если период публикации сейчас)
   const { data: ad, error } = await supabase.rpc("preview_active_ad");
   const adRow = !error && Array.isArray(ad) && ad.length > 0 ? (ad[0] as AdRow) : null;
 
   return NextResponse.json({
-    own: ownUrl && ownUrl.trim() ? ownUrl.trim() : null,
+    own: effectiveOwn,
     ad: adRow
       ? {
           id: adRow.id,
