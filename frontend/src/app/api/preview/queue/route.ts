@@ -7,7 +7,7 @@ const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Supabase env missing");
   return createClient(url, key, { auth: { persistSession: false } });
 }
@@ -26,7 +26,7 @@ export async function GET() {
   try {
     supabase = getSupabase();
   } catch {
-    return NextResponse.json({ own: null, ad: null });
+    return NextResponse.json({ own: DEFAULT_OWN, ad: null });
   }
 
   // 1) Наш ролик

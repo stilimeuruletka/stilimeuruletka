@@ -221,7 +221,7 @@ export default function ProfilePage() {
             disablePictureInPicture
             disableRemotePlayback
           >
-            <source src="/ГЛАВНОЕВИДЕО.mp4" type="video/mp4" />
+            <source src="/IMG_2304.MP4" type="video/mp4" />
           </video>
         </div>
 
