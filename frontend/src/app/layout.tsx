@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import TelegramInit from "./telegram-init";
+import AppFrame from "./app-frame";
 
 const uncage = localFont({
   src: "../../UNCAGE-Regular.ttf",
@@ -52,7 +53,7 @@ export default function RootLayout({
       <body>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" />
         <TelegramInit />
-        {children}
+        <AppFrame>{children}</AppFrame>
       </body>
     </html>
   );

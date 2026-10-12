@@ -23,6 +23,14 @@ body {
   touch-action: pan-x pan-y;
 }
 
+/* Мобильная рамка: на широких экранах (ПК / Telegram Desktop) приложение
+   сворачивается в колонку ширины телефона и центрируется, чтобы все
+   px-отступы и позиционирование совпадали с мобильной версией. */
+html,
+body {
+  height: 100%;
+}
+
 body {
   min-height: 100%;
   display: flex;
@@ -33,6 +41,41 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+.app-frame {
+  width: 100%;
+  min-height: 100dvh;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body:has(.app-frame) {
+  align-items: center;
+  background: #d7d7d7;
+}
+
+@media (min-width: 520px) {
+  .app-frame {
+    max-width: 430px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* Обёрнутые страницы приложения не растягивают content шире рамки */
+.app-frame .screen,
+.app-frame .placeholderPage {
+  width: 100%;
+}
+
+@media (min-width: 520px) {
+  .app-frame .splashVideo {
+    width: 100%;
+  }
 }
 
 * {
