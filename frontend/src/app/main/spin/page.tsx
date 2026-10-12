@@ -51,15 +51,6 @@ type SubCampaign = {
 
 type SubProgress = { confirmed: number; goal: number; percent: number } | null;
 
-type SubStatusState = {
-  loading: boolean;
-  campaigns: SubCampaign[];
-  confirmed: boolean;
-  progress: SubProgress;
-  checking: boolean;
-  checkError: string | null;
-};
-
 type PrizeDef = {
   key: string;
   title: string;
@@ -227,7 +218,7 @@ function WheelArt() {
   return (
     <div className={styles.rouletteWheelArt} aria-hidden="true">
       <Image
-        src="/колесо4к.png"
+        src="/колесо_1600.png"
         alt=""
         fill
         className={styles.rouletteWheelComposite}
@@ -257,14 +248,6 @@ export default function RoulettePage() {
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
   const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
-  const [subStatus, setSubStatus] = useState<SubStatusState>({
-    loading: true,
-    campaigns: [],
-    confirmed: true,
-    progress: null,
-    checking: false,
-    checkError: null
-  });
 
   useEffect(() => {
     rotationRef.current = rotation;
@@ -277,77 +260,6 @@ export default function RoulettePage() {
       audioRef.current = null;
       void ctx?.close().catch(() => {});
     };
-  }, []);
-
-  const fetchSubStatus = useCallback(async () => {
-    const initData = getInitData();
-    const base = getBackendBase();
-
-    // Локальный тест: показываем демо-экран подписки даже без бэкенда,
-    // чтобы визуально проверить гейт в браузере.
-    if (!initData && isLocalDevHost()) {
-      setSubStatus({
-        loading: false,
-        campaigns: [
-          {
-            campaign_id: "local-demo",
-            blogger_name: "stilimeu",
-            channel_id: "@stilimeu",
-            telegram_link: "https://t.me/stilimeu",
-            goal_subscribers: 100,
-            confirmed_count: 0,
-            percent: 0,
-            user_confirmed: false
-          }
-        ],
-        confirmed: false,
-        progress: { confirmed: 0, goal: 100, percent: 0 },
-        checking: false,
-        checkError: null
-      });
-      return;
-    }
-
-    if (!base) {
-      setSubStatus((s) => ({ ...s, loading: false }));
-      return;
-    }
-    if (!initData) {
-      if (isLocalDevHost()) {
-        setSubStatus((s) => ({ ...s, loading: false }));
-      } else {
-        setSubStatus((s) => ({ ...s, loading: false }));
-      }
-      return;
-    }
-    setSubStatus((s) => ({ ...s, loading: true, checkError: null }));
-    try {
-      const res = await fetch(`${base}/api/subscription/status`, {
-        method: "GET",
-        headers: { "x-telegram-init-data": initData }
-      });
-      const json = (await res.json().catch(() => null)) as {
-        campaigns?: SubCampaign[] | null;
-        confirmed?: boolean;
-        progress?: SubProgress;
-        message?: string;
-      } | null;
-      if (res.ok && json && typeof json === "object") {
-        const campaigns = Array.isArray(json.campaigns) ? json.campaigns : [];
-        setSubStatus({
-          loading: false,
-          campaigns,
-          confirmed: typeof json.confirmed === "boolean" ? json.confirmed : campaigns.length === 0,
-          progress: json.progress ?? null,
-          checking: false,
-          checkError: null
-        });
-      } else {
-        setSubStatus({ loading: false, campaigns: [], confirmed: true, progress: null, checking: false, checkError: null });
-      }
-    } catch {
-      setSubStatus({ loading: false, campaigns: [], confirmed: true, progress: null, checking: false, checkError: null });
-    }
   }, []);
 
   const fetchDatabaseBalance = useCallback(async () => {
@@ -376,89 +288,10 @@ export default function RoulettePage() {
     return () => window.clearTimeout(id);
   }, [fetchDatabaseBalance]);
 
-  const checkSubNow = useCallback(async () => {
-    const initData = getInitData();
-    const base = getBackendBase();
-    if (!base || !initData) {
-      setSubStatus((s) => ({ ...s, checkError: "Откройте приложение через Telegram" }));
-      return;
-    }
-    setSubStatus((s) => ({ ...s, checking: true, checkError: null }));
-    try {
-      const res = await fetch(`${base}/api/subscription/check`, {
-        method: "POST",
-        headers: { "x-telegram-init-data": initData }
-      });
-      const json = (await res.json().catch(() => null)) as {
-        campaigns?: SubCampaign[] | null;
-        confirmed?: boolean;
-        progress?: SubProgress;
-        message?: string;
-        status?: string;
-      } | null;
-      if (res.ok && json && typeof json === "object") {
-        setSubStatus((prev) => ({
-          ...prev,
-          checking: false,
-          campaigns: Array.isArray(json.campaigns) ? json.campaigns : prev.campaigns,
-          confirmed: typeof json.confirmed === "boolean" ? json.confirmed : prev.confirmed,
-          progress: json.progress ?? prev.progress,
-          checkError:
-            json.confirmed === false && json.message
-              ? json.message
-              : json.confirmed === false && !json.message
-                ? "Вы ещё не подписались. Если только что подписались — подожди 5 секунд и проверь ещё раз."
-                : null
-        }));
-      } else if (res.status === 503 && json && typeof json === "object") {
-        setSubStatus((prev) => ({
-          ...prev,
-          checking: false,
-          checkError:
-            json.message || "Бот не может проверить подписку — напишите в поддержку."
-        }));
-      } else {
-        setSubStatus((prev) => ({
-          ...prev,
-          checking: false,
-          checkError: "Не удалось проверить подписку. Попробуйте позже."
-        }));
-      }
-    } catch {
-      setSubStatus((prev) => ({
-        ...prev,
-        checking: false,
-        checkError: "Не удалось проверить подписку. Проверьте интернет."
-      }));
-    }
-  }, []);
-
-  const openChannel = useCallback((link: string | null | undefined) => {
-    if (!link) return;
-    const w = window as TelegramSdkWindow;
-    if (typeof w.Telegram?.WebApp?.openTelegramLink === "function") {
-      w.Telegram.WebApp.openTelegramLink(link);
-      return;
-    }
-    window.open(link, "_blank", "noopener,noreferrer");
-  }, []);
-
-  useEffect(() => {
-    const id = window.setTimeout(() => {
-      void fetchSubStatus();
-    }, 0);
-    return () => window.clearTimeout(id);
-  }, [fetchSubStatus]);
-
   const startSpin = useCallback(async () => {
     if (spinning) return;
     if (availableSpins > 0) {
       // use local bonus spins pool first (no 24h cooldown)
-    }
-    if (subStatus.campaigns.length > 0 && !subStatus.confirmed) {
-      setError("Чтобы крутить — подпишитесь на аккаунты и нажмите «Проверить».");
-      void fetchSubStatus();
-      return;
     }
     setError(null);
     setModalOpen(false);
@@ -521,18 +354,6 @@ export default function RoulettePage() {
             | { message?: string; code?: string; campaigns?: SubCampaign[]; progress?: SubProgress }
             | null;
           if (!res.ok || !json || typeof json !== "object") {
-            if (json && "code" in json && json.code === "MUST_SUBSCRIBE_FIRST") {
-              setSubStatus((prev) => ({
-                ...prev,
-                campaigns: "campaigns" in json && Array.isArray(json.campaigns) ? json.campaigns : prev.campaigns,
-                confirmed: false,
-                progress: "progress" in json && json.progress ? json.progress : prev.progress
-              }));
-              setSpinning(false);
-              setDurationMs(0);
-              setError("Чтобы крутить — сначала подпишитесь на аккаунты и подтвердите подписку.");
-              return;
-            }
             const msg = (json && "message" in json && typeof json.message === "string" && json.message) || "Спин недоступен";
             throw new Error(msg);
           }
@@ -589,7 +410,7 @@ export default function RoulettePage() {
       setDurationMs(0);
       setError(e instanceof Error ? e.message : "Спин недоступен");
     }
-  }, [spinning, availableSpins, subStatus.campaigns.length, subStatus.confirmed, fetchSubStatus, fetchDatabaseBalance]);
+  }, [spinning, availableSpins, fetchDatabaseBalance]);
 
   const onWheelTransitionEnd = useCallback(() => {
     if (!spinning) return;
@@ -646,233 +467,15 @@ export default function RoulettePage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        {subStatus.campaigns.length > 0 && !subStatus.confirmed && (
-          <div
-            aria-live="polite"
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 5,
-              display: "flex",
-              flexDirection: "column",
-              background: "linear-gradient(180deg, #ffffff 0%, #fff5f5 100%)",
-              overflow: "hidden"
-            }}
-          >
-            <div
-              style={{
-                padding: "22px 18px 10px",
-                textAlign: "center"
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 900,
-                  fontSize: 19,
-                  lineHeight: 1.2,
-                  color: "#111",
-                  letterSpacing: 0.2
-                }}
-              >
-                Подпишись, чтобы крутить
-              </div>
-              <div
-                style={{
-                  marginTop: 6,
-                  fontSize: 13,
-                  color: "#666",
-                  lineHeight: 1.45
-                }}
-              >
-                Эти аккаунты нужно подписаться, чтобы запустить рулетку
-              </div>
-            </div>
-
-            <div
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                padding: "6px 16px 12px"
-              }}
-            >
-              {subStatus.campaigns.map((c, idx) => {
-                const stateText = c.user_confirmed
-                  ? "✓ Подписка подтверждена"
-                  : "Подписаться и нажать «Проверить»";
-                return (
-                  <div
-                    key={c.campaign_id ?? idx}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      padding: "14px 14px",
-                      marginBottom: 12,
-                      background: "#ffffff",
-                      border: `2px solid ${c.user_confirmed ? "rgba(40,167,69,0.55)" : "rgba(184,31,34,0.18)"}`,
-                      borderRadius: 14,
-                      boxShadow: "0 8px 20px rgba(0,0,0,0.08)"
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: "1 1 auto",
-                        minWidth: 0
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          flexWrap: "wrap"
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 800,
-                            color: "#111"
-                          }}
-                        >
-                          {c.blogger_name || `Аккаунт ${idx + 1}`}
-                        </span>
-                        {c.user_confirmed && (
-                          <span
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 700,
-                              color: "#fff",
-                              background: "#28a745",
-                              borderRadius: 999,
-                              padding: "2px 8px"
-                            }}
-                          >
-                            ✓
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          marginTop: 4,
-                          fontSize: 12,
-                          color: c.user_confirmed ? "#28a745" : "#777",
-                          fontWeight: c.user_confirmed ? 700 : 500
-                        }}
-                      >
-                        {stateText}
-                      </div>
-                    </div>
-                    {!c.user_confirmed && (
-                      <button
-                        type="button"
-                        onClick={() => openChannel(c.telegram_link)}
-                        style={{
-                          flex: "0 0 auto",
-                          minHeight: 40,
-                          padding: "0 16px",
-                          borderRadius: 10,
-                          border: "none",
-                          background: "#b81f22",
-                          color: "#fff",
-                          fontWeight: 800,
-                          fontSize: 13.5,
-                          cursor: "pointer",
-                          boxShadow: "0 4px 12px rgba(184,31,34,0.3)",
-                          position: "relative"
-                        }}
-                      >
-                        <span aria-hidden="true" style={{ position: "absolute", inset: -12 }} />
-                        {c.telegram_link ? "Подписаться" : "Канал"}
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {subStatus.checkError && (
-              <div
-                style={{
-                  margin: "0 16px 10px",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: "rgba(184,31,34,0.08)",
-                  color: "#8a181a",
-                  fontSize: 12.5,
-                  lineHeight: 1.4,
-                  fontWeight: 600
-                }}
-              >
-                {subStatus.checkError}
-              </div>
-            )}
-
-            <div
-              style={{
-                padding: "10px 16px 24px",
-                borderTop: "1px solid rgba(184,31,34,0.12)"
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => void checkSubNow()}
-                disabled={subStatus.checking || subStatus.loading}
-                style={{
-                  width: "100%",
-                  minHeight: 54,
-                  padding: "0 16px",
-                  borderRadius: 12,
-                  border: "none",
-                  background: "#b81f22",
-                  color: "#fff",
-                  fontWeight: 800,
-                  fontSize: 15,
-                  letterSpacing: 0.3,
-                  cursor: subStatus.checking ? "wait" : "pointer",
-                  opacity: subStatus.checking || subStatus.loading ? 0.75 : 1,
-                  boxShadow: "0 8px 22px rgba(184,31,34,0.35)",
-                  position: "relative"
-                }}
-              >
-                <span aria-hidden="true" style={{ position: "absolute", inset: -14 }} />
-                {subStatus.checking ? "Проверяем подписку…" : "Проверить подписку"}
-              </button>
-              <div
-                style={{
-                  marginTop: 10,
-                  fontSize: 11.5,
-                  color: "#888",
-                  textAlign: "center",
-                  lineHeight: 1.4
-                }}
-              >
-                Подписался и нажал? Проверка займёт пару секунд.
-              </div>
-            </div>
-          </div>
-        )}
-
         <div
           className={`${styles.rouletteStage} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
-          style={
-            subStatus.campaigns.length > 0 && !subStatus.confirmed
-              ? {
-                  filter: "grayscale(0.6) brightness(0.92)",
-                  pointerEvents: "none",
-                  opacity: 0.55
-                }
-              : undefined
-          }
         >
           <button
             type="button"
             className={styles.rouletteWheelButton}
             onClick={startSpin}
-            disabled={spinning || (subStatus.campaigns.length > 0 && !subStatus.confirmed)}
-            aria-label={
-              spinning ? "Крутится" : subStatus.campaigns.length > 0 && !subStatus.confirmed ? "Подпишитесь чтобы крутить" : "Крутить"
-            }
+            disabled={spinning}
+            aria-label={spinning ? "Крутится" : "Крутить"}
           >
             <div
               className={styles.rouletteWheel}

@@ -183,7 +183,7 @@ function WheelArt() {
   return (
     <div className={styles.rouletteWheelArt} aria-hidden="true">
       <Image
-        src="/колесо4к.png"
+        src="/колесо_1600.png"
         alt=""
         fill
         className={styles.rouletteWheelComposite}

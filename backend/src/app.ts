@@ -562,23 +562,6 @@ export function buildApp(
         ...(auth.photoUrl ? { photo_url: auth.photoUrl } : {})
       });
 
-      const gateState = await loadGateState(auth.tgUserId, {
-        log: {
-          info: (o, m) => req.log.info(o, m ?? "spin_gate_check"),
-          warn: (o, m) => req.log.warn(o, m ?? "spin_gate_check_fail")
-        }
-      });
-      if (!gateState.ok) {
-        req.log.warn({ gateState }, "spin_gate_db_failed");
-      } else if ((gateState.campaigns?.length ?? 0) > 0 && !gateState.confirmed) {
-        return reply.code(403).send({
-          code: "MUST_SUBSCRIBE_FIRST",
-          message: "Сначала подпишитесь на каналы.",
-          campaigns: gateState.campaigns,
-          progress: gateState.progress
-        });
-      }
-
       const state = await db.ensureFreeSpin(auth.tgUserId);
       if (!state.can_spin) {
         throw app.httpErrors.badRequest("Spin not available yet");
