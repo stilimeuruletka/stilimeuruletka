@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
     const canSpin = !!(data as { can_spin?: boolean } | null)?.can_spin;
     const nextSpinAt = (data as { next_spin_at?: string | null } | null)?.next_spin_at ?? null;
 
-    return NextResponse.json({ balance, can_spin: canSpin, next_spin_at: nextSpinAt });
+    return NextResponse.json({ balance, can_spin: canSpin || balance > 0, next_spin_at: nextSpinAt });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     console.error("[api/me] unhandled error", message, e);

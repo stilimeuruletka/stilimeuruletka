@@ -132,11 +132,14 @@ export async function POST(req: NextRequest) {
     const nextSpinAt = (cooldown as { next_spin_at?: string | null } | null)?.next_spin_at ?? null;
     const balance = (cooldown as { balance?: number } | null)?.balance ?? null;
 
-    if (!testMode && !canSpin) {
+    const balanceValue = typeof balance === "number" && Number.isFinite(balance) ? balance : 0;
+    const canProceed = testMode || canSpin || balanceValue > 0;
+
+    if (!canProceed) {
       return jsonError("Спин пока недоступен (подождите)", 429, { code: "COOLDOWN_ACTIVE", next_spin_at: nextSpinAt, balance });
     }
 
-    if (!testMode && (balance ?? 0) <= 0) {
+    if (!testMode && balanceValue <= 0) {
       const repair = await repairDailyTicketIfMissing(supabase, extracted.userId);
       if (repair.error) {
         console.error("[api/spin] repairDailyTicketIfMissing failed", repair.error);
