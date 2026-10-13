@@ -32,7 +32,8 @@ export async function GET(req: NextRequest) {
     const startParamHeaderRaw = (req.headers.get("x-tg-start-param") ?? "").trim();
     const startParamHeader =
       /^(ref|blog)_[a-z0-9_]{1,80}$/i.test(startParamHeaderRaw) ? startParamHeaderRaw : null;
-    const startParam = extracted.startParam || startParamHeader;
+    const startParamRaw = extracted.startParam || startParamHeader;
+    const refCode = startParamRaw?.startsWith("ref_") ? startParamRaw.slice(4) : null;
 
     const tzOffsetRaw = req.nextUrl.searchParams.get("tz_offset");
     const tzOffset = tzOffsetRaw != null ? Number(tzOffsetRaw) : Number.NaN;
@@ -43,18 +44,18 @@ export async function GET(req: NextRequest) {
     const { error: startError } = await supabase.rpc("handle_start", {
       p_tg_user_id: extracted.userId,
       p_username: extracted.username,
-      p_ref_code: startParam
+      p_ref_code: refCode
     });
     if (startError) {
       console.error("[api/me] handle_start failed", startError);
       return jsonError("Не удалось создать пользователя", 500);
     }
 
-    if (startParam?.startsWith("blog_")) {
+    if (startParamRaw?.startsWith("blog_")) {
       try {
         await supabase.rpc("track_blogger_click", {
           p_tg_user_id: extracted.userId,
-          p_blogger_code: startParam.slice(5),
+          p_blogger_code: startParamRaw.slice(5),
           p_meta: { via: "start_param" }
         });
       } catch (clickErr) {
