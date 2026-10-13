@@ -289,7 +289,7 @@ export default function RoulettePage() {
   const fetchDatabaseBalance = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
-    if (!base || !initData) return;
+    if (!initData) return;
     try {
       const res = await fetch(`${base}/api/me?tz_offset=${encodeURIComponent(String(new Date().getTimezoneOffset()))}`, {
         method: "GET",
@@ -306,10 +306,23 @@ export default function RoulettePage() {
   }, []);
 
   useEffect(() => {
-    const id = window.setTimeout(() => {
+    let cancelled = false;
+    let tries = 0;
+
+    const tick = () => {
+      if (cancelled) return;
+      tries += 1;
       void fetchDatabaseBalance();
-    }, 0);
-    return () => window.clearTimeout(id);
+      if (tries < 12 && !getInitData()) {
+        window.setTimeout(tick, 250);
+      }
+    };
+
+    const id = window.setTimeout(tick, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
   }, [fetchDatabaseBalance]);
 
   const startSpin = useCallback(async () => {

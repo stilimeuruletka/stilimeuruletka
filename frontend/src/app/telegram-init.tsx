@@ -124,6 +124,11 @@ export default function TelegramInit() {
       };
       const webApp = w.Telegram?.WebApp;
       if (webApp) {
+        const initData =
+          typeof (webApp as unknown as { initData?: unknown }).initData === "string" &&
+          (webApp as unknown as { initData?: string }).initData!.length > 10
+            ? ((webApp as unknown as { initData: string }).initData as string)
+            : null;
         const tgStart = webApp.initDataUnsafe?.start_param;
         if (tgStart) {
           try {
@@ -139,6 +144,14 @@ export default function TelegramInit() {
         webApp.expand?.();
         webApp.disableVerticalSwipes?.();
         webApp.ready?.();
+
+        if (initData) {
+          const tzOffset = new Date().getTimezoneOffset();
+          void fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+            headers: { "x-telegram-init-data": initData },
+            cache: "no-store"
+          }).catch(() => null);
+        }
 
         const canFullscreen =
           (typeof webApp.isVersionAtLeast === "function" && webApp.isVersionAtLeast("8.0")) ||

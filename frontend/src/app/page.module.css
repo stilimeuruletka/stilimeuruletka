@@ -538,7 +538,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: 120px;
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
@@ -549,7 +549,7 @@
 
 .friendProfileStack .profileBottomImage {
   position: absolute;
-  top: 180px;
+  top: 120px;
   left: 0;
   right: 0;
   width: 100%;
@@ -3605,13 +3605,13 @@
   }
 
   :global(.app-frame) .friendProfileStack .profileBottomImage {
-    top: 120px;
+    top: 60px;
   }
 
   /* /main/friend на компе: поднять аватар, стрелки и картинку меню,
      кнопку «Пригласить» не двигаем */
   :global(.app-frame) .friendProfileStack .profileOverlayImage {
-    top: 60px;
+    top: 0;
   }
 
   :global(.app-frame) .friendProfileStack .profileAvatarBlockOverlay {

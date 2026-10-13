@@ -235,10 +235,6 @@ export default function RoulettePage() {
   const fetchSubStatus = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
-    if (!base) {
-      setSubStatus((s) => ({ ...s, loading: false }));
-      return;
-    }
     if (!initData) {
       if (isLocalDevHost()) {
         setSubStatus({ loading: false, campaign: null, confirmed: true, progress: null, checking: false, checkError: null });
@@ -279,7 +275,7 @@ export default function RoulettePage() {
   const checkSubNow = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
-    if (!base || !initData) {
+    if (!initData) {
       setSubStatus((s) => ({ ...s, checkError: "Откройте приложение через Telegram" }));
       return;
     }
