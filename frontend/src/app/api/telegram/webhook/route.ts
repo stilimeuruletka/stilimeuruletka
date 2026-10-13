@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET!;
@@ -15,6 +16,43 @@ type TgApiResponse<T> = {
   description?: string;
   error_code?: number;
 };
+
+function getAdminSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+async function getTelegramUserBalance(tgUserId: number) {
+  const supabase = getAdminSupabase();
+  if (!supabase) return 0;
+
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("id")
+    .eq("tg_user_id", tgUserId)
+    .maybeSingle();
+
+  if (userError || !user?.id) {
+    if (userError) console.error("telegram_webhook_balance_user_failed", userError);
+    return 0;
+  }
+
+  const { data: rows, error: balanceError } = await supabase
+    .from("ticket_ledger")
+    .select("delta")
+    .eq("user_id", user.id);
+
+  if (balanceError) {
+    console.error("telegram_webhook_balance_ledger_failed", balanceError);
+    return 0;
+  }
+
+  return Array.isArray(rows)
+    ? rows.reduce((sum, row) => sum + Number((row as { delta?: number }).delta || 0), 0)
+    : 0;
+}
 
 async function tg<T>(method: string, body: TgPayload): Promise<TgApiResponse<T>> {
   const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
@@ -155,6 +193,9 @@ export async function POST(req: NextRequest) {
     const text: string = u.message.text;
     if (text.startsWith("/start")) {
       await sendWelcome(chatId);
+    } else if (text === "/balance") {
+      const balance = await getTelegramUserBalance(userId);
+      await tg("sendMessage", { chat_id: chatId, text: `Баланс: ${balance} билет(ов).` });
     } else if (text === "/check_sub") {
       const last = rateMap.get(userId);
       const now = Date.now();
@@ -210,7 +251,8 @@ export async function POST(req: NextRequest) {
         }
       }
     } else if (data === "balance") {
-      await tg("sendMessage", { chat_id: chatId, text: "Баланс: 0 билет(ов)." });
+      const balance = await getTelegramUserBalance(userId);
+      await tg("sendMessage", { chat_id: chatId, text: `Баланс: ${balance} билет(ов).` });
     }
   }
 

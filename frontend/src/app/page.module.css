@@ -1239,6 +1239,7 @@
   gap: 22px;
   padding: 0 12px;
   font-family: var(--font-uncage);
+  transform: translateY(-110px);
 }
 
 .friendsListEmptyText {
@@ -2373,7 +2374,7 @@
 }
 
 .spinResultTicketPlatform {
-  margin: 112px auto 0;
+  margin: 148px auto 0;
   width: min(70vw, 340px);
   height: auto;
   display: block;
@@ -2404,17 +2405,7 @@
 }
 
 .spinResultTicket::after {
-  content: "";
-  position: absolute;
-  left: -3px;
-  right: -3px;
-  bottom: -6px;
-  height: 12px;
-  background:
-    radial-gradient(circle at 8px 0, transparent 6px, rgba(251, 250, 247, 0.85) 6.5px) 0 0 / 16px 100% repeat-x;
-  z-index: -1;
-  opacity: 0.25;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.06));
+  content: none;
 }
 
 .spinResultTicketDate {
@@ -2575,6 +2566,42 @@
   text-align: center;
   position: relative;
   z-index: 57;
+}
+
+/* Высокие iPhone (16/17/18 и похожие): результат спина ниже и крупнее,
+   чтобы блок не выглядел сжатым как на iOS с большим safe-area сверху. */
+@media (max-width: 430px) and (min-height: 900px) {
+  .spinResultTicketPlatform {
+    margin-top: 210px;
+    width: min(82vw, 390px);
+  }
+
+  .spinResultTicket {
+    width: min(76vw, 356px);
+  }
+
+  .spinResultPrizeImageWrap {
+    margin-top: -30px;
+    width: min(104%, 520px);
+    transform: translateX(-4px) scale(1.08);
+    transform-origin: top center;
+  }
+
+  .spinResultActions {
+    margin-top: 18px;
+    width: min(60vw, 252px);
+    transform: translateX(-4px);
+    gap: 6px;
+  }
+
+  .spinResultActionButtonSmall {
+    width: 98%;
+    transform: translate(2px, 0);
+  }
+
+  .spinResultSpinsCounter {
+    margin-top: 10px;
+  }
 }
 
 .howToPlayNavLeft {
