@@ -23,7 +23,7 @@ async function sendTelegramMessage(botToken: string, chatId: number, text: strin
       chat_id: chatId,
       text,
       reply_markup: {
-        inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: webAppUrl } }]]
+        inline_keyboard: [[{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", web_app: { url: webAppUrl } }]]
       }
     })
   });

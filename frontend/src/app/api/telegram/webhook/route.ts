@@ -79,9 +79,9 @@ async function sendSubscribedMenu(chatId: number | string) {
     photo: `${base}/IMG_3178.JPEG`,
     reply_markup: {
       inline_keyboard: [
-        [{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: base } }],
+        [{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", web_app: { url: base } }],
         [
-          { text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" },
+          { text: "Поддержка", url: "https://t.me/stilimeuruletkasos" },
           { text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }
         ],
         [

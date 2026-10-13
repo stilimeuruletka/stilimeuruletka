@@ -102,7 +102,7 @@ export default function FriendPage() {
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
         <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
-        <Link href="/main/profile" className={`${styles.profileArrow} ${styles.profileArrowLeft}`} aria-label="Назад">
+        <Link href="/main" className={`${styles.profileArrow} ${styles.profileArrowLeft}`} aria-label="Назад">
           <Image
             src="/стрелканазад.PNG"
             alt="Назад"

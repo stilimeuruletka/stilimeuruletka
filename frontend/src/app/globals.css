@@ -61,22 +61,36 @@ body:has(.app-frame) {
 
 @media (min-width: 520px) {
   .app-frame {
-    max-width: 520px;
+    max-width: 430px;
+    height: min(100dvh, 844px);
     box-shadow: 0 0 60px rgba(0, 0, 0, 0.35);
+  }
+  .app-frame .aboutNavArrowLeft,
+  .app-frame .aboutNavArrowLeft,
+  .app-frame .aboutNavArrowRight {
+    top: 100px;
+    width: 72px;
+    height: 36px;
+  }
+  .app-frame .aboutNavArrowLeft {
+    left: 30px;
+  }
+  .app-frame .aboutNavArrowRight {
+    right: 30px;
+  }
+  .app-frame .fullScreenPage .commonTopHeader {
+    top: 94px;
+  }
+  .app-frame .fullScreenPage .aboutTopHeader {
+    top: 142px;
+  }
+
+  .app-frame .friendProfileStack .profileBottomImage {
+    top: 120px;
   }
 }
 
 /* Обёрнутые страницы приложения не растягивают content шире рамки */
-.app-frame .screen,
-.app-frame .placeholderPage {
-  width: 100%;
-}
-
-@media (min-width: 520px) {
-  .app-frame .splashVideo {
-    width: 100%;
-  }
-}
 
 * {
   box-sizing: border-box;

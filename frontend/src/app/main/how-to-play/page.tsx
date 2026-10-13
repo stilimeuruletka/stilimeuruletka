@@ -1,46 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../../page.module.css";
 import PageTopNav from "../../../components/PageTopNav";
-
-type TelegramWebAppUser = {
-  id?: number;
-  username?: string;
-  photo_url?: string;
-};
-
-type TelegramWebApp = {
-  initDataUnsafe?: {
-    user?: TelegramWebAppUser;
-  };
-};
-
-type TelegramSdkWindow = Window & {
-  Telegram?: {
-    WebApp?: TelegramWebApp;
-  };
-};
 
 export default function HowToPlayPlaceholderPage() {
   const storageKey = "how_to_play_seen_v1";
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const overlayCardRef = useRef<HTMLDivElement | null>(null);
-  const [{ displayName, avatarSrc }] = useState(() => {
-    if (typeof window === "undefined") {
-      return { displayName: "@username", avatarSrc: null as string | null };
-    }
-
-    const w = window as TelegramSdkWindow;
-    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
-
-    return {
-      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
-      avatarSrc: tgUser?.photo_url ?? null
-    };
-  });
   const [seen, setSeen] = useState<[boolean, boolean, boolean]>(() => {
     if (typeof window === "undefined") {
       return [false, false, false];
@@ -137,8 +105,10 @@ export default function HowToPlayPlaceholderPage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        {/* ✅ ЕДИНЫЙ ХЕДЕР — стрелки + центр (top=112, картинка красная главное меню/рулетка) */}
-        <PageTopNav center="red-main-roulette" backHref="/main" nextHref="/main/profile" top={112} />
+        {/* ✅ ЕДИНЫЙ ХЕДЕР показываем только пока карточка не открыта */}
+        {activeIndex == null && (
+          <PageTopNav center="red-main-roulette" backHref="/main" nextHref="/main/profile" top={112} />
+        )}
         <Image
           src="/IMG_2381.PNG"
           alt="Как играть"
@@ -212,6 +182,22 @@ export default function HowToPlayPlaceholderPage() {
               className={styles.howToPlayOverlayCard}
               ref={overlayCardRef}
             >
+              <button
+                type="button"
+                className={styles.howToPlayOverlayBack}
+                onClick={closeOverlay}
+                aria-label="Назад"
+              >
+                <Image
+                  src="/стрелканазад.PNG"
+                  alt="Назад"
+                  width={104}
+                  height={52}
+                  className={styles.howToPlayOverlayBackIcon}
+                  sizes="52px"
+                  quality={80}
+                />
+              </button>
               <Image src={overlaySrc} alt="" fill className={styles.howToPlayOverlayImage} priority />
             </div>
           </div>

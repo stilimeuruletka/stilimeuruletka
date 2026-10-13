@@ -236,9 +236,9 @@ export function buildApp(
           inline_keyboard: [
             (() => {
               const tme = buildTmeAppUrl();
-              return [{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ (FULLSCREEN)", ...(tme ? { url: tme } : { web_app: { url: buildWebAppUrl() } }) }];
+              return [{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", ...(tme ? { url: tme } : { web_app: { url: buildWebAppUrl() } }) }];
             })(),
-            [{ text: "Стильная поддержка", url: "https://t.me/stilimeuruletkasos" }],
+            [{ text: "Поддержка", url: "https://t.me/stilimeuruletkasos" }],
             [{ text: "Канал сообщества", url: "https://t.me/stilimeuruletka" }],
             (() => {
               const tme = buildTmeAppUrl();
@@ -522,7 +522,7 @@ export function buildApp(
           "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
           {
             reply_markup: {
-              inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+              inline_keyboard: [[{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
             }
           }
         );
@@ -666,7 +666,7 @@ export function buildApp(
       "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
       {
         reply_markup: {
-          inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+          inline_keyboard: [[{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
         }
       }
     );
@@ -712,7 +712,7 @@ export function buildApp(
           "It’s time to spin & win!\n\nЕжедневный бесплатный спин снова доступен! Ловите +1 на баланс! Переходите в Стильную Рулетку , чтобы испытать удачу.",
           {
             reply_markup: {
-              inline_keyboard: [[{ text: "РАЗДАТЬ СТИЛЯ | ЗАПУСТИТЬ ПРИЛОЖЕНИЕ TG", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
+              inline_keyboard: [[{ text: "ЗАПУСТИТЬ ПРИЛОЖЕНИЕ | РАЗДАТЬ СТИЛЯ", web_app: { url: env.PUBLIC_WEBAPP_URL } }]]
             }
           }
         );

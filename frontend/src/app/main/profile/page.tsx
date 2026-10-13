@@ -159,8 +159,14 @@ function SpinTimer() {
         quality={80}
       />
       <div className={styles.profileSpinTimerText}>
-        <span>{canSpin ? "МОЖНО КРУТИТЬ" : "ДО СЛЕДУЮЩЕГО СПИНА"}</span>
-        <span className={styles.profileSpinTimerValue}>{remainingText}</span>
+        {canSpin ? (
+          "Использовать спин"
+        ) : (
+          <>
+            <span>ДО СЛЕДУЮЩЕГО СПИНА</span>
+            <span className={styles.profileSpinTimerValue}>{remainingText}</span>
+          </>
+        )}
       </div>
     </div>
   );

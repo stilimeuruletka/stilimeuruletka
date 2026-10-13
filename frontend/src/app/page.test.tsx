@@ -28,15 +28,16 @@ describe("Home", () => {
     globalThis.fetch = origFetchRef;
   });
 
-  it("renders splash tap-to-main", async () => {
+  it("plays fallback preview immediately, without any text placeholder", async () => {
+    // fetch /api/preview/queue никогда не резолвится — должно играть резервное видео сразу
+    globalThis.fetch = vi.fn(async () => new Response(null, { status: 500 })) as unknown as typeof fetch;
     render(<Home />);
 
-    // подпись «анимация» без картинки-заставки
-    expect(await screen.findByText("анимация")).toBeInTheDocument();
-
-    const splash = screen.getByRole("button");
-    splash.click();
-    expect(pushMock).toHaveBeenCalledWith("/main");
+    // видео стартует сразу, никакого экрана-заглушки с текстом
+    const video = await screen.findByTestId("preview-video");
+    expect(video).toBeInTheDocument();
+    expect(video.getAttribute("src")).toBe("/ГЛАВНОЕВИДЕО.mp4");
+    expect(screen.queryByText("анимация")).not.toBeInTheDocument();
   });
 
   it("plays preview queue when own video is set, then routes to /main", async () => {
@@ -50,19 +51,28 @@ describe("Home", () => {
 
     render(<Home />);
 
-    const video = await screen.findByTestId("preview-video");
+    // ждём, когда очередь подтянется и видео получит src нашего ролика
+    await waitFor(() => {
+      expect(screen.getByTestId("preview-video").getAttribute("src")).toBe("https://cdn/own.mp4");
+    });
+    const video = screen.getByTestId("preview-video");
     expect(video).toBeInTheDocument();
 
     // играем наш ролик (фиксируем просмотр own) → закончился → переходим на рекламу
     fireEvent.play(video);
     fireEvent.ended(video);
 
-    // реклама: onPlay сменяет src, через find по data-testid тот же элемент продолжает
-    const video2 = await screen.findByTestId("preview-video");
+    // реклама: ждём смены src на рекламный ролик
+    await waitFor(() => {
+      expect(screen.getByTestId("preview-video").getAttribute("src")).toBe("https://cdn/ad.mp4");
+    });
+    const video2 = screen.getByTestId("preview-video");
     fireEvent.play(video2);
     fireEvent.ended(video2);
 
-    expect(pushMock).toHaveBeenCalledWith("/main");
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/main");
+    });
     globalThis.fetch = origFetch;
   });
 

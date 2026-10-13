@@ -26,15 +26,20 @@ function getInitData() {
   return typeof initData === "string" && initData.length > 10 ? initData : null;
 }
 
+// Резервный ролик — играет сразу, до того как придёт очередь из БД
+const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
+
 export default function Home() {
   const router = useRouter();
-  const [playlist, setPlaylist] = useState<string[]>([]);
-  const [adIds, setAdIds] = useState<string[]>([]);
+  const [playlist, setPlaylist] = useState<string[]>([DEFAULT_OWN]);
+  const [adIds, setAdIds] = useState<string[]>(["own"]);
   const [index, setIndex] = useState(0);
-  const [readyToPlay, setReadyToPlay] = useState(false);
   const recordedRef = useRef<Set<number>>(new Set());
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Загружаем очередь роликов (наш + активная реклама)
+  // Загружаем очередь роликов (наш + активная реклама).
+  // Пока она едет, уже играет DEFAULT_OWN — поэтому никакой текстовой
+  // заглушки («анимация») и вспышек на экране нет.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -51,24 +56,66 @@ export default function Home() {
       const ad = queue?.ad ?? null;
 
       if (own && own.trim()) {
-        const items = [own];
+        const items = [own.trim()];
         const ids: string[] = ["own"];
         if (ad && ad.video_url && ad.video_url.trim()) {
-          items.push(ad.video_url);
+          items.push(ad.video_url.trim());
           ids.push(ad.id);
         }
         setPlaylist(items);
         setAdIds(ids);
-        setReadyToPlay(true);
-      } else {
-        // Ролика нет — остаёмся на подписи-заглушке (тап для входа)
-        setReadyToPlay(false);
       }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // Звук: пробуем играть сразу со звуком. Браузеры/Telegram часто блокируют
+  // автоплей со звуком — тогда видео играет молча, а звук включается первым тапом.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    let cancelled = false;
+
+    const play = (): Promise<void> | undefined => {
+      try {
+        const p = v.play();
+        if (p && typeof p.catch === "function") {
+          return Promise.resolve(p).catch(() => {});
+        }
+        return undefined;
+      } catch {
+        /* media API недоступен (jsdom) — игнорируем */
+        return undefined;
+      }
+    };
+
+    v.muted = false;
+    const first = play();
+    const markMuted = () => {
+      if (cancelled) return;
+      v.muted = true;
+      play();
+    };
+    if (first) {
+      first.catch(() => markMuted());
+    } else {
+      // если play() не дал промиса — считаем, что со звуком не вышло
+      markMuted();
+    }
+
+    const unlock = () => {
+      v.muted = false;
+      play();
+    };
+    document.addEventListener("pointerdown", unlock, { passive: true });
+
+    return () => {
+      cancelled = true;
+      document.removeEventListener("pointerdown", unlock);
+    };
+  }, [playlist[index]]);
 
   // Фиксируем просмотр текущего видео
   const recordView = (i: number) => {
@@ -95,26 +142,15 @@ export default function Home() {
     }
   };
 
-  if (!readyToPlay || playlist.length === 0) {
-    const go = () => router.push("/main");
-    return (
-      <div className={styles.splash} onClick={go} role="button" tabIndex={0}>
-        <div className={styles.splashInner}>
-          <div className={styles.splashText}>анимация</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000" }}>
+    <div className={styles.splashVideoWrap}>
       <video
         key={playlist[index]}
+        ref={videoRef}
         data-testid="preview-video"
         src={playlist[index]}
         className={styles.splashVideo}
         autoPlay
-        muted
         playsInline
         onPlay={() => recordView(index)}
         onEnded={onEnded}

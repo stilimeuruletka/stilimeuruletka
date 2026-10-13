@@ -97,7 +97,18 @@ export default function FriendsPage() {
         </div>
 
         <div className={styles.friendsListScroll}>
-          {showEmpty && <div className={styles.friendsListEmpty}>Пока нет приглашённых друзей</div>}
+          {showEmpty && (
+            <div className={styles.friendsListEmpty}>
+              <p className={styles.friendsListEmptyText}>
+                У вас нет приглашенных друзей. Приглашай стильных друзей и получай дополнительные спины за каждого.
+              </p>
+              <p className={styles.friendsListEmptyBonus}>1 друг — 1 дополнительный спин</p>
+              <div className={styles.friendsListEmptyReferral}>
+                <span className={styles.friendsListEmptyReferralLabel}>— Реферальная ссылка</span>
+                <Image src="/рефссылка.PNG" alt="Реферальная ссылка" width={64} height={64} className={styles.friendsListEmptyReferralIcon} />
+              </div>
+            </div>
+          )}
           {friends.map((f) => (
             <div key={f.tg_user_id} className={styles.friendsListCard}>
               <Image src="/IMG_1368.PNG" alt="" fill className={styles.friendsListCardImage} sizes="(max-width: 520px) 92vw, 520px" quality={90} />

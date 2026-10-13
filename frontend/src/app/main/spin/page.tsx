@@ -162,6 +162,28 @@ function ensureAudioContext(ref: React.MutableRefObject<AudioContext | null>) {
   return ref.current;
 }
 
+function unlockSpinAudio(ref: React.MutableRefObject<AudioContext | null>) {
+  const ctx = ensureAudioContext(ref);
+  if (ctx.state === "suspended") {
+    void ctx.resume().catch(() => {});
+  }
+
+  // iOS/Telegram надёжно разблокирует WebAudio только после крошечного звука,
+  // созданного прямо внутри обработчика пользовательского тапа.
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.value = 1;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.00001, t + 0.02);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.02);
+  return ctx;
+}
+
 function playTick(ctx: AudioContext) {
   const t = ctx.currentTime;
   const osc = ctx.createOscillator();
@@ -290,6 +312,7 @@ export default function RoulettePage() {
 
   const startSpin = useCallback(async () => {
     if (spinning) return;
+    unlockSpinAudio(audioRef);
     if (availableSpins > 0) {
       // use local bonus spins pool first (no 24h cooldown)
     }
@@ -400,7 +423,7 @@ export default function RoulettePage() {
       stopTicks(tickTimeoutRef);
       const ctx = ensureAudioContext(audioRef);
       if (ctx.state === "suspended") {
-        await ctx.resume().catch(() => {});
+        void ctx.resume().catch(() => {});
       }
       scheduleTicks(audioRef, tickTimeoutRef, ms);
       requestAnimationFrame(() => setRotation(nextRotation));
@@ -458,6 +481,11 @@ export default function RoulettePage() {
     setModalOpen(false);
   }, []);
 
+  const unlockAudioOnTouch = useCallback(() => {
+    if (spinning) return;
+    unlockSpinAudio(audioRef);
+  }, [spinning]);
+
   const rerunFromModal = useCallback(() => {
     if (spinning) return;
     setModalOpen(false);
@@ -473,6 +501,7 @@ export default function RoulettePage() {
           <button
             type="button"
             className={styles.rouletteWheelButton}
+            onPointerDown={unlockAudioOnTouch}
             onClick={startSpin}
             disabled={spinning}
             aria-label={spinning ? "Крутится" : "Крутить"}
@@ -597,6 +626,7 @@ export default function RoulettePage() {
               <button
                 type="button"
                 className={`${styles.spinResultActionButton} ${styles.spinResultActionButtonSmall}`}
+                onPointerDown={unlockAudioOnTouch}
                 onClick={rerunFromModal}
                 disabled={spinning}
                 aria-label="Запустить рулетку"

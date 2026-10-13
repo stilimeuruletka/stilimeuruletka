@@ -36,9 +36,16 @@
   letter-spacing: 0.2px;
 }
 
+.splashVideoWrap {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  position: relative;
+}
+
 .splashVideo {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
   background: #000;
@@ -1219,6 +1226,55 @@
   padding: 186px 16px 22px;
   overflow-y: auto;
   z-index: 1;
+}
+
+.friendsListEmpty {
+  height: 100%;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 22px;
+  padding: 0 12px;
+  font-family: var(--font-uncage);
+}
+
+.friendsListEmptyText {
+  font-size: clamp(10px, 2.6vw, 16px);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: #0f172a;
+  max-width: 360px;
+}
+
+.friendsListEmptyBonus {
+  font-size: clamp(11px, 2.9vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #0f172a;
+}
+
+.friendsListEmptyReferral {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.friendsListEmptyReferralLabel {
+  font-size: clamp(9px, 2.2vw, 14px);
+  letter-spacing: 0.03em;
+  color: #0f172a;
+}
+
+.friendsListEmptyReferralIcon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
 }
 
 .friendsListCard {
@@ -2719,6 +2775,31 @@
   object-fit: contain;
 }
 
+.howToPlayOverlayBack {
+  position: absolute;
+  top: 480px;
+  left: 109px;
+  transform: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.howToPlayOverlayBack::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+}
+
+.howToPlayOverlayBackIcon {
+  display: block;
+  width: 52px;
+  height: auto;
+  filter: brightness(0);
+}
+
 .howToPlayOverlayClose {
   position: absolute;
   left: 94px;
@@ -3391,7 +3472,7 @@
 /* ← → СТРЕЛКИ: top=12px относительно .pageTopNav = на одной высоте с серединой центральной картинки */
 .pageTopNavArrow {
   position: absolute;
-  top: 20px;
+  top: 0px;
   width: 104px;
   height: 52px;
   display: block;
@@ -3430,5 +3511,64 @@
   pointer-events: auto;
 }
 
+@media (min-width: 520px) {
+  :global(.app-frame) .screen,
+  :global(.app-frame) .placeholderPage,
+  :global(.app-frame) .fullScreenPage {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+  }
 
+  :global(.app-frame) .placeholderFrame,
+  :global(.app-frame) .fullScreenFrame {
+    height: 100%;
+    width: 100%;
+  }
 
+  :global(.app-frame) .profileStack,
+  :global(.app-frame) .friendProfileStack {
+    height: 100%;
+    min-height: 100%;
+  }
+
+  :global(.app-frame) .splashVideo {
+    width: 100%;
+  }
+
+  :global(.app-frame) .commonTopHeader {
+    top: 94px;
+  }
+
+  :global(.app-frame) .aboutTopHeader {
+    top: 142px;
+  }
+
+  :global(.app-frame) .friendProfileStack .profileBottomImage {
+    top: 120px;
+  }
+
+  /* /main/friend на компе: поднять аватар, стрелки и картинку меню,
+     кнопку «Пригласить» не двигаем */
+  :global(.app-frame) .friendProfileStack .profileOverlayImage {
+    top: 60px;
+  }
+
+  :global(.app-frame) .friendProfileStack .profileAvatarBlockOverlay {
+    top: 90px;
+  }
+
+  :global(.app-frame) .friendProfileStack .profileArrowLeft,
+  :global(.app-frame) .friendProfileStack .profileArrowRight {
+    top: 92px;
+  }
+
+  /* /main/friend на компе: кнопку «Пригласить» и иконки опустить ниже */
+  :global(.app-frame) .friendProfileStack .profileInviteButtonOverlay {
+    top: 33%;
+  }
+
+  :global(.app-frame) .friendProfileStack .profileCenterIcons {
+    top: 45%;
+  }
+}
