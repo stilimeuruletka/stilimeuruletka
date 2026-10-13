@@ -1736,6 +1736,39 @@
   padding: 0 16px 18px;
 }
 
+/* Стартовое видео рулетки: сначала проигрывается, потом замирает и блюрится.
+   Растягивается на весь экран до краёв, без белого фона. */
+.spinPage {
+  background: #000;
+}
+
+.spinFrame {
+  background: #000;
+}
+
+.spinIntroVideo {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+  background: #000;
+  z-index: 5;
+}
+
+.spinIntroVideoDone {
+  z-index: 1;
+  filter: blur(10px) saturate(0.85);
+  pointer-events: none;
+  transition: filter 240ms ease;
+}
+
+.rouletteStageHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .rouletteStageBlurred {
   filter: blur(10px) saturate(0.85);
   pointer-events: none;

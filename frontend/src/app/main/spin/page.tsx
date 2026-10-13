@@ -270,6 +270,8 @@ export default function RoulettePage() {
   const [error, setError] = useState<string | null>(null);
   const [wonSegmentIndex, setWonSegmentIndex] = useState<number | null>(null);
   const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
+  const introVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
     rotationRef.current = rotation;
@@ -486,6 +488,28 @@ export default function RoulettePage() {
     unlockSpinAudio(audioRef);
   }, [spinning]);
 
+  const handleIntroEnded = useCallback(() => {
+    const vid = introVideoRef.current;
+    if (vid) {
+      vid.pause();
+      vid.currentTime = vid.duration || vid.currentTime;
+    }
+    setIntroDone(true);
+  }, []);
+
+  const handleIntroError = useCallback(() => {
+    // если видео не проигралось — сразу показываем рулетку
+    setIntroDone(true);
+  }, []);
+
+  const handleIntroUnlock = useCallback(() => {
+    const vid = introVideoRef.current;
+    if (!vid) return;
+    if (vid.paused) {
+      void vid.play().catch(() => {});
+    }
+  }, []);
+
   const rerunFromModal = useCallback(() => {
     if (spinning) return;
     setModalOpen(false);
@@ -493,10 +517,21 @@ export default function RoulettePage() {
   }, [startSpin, spinning]);
 
   return (
-    <div className={styles.placeholderPage}>
-      <div className={styles.placeholderFrame}>
+    <div className={`${styles.placeholderPage} ${styles.spinPage}`}>
+      <div className={`${styles.placeholderFrame} ${styles.spinFrame}`}>
+        <video
+          ref={introVideoRef}
+          className={`${styles.spinIntroVideo} ${introDone ? styles.spinIntroVideoDone : ""}`}
+          src="/рулетка.mp4"
+          autoPlay
+          playsInline
+          preload="auto"
+          onEnded={handleIntroEnded}
+          onError={handleIntroError}
+          onPointerDown={handleIntroUnlock}
+        />
         <div
-          className={`${styles.rouletteStage} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
+          className={`${styles.rouletteStage} ${!introDone ? styles.rouletteStageHidden : ""} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
         >
           <button
             type="button"
