@@ -122,52 +122,71 @@ export default function TelegramInit() {
           };
         };
       };
-      const webApp = w.Telegram?.WebApp;
-      if (webApp) {
-        const initData =
-          typeof (webApp as unknown as { initData?: unknown }).initData === "string" &&
-          (webApp as unknown as { initData?: string }).initData!.length > 10
-            ? ((webApp as unknown as { initData: string }).initData as string)
-            : null;
-        const tgStart = webApp.initDataUnsafe?.start_param;
-        if (tgStart) {
-          try {
-            localStorage.setItem(LS_START_PARAM, tgStart);
-          } catch {
-            /* ignore */
-          }
-        }
+      let cancelled = false;
+      let started = false;
+      let tries = 0;
 
-        webApp.setBackgroundColor?.("#ffffff");
-        webApp.setHeaderColor?.("#ffffff");
-        webApp.setBottomBarColor?.("#ffffff");
-        webApp.expand?.();
-        webApp.disableVerticalSwipes?.();
-        webApp.ready?.();
+      const tick = () => {
+        if (cancelled || started) return;
+        tries += 1;
 
-        if (initData) {
-          const tzOffset = new Date().getTimezoneOffset();
-          void fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
-            headers: { "x-telegram-init-data": initData },
-            cache: "no-store"
-          }).catch(() => null);
-        }
+        const webApp = w.Telegram?.WebApp;
+        if (webApp) {
+          const initData =
+            typeof (webApp as unknown as { initData?: unknown }).initData === "string" &&
+            (webApp as unknown as { initData?: string }).initData!.length > 10
+              ? ((webApp as unknown as { initData: string }).initData as string)
+              : null;
 
-        const canFullscreen =
-          (typeof webApp.isVersionAtLeast === "function" && webApp.isVersionAtLeast("8.0")) ||
-          (typeof webApp.version === "string" && Number.parseFloat(webApp.version) >= 8);
-
-        if (canFullscreen && typeof webApp.requestFullscreen === "function") {
-          try {
-            const p = webApp.requestFullscreen();
-            if (p && typeof (p as Promise<void>).catch === "function") {
-              (p as Promise<void>).catch(() => {});
+          const tgStart = webApp.initDataUnsafe?.start_param;
+          if (tgStart) {
+            try {
+              localStorage.setItem(LS_START_PARAM, tgStart);
+            } catch {
+              /* ignore */
             }
-          } catch {
-            /* no-op */
+          }
+
+          webApp.setBackgroundColor?.("#ffffff");
+          webApp.setHeaderColor?.("#ffffff");
+          webApp.setBottomBarColor?.("#ffffff");
+          webApp.expand?.();
+          webApp.disableVerticalSwipes?.();
+          webApp.ready?.();
+
+          if (initData) {
+            started = true;
+            const tzOffset = new Date().getTimezoneOffset();
+            void fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+              headers: { "x-telegram-init-data": initData },
+              cache: "no-store"
+            }).catch(() => null);
+
+            const canFullscreen =
+              (typeof webApp.isVersionAtLeast === "function" && webApp.isVersionAtLeast("8.0")) ||
+              (typeof webApp.version === "string" && Number.parseFloat(webApp.version) >= 8);
+            if (canFullscreen && typeof webApp.requestFullscreen === "function") {
+              try {
+                const p = webApp.requestFullscreen();
+                if (p && typeof (p as Promise<void>).catch === "function") {
+                  (p as Promise<void>).catch(() => {});
+                }
+              } catch {
+                /* no-op */
+              }
+            }
           }
         }
-      }
+
+        if (!started && tries < 20) {
+          window.setTimeout(tick, 250);
+        }
+      };
+
+      window.setTimeout(tick, 0);
+      return () => {
+        cancelled = true;
+      };
     } catch {
       /* no-op */
     }
