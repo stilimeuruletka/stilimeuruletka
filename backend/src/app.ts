@@ -728,8 +728,13 @@ export function buildApp(
   app.get("/cron/spin-reminder", handleSpinReminderCron);
 
   app.get("/api/referral/link", async (req: FastifyRequest) => {
-    const auth = (req as unknown as { auth: { tgUserId: number } }).auth;
+    const auth = (req as unknown as { auth: { tgUserId: number; username?: string; startParam?: string } }).auth;
     const botUsername = env.TELEGRAM_BOT_USERNAME.replace("@", "");
+    await db.handleStart({
+      tg_user_id: auth.tgUserId,
+      ...(auth.username ? { username: auth.username } : {}),
+      ...(auth.startParam ? { ref_code: auth.startParam } : {})
+    });
     const refCode = await db.getReferralCode(auth.tgUserId);
     const link = env.TELEGRAM_APP_SLUG
       ? `https://t.me/${botUsername}/${env.TELEGRAM_APP_SLUG}?startapp=ref_${refCode}&mode=fullscreen`

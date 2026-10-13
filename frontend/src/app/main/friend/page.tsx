@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "../../page.module.css";
 
 type TelegramWebAppUser = {
@@ -32,6 +32,11 @@ function getBackendBase() {
   return raw ? raw.replace(/\/+$/, "") : "";
 }
 
+function getReferralLinkApiUrl() {
+  const base = getBackendBase();
+  return base ? `${base}/api/referral/link` : "/api/referral/link";
+}
+
 function getInitData() {
   const w = window as TelegramSdkWindow;
   const initData = w.Telegram?.WebApp?.initData;
@@ -58,28 +63,44 @@ export default function FriendPage() {
   }
 
   const [referralLink, setReferralLink] = useState<string>("");
+  const [isLoadingReferralLink, setIsLoadingReferralLink] = useState(false);
+
+  const loadReferralLink = useCallback(async () => {
+    const initData = getInitData();
+    if (!initData) return null;
+
+    setIsLoadingReferralLink(true);
+    try {
+      const res = await fetch(getReferralLinkApiUrl(), {
+        headers: { "x-telegram-init-data": initData }
+      });
+      if (!res.ok) return null;
+      const json = (await res.json().catch(() => null)) as { link?: string } | null;
+      const link = typeof json?.link === "string" ? json.link : null;
+      if (link) setReferralLink(link);
+      return link;
+    } catch (e) {
+      console.error("[friend] referral link fetch failed", e);
+      return null;
+    } finally {
+      setIsLoadingReferralLink(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const initData = getInitData();
-    const base = getBackendBase();
-    if (!base || !initData) return;
-
     let cancelled = false;
-    fetch(`${base}/api/referral/link`, {
-      headers: { "x-telegram-init-data": initData }
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((json) => {
-        if (!cancelled && json && typeof json.link === "string") setReferralLink(json.link);
-      })
-      .catch(() => {});
+    void loadReferralLink().then((link) => {
+      if (cancelled || !link) return;
+      setReferralLink(link);
+    });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadReferralLink]);
 
   const handleCopyReferral = async () => {
-    if (!referralLink || typeof window === "undefined") {
+    const link = referralLink || (await loadReferralLink());
+    if (!link || typeof window === "undefined") {
       const w = window as TelegramSdkWindow;
       w.Telegram?.WebApp?.showAlert?.("Не удалось получить ссылку");
       return;
@@ -87,7 +108,7 @@ export default function FriendPage() {
 
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(referralLink);
+        await navigator.clipboard.writeText(link);
       }
 
       const w = window as TelegramSdkWindow;
@@ -149,6 +170,7 @@ export default function FriendPage() {
             height={144}
             className={`${styles.profileCenterIcon} ${styles.profileCenterIconRight}`}
             onClick={handleCopyReferral}
+            aria-disabled={isLoadingReferralLink}
           />
           <Image
             src="/стильныедрущья.PNG"
