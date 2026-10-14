@@ -33,14 +33,23 @@ function extractStartParamFromUrl(): string | null {
 function setupStartParamHeader() {
   if (typeof window === "undefined") return;
   try {
-    const headerValue = localStorage.getItem(LS_START_PARAM);
-    if (!headerValue) return;
+    const w = window as unknown as { __tgStartParamHeaderPatched?: boolean };
+    if (w.__tgStartParamHeaderPatched) return;
+    w.__tgStartParamHeaderPatched = true;
 
     const origFetch = window.fetch.bind(window);
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const reqInit: RequestInit = init ? { ...init } : {};
       const headers = new Headers(reqInit.headers || {});
+      const headerValue = (() => {
+        try {
+          return localStorage.getItem(LS_START_PARAM);
+        } catch {
+          return null;
+        }
+      })();
       const needsHeader =
+        !!headerValue &&
         !headers.has("x-tg-start-param") &&
         (() => {
           try {
@@ -66,7 +75,17 @@ function setupStartParamHeader() {
       (OrigXhrOpen as unknown as (this: XMLHttpRequest, ...a: unknown[]) => unknown).apply(this, args);
       try {
         const urlStr = typeof url === "string" ? url : url instanceof URL ? url.toString() : "";
-        if (urlStr.includes("/api/") || urlStr.includes("localhost") || urlStr.includes("127.0.0.1")) {
+        const headerValue = (() => {
+          try {
+            return localStorage.getItem(LS_START_PARAM);
+          } catch {
+            return null;
+          }
+        })();
+        if (
+          headerValue &&
+          (urlStr.includes("/api/") || urlStr.includes("localhost") || urlStr.includes("127.0.0.1"))
+        ) {
           try {
             this.setRequestHeader("x-tg-start-param", headerValue);
           } catch {
@@ -158,7 +177,16 @@ export default function TelegramInit() {
             started = true;
             const tzOffset = new Date().getTimezoneOffset();
             void fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
-              headers: { "x-telegram-init-data": initData },
+              headers: (() => {
+                const headers = new Headers({ "x-telegram-init-data": initData });
+                try {
+                  const startParam = localStorage.getItem(LS_START_PARAM);
+                  if (startParam) headers.set("x-tg-start-param", startParam);
+                } catch {
+                  /* ignore */
+                }
+                return headers;
+              })(),
               cache: "no-store"
             }).catch(() => null);
 
