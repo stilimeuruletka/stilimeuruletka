@@ -64,14 +64,13 @@ export async function GET(req: NextRequest) {
       process.env.TELEGRAM_BOT_USERNAME ||
       "";
     const cleanBotUsername = botUsername.replace(/^@/, "");
-    const appSlug = process.env.NEXT_PUBLIC_TELEGRAM_APP_SLUG || process.env.TELEGRAM_APP_SLUG || "app";
 
     if (!cleanBotUsername) {
       return jsonError("Bot username is not configured", 500);
     }
 
     return NextResponse.json({
-      link: `https://t.me/${cleanBotUsername}/${appSlug}?startapp=ref_${refCode}&mode=fullscreen`
+      link: `https://t.me/${cleanBotUsername}?start=ref_${refCode}`
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";

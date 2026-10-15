@@ -736,9 +736,7 @@ export function buildApp(
       ...(auth.startParam ? { ref_code: auth.startParam } : {})
     });
     const refCode = await db.getReferralCode(auth.tgUserId);
-    const link = env.TELEGRAM_APP_SLUG
-      ? `https://t.me/${botUsername}/${env.TELEGRAM_APP_SLUG}?startapp=ref_${refCode}&mode=fullscreen`
-      : `https://t.me/${botUsername}?startapp=ref_${refCode}`;
+    const link = `https://t.me/${botUsername}?start=ref_${refCode}`;
     return { link };
   });
 

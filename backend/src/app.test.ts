@@ -255,7 +255,7 @@ describe("buildApp", () => {
       headers: { "x-telegram-init-data": initData }
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ link: "https://t.me/my_bot?startapp=ref_abc123" });
+    expect(res.json()).toEqual({ link: "https://t.me/my_bot?start=ref_abc123" });
     await app.close();
   });
 
@@ -335,6 +335,7 @@ describe("buildApp", () => {
     };
 
     const telegram = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -353,7 +354,7 @@ describe("buildApp", () => {
 
     expect(res.statusCode).toBe(200);
     expect(db.handleStart).toHaveBeenCalled();
-    expect(telegram.sendMessage).toHaveBeenCalled();
+    expect(telegram.sendPhoto).toHaveBeenCalled();
     await app.close();
   });
 
@@ -490,7 +491,7 @@ describe("buildApp", () => {
         upsertUserProfile: vi.fn(async () => {}),
         grantSubscriptionTicket: vi.fn(async () => ({ balance: 0 })),
         spinWheel: vi.fn(async () => spinOk),
-        setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        setNextSpinAfterSpin: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
         listDueSpinUsers: vi.fn(async () => []),
         getTicketBalance: vi.fn(async () => ({ balance: 0 })),
         writeAuditEvent: vi.fn(async () => {}),
@@ -512,7 +513,7 @@ describe("buildApp", () => {
         spinWheel: vi.fn(async () => {
           throw new Error("no tickets");
         }),
-        setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
+        setNextSpinAfterSpin: vi.fn(async () => ({ next_spin_at: "2026-01-02T00:00:00.000Z" })),
         listDueSpinUsers: vi.fn(async () => []),
         getTicketBalance: vi.fn(async () => ({ balance: 0 })),
         writeAuditEvent: vi.fn(async () => {}),
@@ -558,6 +559,7 @@ describe("buildApp", () => {
         getReferralCode: vi.fn(async () => "refcode")
       } as any,
       telegram: {
+        sendPhoto: vi.fn(async () => ({})),
         sendMessage: vi.fn(async () => ({})),
         answerCallbackQuery: vi.fn(async () => ({})),
         getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -604,6 +606,7 @@ describe("buildApp", () => {
     };
 
     const telegram1 = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "left" }))
@@ -623,6 +626,7 @@ describe("buildApp", () => {
     expect(baseDb.grantSubscriptionTicket).not.toHaveBeenCalled();
 
     const telegram2 = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -674,6 +678,7 @@ describe("buildApp", () => {
     };
 
     const telegram = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -732,6 +737,7 @@ describe("buildApp", () => {
     };
 
     const telegram = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -835,7 +841,7 @@ describe("buildApp", () => {
       if (fn === "upsert_user_profile") {
         return { data: null, error: null };
       }
-      if (fn === "set_next_spin_after_spin_midnight") {
+      if (fn === "set_next_spin_after_spin") {
         return { data: { next_spin_at: "2026-01-02T00:00:00.000Z" }, error: null };
       }
       if (fn === "list_due_spin_users") {
@@ -883,6 +889,7 @@ describe("buildApp", () => {
     } as any;
 
     const telegram = {
+      sendPhoto: vi.fn(async () => ({})),
       sendMessage: vi.fn(async () => ({})),
       answerCallbackQuery: vi.fn(async () => ({})),
       getChatMember: vi.fn(async () => ({ status: "member" }))
@@ -1004,7 +1011,7 @@ describe("buildApp", () => {
       upsertUserProfile: vi.fn(async () => {}),
       spinWheel: vi.fn(async () => spinOk),
       spinWheelLimited: vi.fn(async () => spinOk),
-      setNextSpinAfterSpinMidnight: vi.fn(async () => ({ next_spin_at: "2026-01-03T00:00:00.000Z" }))
+      setNextSpinAfterSpin: vi.fn(async () => ({ next_spin_at: "2026-01-03T00:00:00.000Z" }))
     };
 
     const app = buildApp(env, { db: db as any });

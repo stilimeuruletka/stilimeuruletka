@@ -24,6 +24,37 @@ function getAdminSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+function parseStartPayload(text: string): string | null {
+  const trimmed = text.trim();
+  if (!trimmed.startsWith("/start")) return null;
+  const payload = trimmed.split(/\s+/, 2)[1];
+  return payload && payload.length > 0 ? payload : null;
+}
+
+function extractRefCodeFromPayload(payload: string | null): string | null {
+  if (!payload) return null;
+  const v = payload.trim();
+  if (!v) return null;
+  if (v.startsWith("ref_")) return v.slice(4) || null;
+  return null;
+}
+
+async function handleStartFromBot(tgUserId: number, username: string | null, payload: string | null) {
+  const supabase = getAdminSupabase();
+  if (!supabase) return null;
+  const refCode = extractRefCodeFromPayload(payload);
+  const { data, error } = await supabase.rpc("handle_start", {
+    p_tg_user_id: tgUserId,
+    p_username: username,
+    p_ref_code: refCode
+  });
+  if (error) {
+    console.error("telegram_webhook_handle_start_failed", error);
+    return null;
+  }
+  return data ?? null;
+}
+
 async function getTelegramUserBalance(tgUserId: number) {
   const supabase = getAdminSupabase();
   if (!supabase) return 0;
@@ -185,13 +216,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
-  const u = update as { message?: { text?: string; chat: { id: number }; from: { id: number } }; callback_query?: { id: string; data?: string; from: { id: number }; message?: { chat?: { id: number } } } };
+  const u = update as {
+    message?: { text?: string; chat: { id: number }; from: { id: number; username?: string } };
+    callback_query?: { id: string; data?: string; from: { id: number; username?: string }; message?: { chat?: { id: number } } };
+  };
 
   if (u?.message?.text) {
     const chatId = u.message.chat.id;
     const userId = u.message.from.id;
+    const username = typeof u.message.from.username === "string" && u.message.from.username.length > 0 ? u.message.from.username : null;
     const text: string = u.message.text;
     if (text.startsWith("/start")) {
+      const payload = parseStartPayload(text);
+      await handleStartFromBot(userId, username, payload);
       await sendWelcome(chatId);
     } else if (text === "/balance") {
       const balance = await getTelegramUserBalance(userId);
