@@ -135,6 +135,7 @@ export default function HowToPlayPlaceholderPage() {
               sizes="24px"
               quality={100}
             />
+            <span aria-hidden="true" className={styles.howToPlayRuleHitArea} />
           </button>
           <button
             type="button"
@@ -154,6 +155,7 @@ export default function HowToPlayPlaceholderPage() {
               sizes="24px"
               quality={100}
             />
+            <span aria-hidden="true" className={styles.howToPlayRuleHitArea} />
           </button>
           <button
             type="button"
@@ -173,6 +175,7 @@ export default function HowToPlayPlaceholderPage() {
               sizes="24px"
               quality={100}
             />
+            <span aria-hidden="true" className={styles.howToPlayRuleHitArea} />
           </button>
         </div>
 

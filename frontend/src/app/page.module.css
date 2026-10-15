@@ -538,7 +538,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: 0;
+  top: 16px;
   left: 0;
   right: 0;
   width: 100%;
@@ -884,11 +884,13 @@
 }
 
 .profileHistoryArrowLeft {
-  left: 8px;
+  left: 0px;
+  transform: translateY(96px);
 }
 
 .profileHistoryArrowRight {
-  right: 8px;
+  right: 0px;
+  transform: translateY(96px);
 }
 
 .profileHistoryArrowIcon {
@@ -906,12 +908,12 @@
 .profileHistoryCloseButton {
   position: absolute;
   top: 96px;
-  left: 24px;
+  left: -16px;
   border: 0;
   background: transparent;
   padding: 0;
   cursor: pointer;
-  z-index: 2;
+  z-index: 3;
 }
 
 .profileHistoryCloseIcon {
@@ -925,12 +927,12 @@
 .profileHistoryTopRightButton {
   position: absolute;
   top: 96px;
-  right: 24px;
+  right: -16px;
   border: 0;
   background: transparent;
   padding: 0;
   cursor: pointer;
-  z-index: 2;
+  z-index: 3;
 }
 
 .profileHistoryTopRightIcon {
@@ -954,8 +956,7 @@
 }
 
 .profileHistoryTopRightImg {
-  width: 96%;
-  max-width: none;
+  width: min(300px, 84vw);
   margin: 0 auto;
   display: block;
   object-fit: contain;
@@ -1052,11 +1053,11 @@
 }
 
 .aboutNavArrowLeft {
-  left: 30px;
+  left: 8px;
 }
 
 .aboutNavArrowRight {
-  right: 30px;
+  right: 8px;
   transform: scaleX(-1);
 }
 
@@ -1357,7 +1358,7 @@
 
 .historySpinTop {
   position: absolute;
-  top: 0;
+  top: 20px;
   left: 0;
   right: 0;
   height: 150px;
@@ -1374,7 +1375,7 @@
 
 .historySpinBackButton {
   position: absolute;
-  top: 44px;
+  top: 72px;
   left: -20px;
   border: 0;
   background: transparent;
@@ -1393,7 +1394,7 @@
 
 .historySpinNextButton {
   position: absolute;
-  top: 44px;
+  top: 72px;
   right: -20px;
   border: 0;
   background: transparent;
@@ -1413,7 +1414,7 @@
 
 .historySpinContent {
   position: absolute;
-  top: 150px;
+  top: 170px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -1458,8 +1459,10 @@
   flex: 1 1 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  column-gap: 6px;
-  row-gap: 0;
+  grid-auto-rows: max-content;
+  align-content: start;
+  column-gap: 5px;
+  row-gap: 30px;
   padding: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -1479,12 +1482,12 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transform: scale(1.35);
+  transform: scale(1.4);
   transform-origin: center;
 }
 
 .historySpinTileImageSpin {
-  transform: scale(1.55) translateY(-6%);
+  transform: scale(1.6) translateY(-6%);
   transform-origin: center;
 }
 
@@ -2637,6 +2640,52 @@
   }
 }
 
+/* Только для высоких современных iPhone (14-17 и похожие, класс ставится по UA,
+   Android и другие устройства не затрагиваются):
+   убираем растяжение видео, опускаем крутку и экран результата, мельче счётчик. */
+:global(.is-iphone-tall) .spinIntroVideo {
+  object-fit: contain;
+}
+
+:global(.is-iphone-tall) .rouletteStage {
+  top: 57%;
+}
+
+:global(.is-iphone-tall) .rouletteWheelArt {
+  transform: translateY(-56px) scale(1.12);
+}
+
+:global(.is-iphone-tall) .spinResultTopHeader {
+  top: 56px;
+}
+
+:global(.is-iphone-tall) .spinResultTopNavLeft,
+:global(.is-iphone-tall) .spinResultTopNavRight {
+  top: 70px;
+}
+
+:global(.is-iphone-tall) .spinResultTicketPlatform {
+  margin-top: 190px;
+}
+
+:global(.is-iphone-tall) .spinResultPrizeImageWrap {
+  margin-top: -34px;
+}
+
+:global(.is-iphone-tall) .spinResultSpinsCounter {
+  margin-top: 24px;
+  margin-bottom: 52px;
+}
+
+:global(.is-iphone-tall) .spinResultSpinsCounter {
+  font-size: 10px;
+}
+
+:global(.is-iphone-tall) .howToPlayOverlayBack {
+  top: 595px;
+  left: 90px;
+}
+
 .howToPlayNavLeft {
   left: 16px;
   top: 76px;
@@ -2805,6 +2854,21 @@
   width: 22px;
   height: 22px;
   display: block;
+}
+
+/* Прозрачная прямоугольная плашка справа от кругляша:
+   расширяет кликабельную область «на текст», открывает то же описание. */
+.howToPlayRuleHitArea {
+  position: absolute;
+  left: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(240px, 52vw);
+  height: 44px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  touch-action: manipulation;
 }
 
 
@@ -3611,7 +3675,7 @@
   /* /main/friend на компе: поднять аватар, стрелки и картинку меню,
      кнопку «Пригласить» не двигаем */
   :global(.app-frame) .friendProfileStack .profileOverlayImage {
-    top: 0;
+    top: 16px;
   }
 
   :global(.app-frame) .friendProfileStack .profileAvatarBlockOverlay {

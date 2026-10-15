@@ -103,6 +103,23 @@ function setupStartParamHeader() {
 
 export default function TelegramInit() {
   useEffect(() => {
+    // Только высокие современные iPhone (14-17 и похожие): добавляем класс,
+    // чтобы стили для этих экранов не задевали Android и другие устройства.
+    try {
+      if (/iPhone|iPod/.test(navigator.userAgent)) {
+        const matches = window.matchMedia(
+          "(min-width: 360px) and (max-width: 440px) and (min-height: 830px) and (max-height: 960px)"
+        ).matches;
+        if (matches) {
+          document.documentElement.classList.add("is-iphone-tall");
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
     try {
       const pendingFromUrl = extractStartParamFromUrl();
       if (pendingFromUrl) {
