@@ -38,6 +38,18 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
               Заказы
             </Link>
             <Link
+              href="/admin/advertisers"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/advertisers") ? styles.navLinkActive : ""}`}
+            >
+              Реклама
+            </Link>
+            <Link
+              href="/admin/shelf"
+              className={`${styles.navLink} ${pathname.startsWith("/admin/shelf") ? styles.navLinkActive : ""}`}
+            >
+              Полка
+            </Link>
+            <Link
               href="/admin/users"
               className={`${styles.navLink} ${pathname.startsWith("/admin/users") ? styles.navLinkActive : ""}`}
             >

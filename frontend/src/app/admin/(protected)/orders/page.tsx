@@ -4,15 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "../../admin.module.css";
 
-type BloggerStat = {
-  blogger_id: string;
-  code: string;
-  name: string;
-  clicks: number;
-  registrations: number;
-  spins: number;
-};
-
 type BloggerRow = {
   id: string;
   code: string;
@@ -38,31 +29,6 @@ type CampaignRow = {
 };
 
 type ToastState = { message: string; variant: "ok" | "error" } | null;
-
-function demoStats(): BloggerStat[] {
-  return [
-    { blogger_id: "demo-1", code: "blog_anna", name: "Анна", clicks: 120, registrations: 38, spins: 44 },
-    { blogger_id: "demo-2", code: "blog_kate", name: "Катя", clicks: 76, registrations: 21, spins: 19 },
-    { blogger_id: "demo-3", code: "blog_masha", name: "Маша", clicks: 34, registrations: 8, spins: 5 }
-  ];
-}
-
-function yyyyMmDd(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function toIsoStartOfDayLocal(dateStr: string) {
-  const d = new Date(`${dateStr}T00:00:00`);
-  return Number.isFinite(d.getTime()) ? d.toISOString() : null;
-}
-
-function toIsoEndOfDayLocal(dateStr: string) {
-  const d = new Date(`${dateStr}T23:59:59.999`);
-  return Number.isFinite(d.getTime()) ? d.toISOString() : null;
-}
 
 function progressClass(p: number) {
   if (p >= 100) return `${styles.progressFill} ${styles.progressFillFull}`;
@@ -98,14 +64,6 @@ async function copyToClipboardFallback(text: string): Promise<boolean> {
 }
 
 export default function AdminOrdersPage() {
-  const today = useMemo(() => new Date(), []);
-  const defaultTo = useMemo(() => yyyyMmDd(today), [today]);
-  const defaultFrom = useMemo(() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - 30);
-    return yyyyMmDd(d);
-  }, [today]);
-
   // ---- Общее состояние ----
   const [toast, setToast] = useState<ToastState>(null);
   const toastTimerRef = useRef<number | null>(null);
@@ -121,12 +79,7 @@ export default function AdminOrdersPage() {
   const [editing, setEditing] = useState<Record<string, { name: string; telegram_link: string; active: boolean }>>(
     {}
   );
-
-  // ---- Реклама (аналитика) ----
-  const [from, setFrom] = useState(defaultFrom);
-  const [to, setTo] = useState(defaultTo);
-  const [stats, setStats] = useState<BloggerStat[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [showClosed, setShowClosed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [linkConfig, setLinkConfig] = useState<{
@@ -178,36 +131,11 @@ export default function AdminOrdersPage() {
     });
   }, []);
 
-  const loadStats = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    const fromIso = toIsoStartOfDayLocal(from);
-    const toIso = toIsoEndOfDayLocal(to);
-
-    const qs = new URLSearchParams();
-    if (fromIso) qs.set("from", fromIso);
-    if (toIso) qs.set("to", toIso);
-
-    const res = await fetch(`/admin/api/bloggers/stats?${qs.toString()}`, { cache: "no-store" }).catch(() => null);
-    if (!res || !res.ok) {
-      const msg = (await res?.json().catch(() => null)) as { error?: string } | null;
-      setError(msg?.error || "Демо-режим: нет доступа к API аналитики");
-      setStats(demoStats());
-      setLoading(false);
-      return;
-    }
-
-    const json = (await res.json().catch(() => null)) as { stats?: BloggerStat[] } | null;
-    setStats(Array.isArray(json?.stats) ? json!.stats! : []);
-    setLoading(false);
-  }, [from, to]);
-
   const loadAll = useCallback(() => {
     void loadBloggers();
     void loadCampaigns();
-    void loadStats();
     void loadConfig();
-  }, [loadBloggers, loadCampaigns, loadStats, loadConfig]);
+  }, [loadBloggers, loadCampaigns, loadConfig]);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -219,10 +147,9 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     const id = window.setInterval(() => {
       void loadCampaigns();
-      void loadStats();
     }, 5000);
     return () => window.clearInterval(id);
-  }, [loadCampaigns, loadStats]);
+  }, [loadCampaigns]);
 
   const bloggerProgress = useMemo(() => {
     const map = new Map<string, { got: number; goal: number }>();
@@ -235,6 +162,23 @@ export default function AdminOrdersPage() {
     }
     return map;
   }, [campaigns]);
+
+  // Заказы, достигшие цели (100%) — «задача выполнена»
+  const doneBloggerIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of bloggers) {
+      const prog = bloggerProgress.get(b.id);
+      const goal = prog?.goal ?? 0;
+      const got = prog?.got ?? 0;
+      if (goal > 0 && got >= goal) set.add(b.id);
+    }
+    return set;
+  }, [bloggers, bloggerProgress]);
+
+  const visibleBloggers = useMemo(() => {
+    if (showClosed) return bloggers;
+    return bloggers.filter((b) => !doneBloggerIds.has(b.id));
+  }, [bloggers, showClosed, doneBloggerIds]);
 
   const buildBloggerLink = useCallback(
     (b: { code: string; telegram_link: string | null }) => {
@@ -278,7 +222,6 @@ export default function AdminOrdersPage() {
     setNewTelegramLink("");
     setNewActive(true);
     await loadBloggers();
-    void loadStats();
   };
 
   const startEdit = (b: BloggerRow) => {
@@ -316,7 +259,6 @@ export default function AdminOrdersPage() {
     }
     cancelEdit(id);
     await loadBloggers();
-    void loadStats();
   };
 
   const deleteBlogger = async (id: string) => {
@@ -333,7 +275,6 @@ export default function AdminOrdersPage() {
       return;
     }
     await loadBloggers();
-    void loadStats();
   };
 
   return (
@@ -346,6 +287,25 @@ export default function AdminOrdersPage() {
             <span>Всего: {bloggers.length}</span>
             <span>Активных: {bloggers.filter((b) => b.active).length}</span>
           </div>
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              marginLeft: 12,
+              fontSize: 13,
+              cursor: "pointer",
+              whiteSpace: "nowrap"
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={showClosed}
+              onChange={(e) => setShowClosed(e.target.checked)}
+              style={{ cursor: "pointer" }}
+            />
+            Показать закрытые
+          </label>
         </div>
 
         <div className={styles.row}>
@@ -413,7 +373,7 @@ export default function AdminOrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {bloggers.map((b) => {
+              {visibleBloggers.map((b) => {
                 const e = editing[b.id];
                 const link = buildBloggerLink(b);
                 const prog = bloggerProgress.get(b.id);
@@ -554,87 +514,19 @@ export default function AdminOrdersPage() {
                   </tr>
                 );
               })}
-              {bloggers.length === 0 && (
+              {visibleBloggers.length === 0 && (
                 <tr>
                   <td className={styles.td} colSpan={6}>
-                    {bloggersLoading ? "Загрузка..." : "Нет заказов — создайте первый выше"}
+                    {bloggersLoading
+                      ? "Загрузка..."
+                      : bloggers.length > 0
+                        ? "Все заказы выполнены. Включите «Показать закрытые», чтобы увидеть их."
+                        : "Нет заказов — создайте первый выше"}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* ============ РЕКЛАМА (аналитика по купленным рекламам / реферальным ссылкам) ============ */}
-      <div className={styles.card} style={{ marginTop: 16 }}>
-        <div className={styles.titleRow}>
-          <h1 className={styles.title}>Реклама</h1>
-          <div className={styles.pill}>
-            <span>Период: {from} → {to}</span>
-          </div>
-        </div>
-
-        <div className={styles.muted} style={{ marginBottom: 12, lineHeight: 1.5 }}>
-          Аналитика по купленным рекламам и реферальным ссылкам: переходы, регистрации, спины.
-        </div>
-
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <div className={styles.label}>С</div>
-            <input className={styles.input} type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          </div>
-          <div className={styles.field}>
-            <div className={styles.label}>По</div>
-            <input className={styles.input} type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-          </div>
-        </div>
-
-        <div className={styles.buttonRow}>
-          <button
-            className={`${styles.button} ${styles.buttonPrimary}`}
-            type="button"
-            onClick={loadStats}
-            disabled={loading}
-          >
-            {loading ? "Обновление..." : "Обновить аналитику"}
-          </button>
-        </div>
-
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.th}>Код</th>
-                <th className={styles.th}>Имя</th>
-                <th className={`${styles.th} ${styles.tdRight}`}>Переходы</th>
-                <th className={`${styles.th} ${styles.tdRight}`}>Регистрации</th>
-                <th className={`${styles.th} ${styles.tdRight}`}>Спины</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.map((s) => (
-                <tr key={s.blogger_id}>
-                  <td className={styles.td}>{s.code}</td>
-                  <td className={styles.td}>{s.name}</td>
-                  <td className={`${styles.td} ${styles.tdRight}`}>{s.clicks}</td>
-                  <td className={`${styles.td} ${styles.tdRight}`}>{s.registrations}</td>
-                  <td className={`${styles.td} ${styles.tdRight}`}>{s.spins}</td>
-                </tr>
-              ))}
-              {stats.length === 0 && (
-                <tr>
-                  <td className={styles.td} colSpan={5}>
-                    {loading ? "Загрузка..." : "Нет данных за выбранный период"}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className={styles.muted} style={{ marginTop: 12 }}>
-          Автообновление: каждые 5 секунд
         </div>
       </div>
 

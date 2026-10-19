@@ -160,6 +160,17 @@ export async function trackBloggerClick(
   });
 }
 
+export async function trackAdvertiserClick(
+  supabase: SupabaseClient,
+  input: { tg_user_id: number; advertiser_code: string; meta?: Record<string, unknown> }
+) {
+  await rpc<unknown>(supabase, "track_advertiser_click", {
+    p_tg_user_id: input.tg_user_id,
+    p_advertiser_code: input.advertiser_code,
+    p_meta: input.meta ?? {}
+  });
+}
+
 export async function listReferrals(supabase: SupabaseClient, tgUserId: number) {
   const data = await rpc<unknown>(supabase, "list_referrals", { p_tg_user_id: tgUserId });
   return z

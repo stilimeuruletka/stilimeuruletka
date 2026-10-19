@@ -119,6 +119,34 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true, result: data });
 }
 
+export async function PATCH(req: Request) {
+  const fail = await requireAdmin(req);
+  if (fail) return fail;
+
+  const body = (await req.json().catch(() => null)) as unknown;
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+  }
+  const obj = body as Record<string, unknown>;
+
+  const id = typeof obj.id === "string" ? obj.id : null;
+  if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
+
+  const deltaNum = typeof obj.delta === "number" ? obj.delta : obj.delta != null ? Number(obj.delta) : Number.NaN;
+  if (!Number.isFinite(deltaNum) || !Number.isInteger(deltaNum) || deltaNum === 0 || Math.abs(deltaNum) > 10_000) {
+    return NextResponse.json({ error: "delta must be a non-zero integer" }, { status: 400 });
+  }
+
+  const supabase = getAdminSupabase();
+  const { data, error } = await supabase.rpc("admin_adjust_prize_calendar", {
+    p_id: id,
+    p_delta: deltaNum
+  });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true, result: data });
+}
+
 export async function DELETE(req: Request) {
   const fail = await requireAdmin(req);
   if (fail) return fail;

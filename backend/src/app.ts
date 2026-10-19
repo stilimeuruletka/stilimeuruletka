@@ -31,6 +31,7 @@ import {
   spinWheel,
   spinWheelLimited,
   trackBloggerClick,
+  trackAdvertiserClick,
   writeAuditEvent
 } from "./db.js";
 
@@ -72,6 +73,7 @@ type DbApi = {
     inviter_user_id: number | null;
   }>;
   trackBloggerClick: (input: { tg_user_id: number; blogger_code: string; meta?: Record<string, unknown> }) => Promise<void>;
+  trackAdvertiserClick: (input: { tg_user_id: number; advertiser_code: string; meta?: Record<string, unknown> }) => Promise<void>;
   getTicketBalance: (tgUserId: number) => Promise<{ balance: number }>;
   grantSubscriptionTicket: (tgUserId: number, channelId: string) => Promise<{ balance: number }>;
   spinWheel: (tgUserId: number) => Promise<{
@@ -128,6 +130,7 @@ export function buildApp(
     ({
       handleStart: (input) => handleStart(supabase, input),
       trackBloggerClick: (input) => trackBloggerClick(supabase, input),
+      trackAdvertiserClick: (input) => trackAdvertiserClick(supabase, input),
       getTicketBalance: (tgUserId) => getTicketBalance(supabase, tgUserId),
       grantSubscriptionTicket: (tgUserId, channelId) => grantSubscriptionTicket(supabase, tgUserId, channelId),
       spinWheel: (tgUserId) => spinWheel(supabase, tgUserId),
@@ -510,6 +513,13 @@ export function buildApp(
         meta: { via: "start_param" }
       });
     }
+    if (auth.startParam?.startsWith("adv_")) {
+      await db.trackAdvertiserClick({
+        tg_user_id: auth.tgUserId,
+        advertiser_code: auth.startParam.slice(4),
+        meta: { via: "start_param" }
+      });
+    }
     await db.upsertUserProfile(auth.tgUserId, {
       ...(auth.username ? { username: auth.username } : {}),
       ...(auth.photoUrl ? { photo_url: auth.photoUrl } : {})
@@ -554,6 +564,13 @@ export function buildApp(
         await db.trackBloggerClick({
           tg_user_id: auth.tgUserId,
           blogger_code: auth.startParam.slice(5),
+          meta: { via: "start_param" }
+        });
+      }
+      if (auth.startParam?.startsWith("adv_")) {
+        await db.trackAdvertiserClick({
+          tg_user_id: auth.tgUserId,
+          advertiser_code: auth.startParam.slice(4),
           meta: { via: "start_param" }
         });
       }

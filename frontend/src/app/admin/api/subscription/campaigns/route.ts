@@ -146,6 +146,23 @@ export async function GET(req: Request): Promise<NextResponse> {
     };
   });
 
+  // Автозакрытие: заказ выполнен (100% подтверждённых подписчиков) →
+  // деактивируем кампанию и блогера-заказчика («задача выполнена»)
+  const completed = campaigns.filter(
+    (c) => c.active && c.goal_subscribers > 0 && c.confirmed_count >= c.goal_subscribers
+  );
+  if (completed.length > 0) {
+    const ids = completed.map((c) => c.id);
+    await supabase.from("subscription_campaigns").update({ active: false }).in("id", ids);
+    const bloggerIds = Array.from(new Set(completed.map((c) => c.blogger_id)));
+    if (bloggerIds.length > 0) {
+      await supabase.from("bloggers").update({ active: false }).in("id", bloggerIds);
+    }
+    for (const c of campaigns) {
+      if (completed.some((x) => x.id === c.id)) c.active = false;
+    }
+  }
+
   return NextResponse.json({ campaigns });
 }
 

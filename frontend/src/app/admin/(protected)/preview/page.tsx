@@ -283,7 +283,7 @@ export default function AdminPreviewPage() {
         {/* ============ РЕКЛАМА 2-го экрана ============ */}
         <section className={styles.card}>
           <div className={styles.titleRow}>
-            <h2 className={styles.title}>Реклама на 2-м экране (платно)</h2>
+            <h2 className={styles.title}>Аналитика</h2>
             <div className={styles.pill}>
               <span>{activeNow ? "Сейчас активна" : "Реклама не активна"}</span>
             </div>
@@ -355,8 +355,12 @@ export default function AdminPreviewPage() {
               <thead>
                 <tr>
                   <th className={styles.th}>Заказчик</th>
-                  <th className={styles.th}>С публикации</th>
-                  <th className={styles.th}>До удаления</th>
+                  <th className={styles.th}>
+                    Дата публикации,<br />день выхода
+                  </th>
+                  <th className={styles.th}>
+                    Дата окончания публикации,<br />день удаления рекламы
+                  </th>
                   <th className={`${styles.th} ${styles.tdRight}`}>Просмотров</th>
                   <th className={styles.th}>Статус</th>
                   <th className={`${styles.th} ${styles.tdRight}`}>Действия</th>

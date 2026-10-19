@@ -295,6 +295,30 @@ export default function AdminCouponsPage() {
     setModalVersion((v) => v + 1);
   };
 
+  const adjustDayItem = async (id: string, delta: number) => {
+    const target = calendar.find((it) => it.id === id);
+    if (delta < 0 && target && target.remaining <= 0) return;
+    setCalError(null);
+    // Оптимистичное обновление (зеркалит логику admin_adjust_prize_calendar)
+    setCalendar((prev) =>
+      prev.map((it) => {
+        if (it.id !== id) return it;
+        const issued = it.amount - it.remaining;
+        const nextRemaining = Math.max(it.remaining + delta, 0);
+        return { ...it, amount: issued + nextRemaining, remaining: nextRemaining };
+      })
+    );
+    const res = await fetch("/admin/api/prize-calendar", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id, delta })
+    }).catch(() => null);
+    if (!res || !res.ok) {
+      setCalError("Не удалось изменить остаток");
+    }
+    setModalVersion((v) => v + 1); // синхронизация с сервером
+  };
+
   const deleteDayItem = async (id: string) => {
     if (!window.confirm("Удалить эту запись дня?")) return;
     setModalError(null);
@@ -536,8 +560,66 @@ export default function AdminCouponsPage() {
                   {cell.dayNum}
                 </div>
                 {cell.items.length > 0 ? (
-                  <div style={{ fontSize: 10, lineHeight: 1.2, color: "#334155", whiteSpace: "pre-wrap" }}>
-                    {cell.items.map((it) => `${it.prize_title}: ${it.remaining}/${it.amount}`).join("\n")}
+                  <div style={{ fontSize: 10, lineHeight: 1.25, color: "#334155", display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+                    {cell.items.map((it) => (
+                      <div key={it.id} style={{ display: "flex", alignItems: "center", gap: 3, minWidth: 0 }}>
+                        <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.prize_title}</span>
+                        <span style={{ fontWeight: 600, whiteSpace: "nowrap", flexShrink: 0 }}>{it.remaining}/{it.amount}</span>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          title="Убавить"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void adjustDayItem(it.id, -1);
+                          }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 16,
+                            height: 16,
+                            borderRadius: 4,
+                            border: "1px solid #cbd5e1",
+                            background: "#fff",
+                            cursor: it.remaining > 0 ? "pointer" : "not-allowed",
+                            opacity: it.remaining > 0 ? 1 : 0.4,
+                            fontSize: 12,
+                            lineHeight: 1,
+                            userSelect: "none",
+                            flexShrink: 0
+                          }}
+                        >
+                          −
+                        </span>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          title="Добавить"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void adjustDayItem(it.id, 1);
+                          }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 16,
+                            height: 16,
+                            borderRadius: 4,
+                            border: "1px solid #cbd5e1",
+                            background: "#fff",
+                            cursor: "pointer",
+                            fontSize: 12,
+                            lineHeight: 1,
+                            userSelect: "none",
+                            flexShrink: 0
+                          }}
+                        >
+                          +
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className={styles.muted} style={{ fontSize: 10 }}>— нет плана</div>
