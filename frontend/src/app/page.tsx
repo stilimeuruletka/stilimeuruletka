@@ -26,8 +26,9 @@ function getInitData() {
   return typeof initData === "string" && initData.length > 10 ? initData : null;
 }
 
-// Резервный ролик — играет сразу, до того как придёт очередь из БД
-const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
+// Резервный ролик — играет сразу, до того как придёт очередь из БД.
+// ?v=2 — обход кэша после перекодирования видео (HEVC → H.264 + faststart)
+const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4?v=2";
 
 export default function Home() {
   const router = useRouter();

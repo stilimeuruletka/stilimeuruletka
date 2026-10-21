@@ -535,7 +535,7 @@ export default function RoulettePage() {
         <video
           ref={introVideoRef}
           className={`${styles.spinIntroVideo} ${introDone ? styles.spinIntroVideoDone : ""}`}
-          src="/рулетка.mp4"
+          src="/рулетка.mp4?v=2"
           autoPlay
           playsInline
           preload="auto"

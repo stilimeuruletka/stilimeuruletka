@@ -36,7 +36,7 @@ describe("Home", () => {
     // видео стартует сразу, никакого экрана-заглушки с текстом
     const video = await screen.findByTestId("preview-video");
     expect(video).toBeInTheDocument();
-    expect(video.getAttribute("src")).toBe("/ГЛАВНОЕВИДЕО.mp4");
+    expect(video.getAttribute("src")).toBe("/ГЛАВНОЕВИДЕО.mp4?v=2");
     expect(screen.queryByText("анимация")).not.toBeInTheDocument();
   });
 
