@@ -1,12 +1,51 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import styles from "../../page.module.css";
-import PageTopNav from "../../../components/PageTopNav";
+
+type TelegramWebAppUser = {
+  id?: number;
+  username?: string;
+  photo_url?: string;
+};
+
+type TelegramWebApp = {
+  initDataUnsafe?: {
+    user?: TelegramWebAppUser;
+  };
+};
+
+type TelegramSdkWindow = Window & {
+  Telegram?: {
+    WebApp?: TelegramWebApp & { initData?: string };
+  };
+};
 
 export default function HowToPlayPlaceholderPage() {
   const storageKey = "how_to_play_seen_v1";
+
+  // Шапка — точная копия хедера профиля: ТГ-кружок + имя + верхняя картинка
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const { displayName, avatarSrc } = useMemo(() => {
+    if (!isClient) {
+      return { displayName: "@username", avatarSrc: null as string | null };
+    }
+
+    const w = window as TelegramSdkWindow;
+    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+    return {
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+      avatarSrc: tgUser?.photo_url ?? null
+    };
+  }, [isClient]);
+
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const overlayCardRef = useRef<HTMLDivElement | null>(null);
   const [seen, setSeen] = useState<[boolean, boolean, boolean]>(() => {
@@ -105,9 +144,59 @@ export default function HowToPlayPlaceholderPage() {
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
-        {/* ✅ ЕДИНЫЙ ХЕДЕР показываем только пока карточка не открыта */}
+        {/* ✅ ШАПКА КАК В ПРОФИЛЕ — показываем только пока карточка не открыта */}
         {activeIndex == null && (
-          <PageTopNav center="red-main-roulette" backHref="/main" nextHref="/main/profile" top={112} />
+          <>
+            <div className={styles.commonTopHeader} aria-hidden="true">
+              <Image
+                src="/главноеменюрулеткакрасный.png"
+                alt=""
+                width={1040}
+                height={336}
+                className={styles.commonTopHeaderImage}
+                priority
+                sizes="(max-width: 520px) 100vw, 520px"
+                quality={80}
+              />
+              <div className={styles.commonTopHeaderUser}>
+                <div className={styles.commonTopHeaderAvatar}>
+                  {avatarSrc && (
+                    <Image
+                      src={avatarSrc}
+                      alt=""
+                      fill
+                      sizes="66px"
+                      quality={80}
+                      style={{ objectFit: "cover", objectPosition: "center" }}
+                    />
+                  )}
+                </div>
+                <div className={styles.commonTopHeaderName}>{displayName}</div>
+              </div>
+            </div>
+            <Link href="/main" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в меню">
+              <Image
+                src="/стрелканазад.PNG"
+                alt="Назад"
+                width={104}
+                height={52}
+                className={styles.profileArrow}
+                sizes="52px"
+                quality={80}
+              />
+            </Link>
+            <Link href="/main/profile" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Вперёд">
+              <Image
+                src="/стрелканазад.PNG"
+                alt="Вперёд"
+                width={104}
+                height={52}
+                className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+                sizes="52px"
+                quality={80}
+              />
+            </Link>
+          </>
         )}
         <Image
           src="/IMG_2381.PNG"
