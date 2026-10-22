@@ -72,12 +72,13 @@ export default function Home() {
     };
   }, []);
 
-  // Звук: пробуем играть сразу со звуком. Браузеры/Telegram часто блокируют
-  // автоплей со звуком — тогда видео играет молча, а звук включается первым тапом.
+  // Звук: на iOS автоплей со звуком заблокирован до первого касания —
+  // в разметке видео стартует в muted-режиме (иначе play() на iPhone
+  // «зависает» в ожидании тапа и видео не начинает играть).
+  // Первый тап по экрану включает звук.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    let cancelled = false;
 
     const play = (): Promise<void> | undefined => {
       try {
@@ -92,19 +93,7 @@ export default function Home() {
       }
     };
 
-    v.muted = false;
-    const first = play();
-    const markMuted = () => {
-      if (cancelled) return;
-      v.muted = true;
-      play();
-    };
-    if (first) {
-      first.catch(() => markMuted());
-    } else {
-      // если play() не дал промиса — считаем, что со звуком не вышло
-      markMuted();
-    }
+    play();
 
     const unlock = () => {
       v.muted = false;
@@ -113,7 +102,6 @@ export default function Home() {
     document.addEventListener("pointerdown", unlock, { passive: true });
 
     return () => {
-      cancelled = true;
       document.removeEventListener("pointerdown", unlock);
     };
   }, [playlist[index]]);
@@ -152,7 +140,9 @@ export default function Home() {
         src={playlist[index]}
         className={styles.splashVideo}
         autoPlay
+        muted
         playsInline
+        preload="auto"
         onPlay={() => recordView(index)}
         onEnded={onEnded}
       />
