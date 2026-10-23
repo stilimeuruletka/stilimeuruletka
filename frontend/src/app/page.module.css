@@ -1432,7 +1432,7 @@
 
 .historySpinTop {
   position: absolute;
-  top: 20px;
+  top: 60px;
   left: 0;
   right: 0;
   height: 150px;
@@ -1449,7 +1449,7 @@
 
 .historySpinBackButton {
   position: absolute;
-  top: 72px;
+  top: 112px;
   left: -20px;
   border: 0;
   background: transparent;
@@ -1468,7 +1468,7 @@
 
 .historySpinNextButton {
   position: absolute;
-  top: 72px;
+  top: 112px;
   right: -20px;
   border: 0;
   background: transparent;
@@ -1488,7 +1488,7 @@
 
 .historySpinContent {
   position: absolute;
-  top: 170px;
+  top: 210px;
   left: 0;
   right: 0;
   bottom: 0;
