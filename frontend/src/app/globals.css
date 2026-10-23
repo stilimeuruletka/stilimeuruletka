@@ -86,7 +86,8 @@ body:has(.app-frame) {
   }
 
   .app-frame .friendProfileStack .profileBottomImage {
-    top: 120px;
+    bottom: 0;
+    top: auto;
   }
 }
 

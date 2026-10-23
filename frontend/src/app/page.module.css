@@ -478,7 +478,7 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 28px;
+  top: 68px;
   transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
@@ -489,7 +489,22 @@
 }
 
 .friendProfileStack .profileInviteButtonOverlay {
-  top: 20%;
+  top: 24%;
+  left: 50%;
+  width: 400px;
+  height: 120px;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+/* iPhone 14+ (высокие модели): кнопка «Пригласить» ниже и чуть больше */
+:global(.is-iphone-tall) .friendProfileStack .profileInviteButtonOverlay {
+  top: 24%;
   left: 50%;
   width: 360px;
   height: 108px;
@@ -502,31 +517,16 @@
   cursor: pointer;
 }
 
-/* iPhone 14+ (высокие модели): кнопка «Пригласить» ниже и чуть больше */
-:global(.is-iphone-tall) .friendProfileStack .profileInviteButtonOverlay {
-  top: 20%;
-  left: 50%;
-  width: 324px;
-  height: 96px;
-  transform: translateX(-50%);
-  z-index: 3;
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
 :global(.is-iphone-tall) .friendProfileStack .profileArrowLeft {
-  top: 40px;
+  top: 80px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileArrowRight {
-  top: 40px;
+  top: 80px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileAvatarBlockOverlay {
-  top: 46px;
+  top: 86px;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -548,12 +548,12 @@
 
 .friendProfileStack .profileArrowLeft {
   left: 24px;
-  top: 26px;
+  top: 66px;
 }
 
 .friendProfileStack .profileArrowRight {
   right: 24px;
-  top: 26px;
+  top: 66px;
   transform: scaleX(-1);
 }
 
@@ -565,7 +565,7 @@
 
 .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: 16px;
+  top: 56px;
   left: 0;
   right: 0;
   width: 100%;
@@ -577,7 +577,7 @@
 /* iPhone 14+ (высокие модели): картинка «в главное меню» выше и чуть больше */
 :global(.is-iphone-tall) .friendProfileStack .profileOverlayImage {
   position: absolute;
-  top: -14px;
+  top: 26px;
   left: 50%;
   right: auto;
   width: 108%;
@@ -622,7 +622,8 @@
 
 .friendProfileStack .profileBottomImage {
   position: absolute;
-  top: 130px;
+  bottom: 0;
+  top: auto;
   left: 0;
   right: 0;
   width: 100%;
@@ -3748,21 +3749,21 @@
   /* /main/friend на компе: поднять аватар, стрелки и картинку меню,
      кнопку «Пригласить» не двигаем */
   :global(.app-frame) .friendProfileStack .profileOverlayImage {
-    top: 16px;
+    top: 56px;
   }
 
   :global(.app-frame) .friendProfileStack .profileAvatarBlockOverlay {
-    top: 0;
+    top: 40px;
   }
 
   :global(.app-frame) .friendProfileStack .profileArrowLeft,
   :global(.app-frame) .friendProfileStack .profileArrowRight {
-    top: 0;
+    top: 40px;
   }
 
   /* /main/friend на компе: кнопку «Пригласить» и иконки ниже, но выше прежнего */
   :global(.app-frame) .friendProfileStack .profileInviteButtonOverlay {
-    top: 24%;
+    top: 28%;
   }
 
   :global(.app-frame) .friendProfileStack .profileCenterIcons {
