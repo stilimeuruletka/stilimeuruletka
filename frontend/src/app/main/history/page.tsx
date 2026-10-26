@@ -166,19 +166,14 @@ export default function HistoryPage() {
     }).format(new Date(ms));
   }, []);
 
-  const _ = useMemo(() => isClient, [isClient]);
-
-
-
-  const { displayName, avatarSrc } = useMemo(() => {
+  const { displayName } = useMemo(() => {
     if (!isClient) {
-      return { displayName: "@username", avatarSrc: null as string | null };
+      return { displayName: "@username" };
     }
     const w = window as TelegramSdkWindow;
     const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
     return {
-      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
-      avatarSrc: tgUser?.photo_url ?? null
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username"
     };
   }, [isClient]);
 
@@ -188,18 +183,6 @@ export default function HistoryPage() {
         <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
 
         <div className={styles.profileHistoryUser}>
-          <div className={styles.commonTopHeaderAvatar}>
-            {avatarSrc && (
-              <Image
-                src={avatarSrc}
-                alt=""
-                fill
-                sizes="66px"
-                quality={80}
-                style={{ objectFit: "cover", objectPosition: "center" }}
-              />
-            )}
-          </div>
           <div className={styles.commonTopHeaderName}>{displayName}</div>
         </div>
 
