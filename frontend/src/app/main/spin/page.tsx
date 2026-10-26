@@ -286,6 +286,12 @@ export default function RoulettePage() {
     };
   }, []);
 
+  // Колесо показываем уже на 8-й секунде ролика, не дожидаясь его окончания.
+  useEffect(() => {
+    const id = window.setTimeout(() => setIntroDone(true), 8000);
+    return () => window.clearTimeout(id);
+  }, []);
+
   const fetchDatabaseBalance = useCallback(async () => {
     const initData = getInitData();
     const base = getBackendBase();
@@ -535,7 +541,7 @@ export default function RoulettePage() {
         <video
           ref={introVideoRef}
           className={`${styles.spinIntroVideo} ${introDone ? styles.spinIntroVideoDone : ""}`}
-          src="/рулетка.mp4?v=2"
+          src="/видеоглавное2.mp4?v=3"
           autoPlay
           playsInline
           preload="auto"
@@ -544,7 +550,7 @@ export default function RoulettePage() {
           onPointerDown={handleIntroUnlock}
         />
         <div
-          className={`${styles.rouletteStage} ${!introDone ? styles.rouletteStageHidden : ""} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
+          className={`${styles.rouletteStage} ${!introDone ? styles.rouletteStageHidden : ""} ${introDone ? styles.rouletteStageReveal : ""} ${modalOpen ? styles.rouletteStageBlurred : ""}`}
         >
           <button
             type="button"
@@ -655,22 +661,24 @@ export default function RoulettePage() {
             </div>
 
             <div className={styles.spinResultActions}>
-              <button
-                type="button"
-                className={styles.spinResultActionButton}
-                onClick={() => void claimPrize()}
-                aria-label="Забрать приз"
-              >
-                <Image
-                  src="/забрать приз.png"
-                  alt="Забрать приз"
-                  width={4456}
-                  height={1148}
-                  className={styles.spinResultActionImage}
-                  sizes="(max-width: 520px) 56vw, 240px"
-                  quality={85}
-                />
-              </button>
+              {result.win && (
+                <button
+                  type="button"
+                  className={styles.spinResultActionButton}
+                  onClick={() => void claimPrize()}
+                  aria-label="Забрать приз"
+                >
+                  <Image
+                    src="/забрать приз.png"
+                    alt="Забрать приз"
+                    width={4456}
+                    height={1148}
+                    className={styles.spinResultActionImage}
+                    sizes="(max-width: 520px) 56vw, 240px"
+                    quality={85}
+                  />
+                </button>
+              )}
               <button
                 type="button"
                 className={`${styles.spinResultActionButton} ${styles.spinResultActionButtonSmall}`}

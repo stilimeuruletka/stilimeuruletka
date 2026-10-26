@@ -1868,6 +1868,22 @@
   pointer-events: none;
 }
 
+/* Колесо выезжает сверху при показе (по таймеру 8 сек видео, либо по окончании ролика). */
+.rouletteStageReveal {
+  animation: rouletteWheelDrop 700ms cubic-bezier(0.22, 0.85, 0.3, 1) both;
+}
+
+@keyframes rouletteWheelDrop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -170%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
 .rouletteStageBlurred {
   filter: blur(10px) saturate(0.85);
   pointer-events: none;
@@ -1915,6 +1931,7 @@
   aspect-ratio: 1;
   position: relative;
   margin-top: 26px;
+  transform: translateX(8px);
   touch-action: manipulation;
   z-index: 4;
 }
@@ -2464,12 +2481,12 @@
 
 .spinResultTopNavLeft {
   left: -20px;
-  top: 40px;
+  top: 54px;
 }
 
 .spinResultTopNavRight {
   right: -20px;
-  top: 40px;
+  top: 54px;
 }
 
 .spinResultTopNavIcon {
@@ -2489,7 +2506,7 @@
 
 .spinResultTopHeader {
   position: absolute;
-  top: 30px;
+  top: 44px;
   left: 16px;
   right: 16px;
   z-index: 58;
@@ -2573,7 +2590,7 @@
   width: min(96%, 480px);
   aspect-ratio: 3 / 4;
   position: relative;
-  transform: translateX(-4px);
+  transform: translateX(-2px);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -2715,7 +2732,7 @@
   .spinResultPrizeImageWrap {
     margin-top: -30px;
     width: min(104%, 520px);
-    transform: translateX(-4px) scale(1.08);
+    transform: translateX(-2px) scale(1.08);
     transform-origin: top center;
   }
 
@@ -2752,12 +2769,12 @@
 }
 
 :global(.is-iphone-tall) .spinResultTopHeader {
-  top: 56px;
+  top: 70px;
 }
 
 :global(.is-iphone-tall) .spinResultTopNavLeft,
 :global(.is-iphone-tall) .spinResultTopNavRight {
-  top: 70px;
+  top: 84px;
 }
 
 :global(.is-iphone-tall) .spinResultTicketPlatform {
