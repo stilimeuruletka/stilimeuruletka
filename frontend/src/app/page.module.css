@@ -1345,7 +1345,7 @@
 }
 
 .friendsListEmptyReferralLabel {
-  font-size: clamp(9px, 2.2vw, 14px);
+  font-size: clamp(11px, 2.7vw, 17px);
   letter-spacing: 0.03em;
   color: #0f172a;
 }
