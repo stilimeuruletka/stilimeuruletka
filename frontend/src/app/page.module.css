@@ -2815,7 +2815,7 @@
   position: absolute;
   left: 50%;
   top: 0px;
-  transform: translateX(calc(-50% + 6px));
+  transform: translateX(calc(-50% + 5px));
   display: flex;
   flex-direction: column;
   align-items: center;
