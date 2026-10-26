@@ -183,23 +183,40 @@ export default function HistorySpinPage() {
   return (
     <div className={styles.historySpinPage}>
       <div className={styles.historySpinFrame}>
-        <div className={styles.historySpinTop}>
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/историяспиноввверх.png"
             alt=""
-            width={540}
-            height={220}
+            width={1040}
+            height={336}
+            className={styles.commonTopHeaderImage}
             priority
-            sizes="(max-width: 520px) 84vw, 84vw"
-            className={styles.historySpinTopImage}
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={80}
           />
         </div>
 
-        <Link href="/main/history" className={styles.historySpinBackButton} aria-label="Назад к истории">
-          <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.historySpinBackIcon} sizes="52px" quality={80} />
+        <Link href="/main/history" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад к истории">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Назад"
+            width={104}
+            height={52}
+            className={styles.profileArrow}
+            sizes="52px"
+            quality={80}
+          />
         </Link>
-        <Link href="/main/spin" className={styles.historySpinNextButton} aria-label="К рулетке">
-          <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.historySpinNextIcon} sizes="52px" quality={80} />
+        <Link href="/main/spin" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="К рулетке">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Далее"
+            width={104}
+            height={52}
+            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+            sizes="52px"
+            quality={80}
+          />
         </Link>
 
         <div className={styles.historySpinContent}>

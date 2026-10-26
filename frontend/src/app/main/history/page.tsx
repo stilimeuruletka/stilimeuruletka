@@ -168,10 +168,40 @@ export default function HistoryPage() {
 
   const _ = useMemo(() => isClient, [isClient]);
 
+
+
+  const { displayName, avatarSrc } = useMemo(() => {
+    if (!isClient) {
+      return { displayName: "@username", avatarSrc: null as string | null };
+    }
+    const w = window as TelegramSdkWindow;
+    const tgUser = w.Telegram?.WebApp?.initDataUnsafe?.user;
+    return {
+      displayName: tgUser?.username ? `@${tgUser.username}` : "@username",
+      avatarSrc: tgUser?.photo_url ?? null
+    };
+  }, [isClient]);
+
   return (
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
         <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
+
+        <div className={styles.profileHistoryUser}>
+          <div className={styles.commonTopHeaderAvatar}>
+            {avatarSrc && (
+              <Image
+                src={avatarSrc}
+                alt=""
+                fill
+                sizes="66px"
+                quality={80}
+                style={{ objectFit: "cover", objectPosition: "center" }}
+              />
+            )}
+          </div>
+          <div className={styles.commonTopHeaderName}>{displayName}</div>
+        </div>
 
         <div className={styles.profileHistoryContent}>
           {historyLoading && <div className={styles.profileHistoryEmpty}>ЗАГРУЗКА...</div>}
@@ -226,23 +256,40 @@ export default function HistoryPage() {
             </div>
           )}
         </div>
-        <Link href="/main/profile" className={styles.profileHistoryCloseButton} aria-label="Назад в профиль">
-          <Image src="/стрелканазад.PNG" alt="Назад" width={104} height={52} className={styles.profileHistoryCloseIcon} sizes="52px" quality={80} />
-        </Link>
-        <Link href="/main/historyspin" className={styles.profileHistoryTopRightButton} aria-label="Подробная история">
-          <Image src="/стрелканазад.PNG" alt="Далее" width={104} height={52} className={styles.profileHistoryTopRightIcon} sizes="52px" quality={80} />
-        </Link>
-        <Link href="/main" className={styles.profileHistoryTopRightLink} aria-label="В главное меню">
+        <Link href="/main/profile" className={`${styles.profileArrowLeft} ${styles.profileArrowLeftProfile}`} aria-label="Назад в профиль">
           <Image
-            src="/чернымглавноеменюистория.png"
-            alt=""
-            width={440}
-            height={90}
-            className={styles.profileHistoryTopRightImg}
-            sizes="220px"
+            src="/стрелканазад.PNG"
+            alt="Назад"
+            width={104}
+            height={52}
+            className={styles.profileArrow}
+            sizes="52px"
             quality={80}
           />
         </Link>
+        <Link href="/main/historyspin" className={`${styles.profileArrowRightNoFlip} ${styles.profileArrowRightProfile}`} aria-label="Подробная история">
+          <Image
+            src="/стрелканазад.PNG"
+            alt="Далее"
+            width={104}
+            height={52}
+            className={`${styles.profileArrow} ${styles.profileArrowIconRight}`}
+            sizes="52px"
+            quality={80}
+          />
+        </Link>
+        <div className={styles.commonTopHeader} aria-hidden="true">
+          <Image
+            src="/чернымглавноеменюистория.png"
+            alt=""
+            width={1040}
+            height={336}
+            className={styles.commonTopHeaderImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={80}
+          />
+        </div>
       </div>
     </div>
   );
