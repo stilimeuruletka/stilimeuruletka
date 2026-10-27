@@ -468,6 +468,27 @@
   order: 1;
 }
 
+/* Прозрачные плашки слева от иконок («Реферальная ссылка»/«Стильные друзья») */
+.friendProfileStack .profileIconTouchPlate {
+  position: absolute;
+  right: 64px;
+  width: 160px;
+  height: 64px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.friendProfileStack .profileIconTouchPlateTop {
+  top: 20px;
+}
+
+.friendProfileStack .profileIconTouchPlateBottom {
+  top: 76px;
+}
+
 .profileCenterIconWrapper .profileCenterIcon {
   width: 100%;
   height: 100%;
@@ -623,6 +644,20 @@
 /* iPhone 13+ (высокие модели): «Рефссылка» чуть ниже */
 :global(.is-iphone-tall) .friendProfileStack .profileCenterIconRight {
   top: 24px;
+}
+
+:global(.is-iphone-tall) .friendProfileStack .profileIconTouchPlate {
+  right: 56px;
+  width: 150px;
+  height: 56px;
+}
+
+:global(.is-iphone-tall) .friendProfileStack .profileIconTouchPlateTop {
+  top: 24px;
+}
+
+:global(.is-iphone-tall) .friendProfileStack .profileIconTouchPlateBottom {
+  top: 64px;
 }
 
 .friendProfileStack .profileBottomImage {
@@ -1280,8 +1315,8 @@
 }
 
 .friendsListBackIcon {
-  width: 64px;
-  height: 32px;
+  width: 80px;
+  height: 40px;
   max-width: none;
   display: block;
   object-fit: contain;
@@ -1327,11 +1362,12 @@
   line-height: 1.45;
   letter-spacing: 0.01em;
   color: #0f172a;
-  max-width: 360px;
+  max-width: 250px;
+  text-align: center;
 }
 
 .friendsListEmptyBonus {
-  font-size: clamp(11px, 2.9vw, 18px);
+  font-size: clamp(12px, 3.2vw, 20px);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #0f172a;
@@ -3113,7 +3149,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(2px, 10px);
+  transform: translate(2px, 5px);
   font-family: var(--font-uncage);
   font-size: 10px;
   letter-spacing: 0.06em;

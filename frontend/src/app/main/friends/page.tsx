@@ -100,7 +100,13 @@ export default function FriendsPage() {
           {showEmpty && (
             <div className={styles.friendsListEmpty}>
               <p className={styles.friendsListEmptyText}>
-                У вас нет приглашенных друзей. Приглашай стильных друзей и получай дополнительные спины за каждого.
+                У вас нет приглашенных друзей.
+                <br />
+                Приглашай стильных друзей и
+                <br />
+                получай дополнительные
+                <br />
+                спины за каждого.
               </p>
               <p className={styles.friendsListEmptyBonus}>1 друг — 1 дополнительный спин</p>
               <div className={styles.friendsListEmptyReferral}>

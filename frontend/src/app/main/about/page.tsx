@@ -94,9 +94,14 @@ export default function AboutPage() {
           quality={90}
         />
 
-        <div className={styles.fullScreenCenterButton} aria-hidden="true">
+        <button
+          type="button"
+          className={styles.fullScreenCenterButton}
+          onClick={() => setAltWithThrottle(!isAlt)}
+          aria-label="Дальше"
+        >
           <Image src={buttonSrc} alt="" fill className={styles.fullScreenCenterButtonImage} sizes="86px" quality={90} />
-        </div>
+        </button>
       </div>
     </div>
   );

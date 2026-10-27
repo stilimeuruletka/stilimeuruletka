@@ -163,6 +163,18 @@ export default function FriendPage() {
         </button>
 
         <div className={styles.profileCenterIcons}>
+          <button
+            type="button"
+            className={`${styles.profileIconTouchPlate} ${styles.profileIconTouchPlateTop}`}
+            onClick={handleCopyReferral}
+            aria-label="Скопировать реферальную ссылку"
+          />
+          <button
+            type="button"
+            className={`${styles.profileIconTouchPlate} ${styles.profileIconTouchPlateBottom}`}
+            onClick={() => router.push("/main/friends")}
+            aria-label="Стильные друзья"
+          />
           <Image
             src="/рефссылка.PNG"
             alt="Реферальная ссылка"
