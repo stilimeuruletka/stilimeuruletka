@@ -179,12 +179,12 @@ export async function GET(req: Request) {
     const refCounts = new Map<string, number>();
     const inviterOf = new Map<string, number>();
     try {
-      const { data: refs, error: refErr } = await supabase.from("referrals").select("referrer_id, invited_user_id");
+      const { data: refs, error: refErr } = await supabase.from("referrals").select("inviter_user_id, invitee_user_id");
       if (!refErr && Array.isArray(refs)) {
-        for (const r of refs as unknown as Array<{ referrer_id: string; invited_user_id: string }>) {
-          refCounts.set(r.referrer_id, (refCounts.get(r.referrer_id) ?? 0) + 1);
-          const inviterTg = userIdToTgId.get(r.referrer_id);
-          if (inviterTg) inviterOf.set(r.invited_user_id, inviterTg);
+        for (const r of refs as unknown as Array<{ inviter_user_id: string; invitee_user_id: string }>) {
+          refCounts.set(r.inviter_user_id, (refCounts.get(r.inviter_user_id) ?? 0) + 1);
+          const inviterTg = userIdToTgId.get(r.inviter_user_id);
+          if (inviterTg) inviterOf.set(r.invitee_user_id, inviterTg);
         }
       }
     } catch {

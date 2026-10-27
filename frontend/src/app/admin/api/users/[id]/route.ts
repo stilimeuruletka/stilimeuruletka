@@ -75,11 +75,11 @@ export async function GET(
 
     const [balanceQ, refsQ, inviteesQ, spinsQ, couponsQ, cooldownQ] = await Promise.all([
       supabase.from("ticket_ledger").select("delta").eq("user_id", user.id),
-      supabase.from("referrals").select("referrer_id, invited_user_id, created_at").eq("referrer_id", user.id),
+      supabase.from("referrals").select("inviter_user_id, invitee_user_id, created_at").eq("inviter_user_id", user.id),
       supabase
         .from("referrals")
-        .select("referrer_id, invited_user_id, created_at, referrer:users!referrals_referrer_id_fkey(tg_user_id,username)")
-        .eq("invited_user_id", user.id)
+        .select("inviter_user_id, invitee_user_id, created_at, inviter:users!referrals_inviter_user_id_fkey(tg_user_id,username)")
+        .eq("invitee_user_id", user.id)
         .maybeSingle(),
       supabase
         .from("spins")
@@ -113,15 +113,15 @@ export async function GET(
 
     const referrals = !refsQ.error && Array.isArray(refsQ.data) ? (refsQ.data as Array<unknown>) : [];
     const invitees = Array.isArray(referrals)
-      ? (referrals as Array<{ invited_user_id: string; created_at: string }>)
+      ? (referrals as Array<{ invitee_user_id: string; created_at: string }>)
       : [];
 
     const inviterRow =
       !inviteesQ.error && inviteesQ.data
         ? (inviteesQ.data as unknown as {
-            referrer_id: string;
+            inviter_user_id: string;
             created_at: string;
-            referrer?: { tg_user_id: number; username: string | null } | null;
+            inviter?: { tg_user_id: number; username: string | null } | null;
           })
         : null;
 
@@ -180,9 +180,9 @@ export async function GET(
             last_free_granted_at: cooldown.last_free_granted_at ?? null
           }
         : { next_spin_at: null, free_spin_granted: false, last_free_granted_at: null },
-      inviter: inviterRow?.referrer ? {
-        tg_user_id: inviterRow.referrer.tg_user_id,
-        username: inviterRow.referrer.username ?? null,
+      inviter: inviterRow?.inviter ? {
+        tg_user_id: inviterRow.inviter.tg_user_id,
+        username: inviterRow.inviter.username ?? null,
         invited_at: inviterRow.created_at
       } : null,
       invitees_count: invitees.length,
