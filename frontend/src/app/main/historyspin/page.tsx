@@ -29,6 +29,7 @@ type SpinHistoryItem = {
   win: boolean;
   prize_title: string | null;
   prize_value: number | null;
+  prize_image?: string | null;
 };
 
 function getBackendBase() {
@@ -88,7 +89,7 @@ const PRIZE_IMAGES: Array<{ match: (t: string) => boolean; src: string }> = [
 ];
 
 function getPrizeImage(it: SpinHistoryItem): string | null {
-  if (!it.win || !it.prize_title) return null;
+  if (!it.prize_title) return null;
   const t = it.prize_title.toLowerCase();
   for (const p of PRIZE_IMAGES) {
     if (p.match(t)) return p.src;
@@ -239,7 +240,7 @@ export default function HistorySpinPage() {
               </button>
               <div id="history-spin-scroll" className={styles.historySpinGrid}>
                 {historyItems.map((it) => {
-                  const prizeImg = getPrizeImage(it);
+                  const prizeImg = it.win ? it.prize_image ?? getPrizeImage(it) : "/карточкапроигрыш.png";
                   return (
                     <div
                       key={it.spin_id}
