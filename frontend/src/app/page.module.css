@@ -1295,6 +1295,8 @@
 .friendsListHeaderImage {
   object-fit: contain;
   object-position: top center;
+  transform: scale(1.05);
+  transform-origin: top center;
 }
 
 .friendsListBackButton {
@@ -1315,8 +1317,8 @@
 }
 
 .friendsListBackIcon {
-  width: 80px;
-  height: 40px;
+  width: 100px;
+  height: 50px;
   max-width: none;
   display: block;
   object-fit: contain;
@@ -1408,9 +1410,9 @@
 
 .friendsListCardName {
   position: absolute;
-  left: 18%;
+  left: 12%;
   top: 32%;
-  width: 54%;
+  width: 48%;
   font-family: var(--font-uncage);
   font-size: clamp(6px, 1.6vw, 12px);
   letter-spacing: 0.06em;

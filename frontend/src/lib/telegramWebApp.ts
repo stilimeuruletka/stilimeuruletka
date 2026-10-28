@@ -3,11 +3,13 @@ import crypto from "crypto";
 type TelegramInitDataUser = {
   id?: number;
   username?: string;
+  photo_url?: string;
 };
 
 export type TelegramInitData = {
   userId: number;
   username: string | null;
+  photoUrl: string | null;
   startParam: string | null;
 };
 
@@ -68,6 +70,8 @@ export function extractTelegramInitData(initData: string): TelegramInitData | nu
   return {
     userId,
     username: typeof user.username === "string" && user.username.length > 0 ? user.username : null,
+    photoUrl:
+      typeof user.photo_url === "string" && user.photo_url.length > 0 ? user.photo_url : null,
     startParam: (() => {
       const raw = params.get("start_param");
       return typeof raw === "string" && raw.length > 0 ? raw : null;

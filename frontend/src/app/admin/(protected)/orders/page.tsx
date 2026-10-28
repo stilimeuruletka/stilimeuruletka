@@ -30,6 +30,14 @@ type CampaignRow = {
 
 type ToastState = { message: string; variant: "ok" | "error" } | null;
 
+type BloggerClick = {
+  tg_user_id: number | null;
+  username: string | null;
+  photo_url: string | null;
+  created_at: string;
+  meta: Record<string, unknown>;
+};
+
 function progressClass(p: number) {
   if (p >= 100) return `${styles.progressFill} ${styles.progressFillFull}`;
   if (p >= 85) return `${styles.progressFill} ${styles.progressFillAlmost}`;
@@ -81,6 +89,8 @@ export default function AdminOrdersPage() {
   );
   const [showClosed, setShowClosed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clicksMap, setClicksMap] = useState<Record<string, BloggerClick[] | null>>({});
+  const [clicksOpenId, setClicksOpenId] = useState<string | null>(null);
 
   const [linkConfig, setLinkConfig] = useState<{
     bot_username: string;
@@ -277,8 +287,28 @@ export default function AdminOrdersPage() {
     await loadBloggers();
   };
 
+  const loadClicks = async (id: string): Promise<BloggerClick[]> => {
+    const res = await fetch(`/admin/api/bloggers/${encodeURIComponent(id)}/clicks`, {
+      cache: "no-store"
+    }).catch(() => null);
+    if (!res || !res.ok) return [];
+    const json = (await res.json().catch(() => null)) as { clicks?: BloggerClick[] } | null;
+    return Array.isArray(json?.clicks) ? json!.clicks! : [];
+  };
+
+  const toggleClicks = async (id: string) => {
+    if (clicksOpenId === id) {
+      setClicksOpenId(null);
+      return;
+    }
+    setClicksOpenId(id);
+    if (clicksMap[id] === undefined) {
+      const clicks = await loadClicks(id);
+      setClicksMap((prev) => ({ ...prev, [id]: clicks }));
+    }
+  };
   return (
-    <>
+    <> 
       {/* ============ ЗАКАЗЫ (покупка подписчиков) ============ */}
       <div className={styles.card}>
         <div className={styles.titleRow}>
@@ -482,6 +512,11 @@ export default function AdminOrdersPage() {
                         <button className={styles.button} type="button" onClick={() => handleCopyLink(b)}>
                           Копировать ссылку
                         </button>
+                        <button className={styles.button} type="button" onClick={() => toggleClicks(b.id)}>
+                          {clicksOpenId === b.id
+                            ? "Свернуть"
+                            : `Кто перешёл${clicksMap[b.id] ? ` (${clicksMap[b.id]!.length})` : ""}`}
+                        </button>
                         {e ? (
                           <>
                             <button
@@ -529,6 +564,92 @@ export default function AdminOrdersPage() {
           </table>
         </div>
       </div>
+
+      {/* ============ КТО ПЕРЕШЁЛ (список переходов по блогеру) ============ */}
+      {clicksOpenId && (() => {
+        const blogger = bloggers.find((b) => b.id === clicksOpenId);
+        const clicks = clicksMap[clicksOpenId];
+        const loading = clicks === undefined;
+        return (
+          <div className={styles.card} style={{ marginTop: 16 }}>
+            <div className={styles.titleRow}>
+              <h2 className={styles.title}>
+                Кто перешёл: {blogger?.name ?? ""} ({blogger?.code ?? ""})
+              </h2>
+              <div className={styles.pill}>
+                <span>{loading ? "Загрузка..." : `Переходов: ${clicks!.length}`}</span>
+              </div>
+            </div>
+            {loading ? (
+              <div className={styles.muted}>Загрузка...</div>
+            ) : clicks!.length === 0 ? (
+              <div className={styles.muted}>
+                Переходов по этой ссылке пока нет. Открой ссылку в Telegram и кликни по ней.
+              </div>
+            ) : (
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th className={styles.th}>Пользователь</th>
+                      <th className={styles.th}>Дата перехода</th>
+                      <th className={styles.th}>Источник</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clicks!.map((c, i) => {
+                      const name = c.username ? `@${c.username}` : `id:${c.tg_user_id ?? "?"}`;
+                      const when = c.created_at
+                        ? new Date(c.created_at).toLocaleString("ru-RU", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                          })
+                        : "—";
+                      const via = typeof c.meta?.via === "string" ? c.meta.via : "start_param";
+                      return (
+                        <tr key={`${c.tg_user_id ?? i}-${c.created_at}`}>
+                          <td className={styles.td}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              {c.photo_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={c.photo_url}
+                                  alt=""
+                                  width={32}
+                                  height={32}
+                                  style={{ borderRadius: 16, objectFit: "cover" }}
+                                />
+                              ) : (
+                                <span
+                                  style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 16,
+                                    display: "inline-block",
+                                    background: "rgba(184,31,34,0.15)"
+                                  }}
+                                />
+                              )}
+                              <span>{name}</span>
+                            </div>
+                          </td>
+                          <td className={styles.td}>{when}</td>
+                          <td className={styles.td}>
+                            <span className={styles.muted}>{via}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ============ КАМПАНИИ ПОДПИСОК (сводно по заказам) ============ */}
       {campaigns.length > 0 && (

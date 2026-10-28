@@ -98,7 +98,8 @@ export async function POST(req: NextRequest) {
     const { error: startError } = await supabase.rpc("handle_start", {
       p_tg_user_id: extracted.userId,
       p_username: extracted.username,
-      p_ref_code: refCode
+      p_ref_code: refCode,
+      p_photo_url: extracted.photoUrl
     });
     if (startError) {
       console.error("[api/spin] handle_start failed", startError);
