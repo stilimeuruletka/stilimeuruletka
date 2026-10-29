@@ -196,9 +196,10 @@ export default function AdminOrdersPage() {
       const custom = b.telegram_link?.trim();
       if (custom && /^https?:\/\//i.test(custom)) return custom;
       const bot = linkConfig?.bot_username || "<BOT>";
-      const slug = linkConfig?.app_slug || "app";
       const cleanCode = String(b.code || "").trim().replace(/^blog_/i, "") || "blog";
-      return `https://t.me/${bot}/${slug}?startapp=blog_${cleanCode}&mode=fullscreen`;
+      // Bot-link (t.me/bot?start=blog_<code>): клик фиксирует бот в вебхуке /start —
+      // надёжно в отличие от startapp, который Telegram может не донести до мини-аппа.
+      return `https://t.me/${bot}?start=blog_${cleanCode}`;
     },
     [linkConfig]
   );

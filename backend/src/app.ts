@@ -254,6 +254,8 @@ export function buildApp(
 
     const handleStartCommand = async (chatId: number, userId: number, username?: string, payload?: string) => {
       const refCode = payload?.startsWith("ref_") ? payload.slice(4) : null;
+      const blogCode = payload?.startsWith("blog_") ? payload.slice(5) : null;
+      const advCode = payload?.startsWith("adv_") ? payload.slice(4) : null;
       const result = await db
         .handleStart({
         tg_user_id: userId,
@@ -265,11 +267,24 @@ export function buildApp(
           throw e;
         });
 
+      // Приход по ссылке вида t.me/bot?start=blog_<code> / adv_<code>:
+      // payload в /start доходит надёжно, в отличие от startapp со стороны мини-аппа.
+      if (blogCode) {
+        await db
+          .trackBloggerClick({ tg_user_id: userId, blogger_code: blogCode, meta: { via: "bot_start" } })
+          .catch((e) => req.log.warn({ err: e }, "track_blogger_click_failed"));
+      }
+      if (advCode) {
+        await db
+          .trackAdvertiserClick({ tg_user_id: userId, advertiser_code: advCode, meta: { via: "bot_start" } })
+          .catch((e) => req.log.warn({ err: e }, "track_advertiser_click_failed"));
+      }
+
       await db
         .writeAuditEvent({
         tg_user_id: userId,
         event_type: "bot_start",
-        payload: { ref_code: refCode, is_new_user: result.is_new_user, referral_processed: result.referral_processed }
+        payload: { ref_code: refCode, blog_code: blogCode, adv_code: advCode, is_new_user: result.is_new_user, referral_processed: result.referral_processed }
         })
         .catch((e) => req.log.warn({ err: e }, "audit_write_failed"));
 

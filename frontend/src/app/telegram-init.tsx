@@ -23,6 +23,20 @@ function extractStartParamFromUrl(): string | null {
       if (typeof fromHash === "string" && fromHash.length > 0) {
         return fromHash;
       }
+      // Telegram кладёт initData целиком в хэш: tgWebAppData=<encoded initData>.
+      // start_param лежит внутри этой строки — вытаскиваем, если прямыми ключами его нет.
+      const embedded = hp.get("tgWebAppData");
+      if (embedded) {
+        try {
+          const inner = new URLSearchParams(embedded);
+          const v = inner.get("start_param") || inner.get("startapp");
+          if (typeof v === "string" && v.length > 0) {
+            return v;
+          }
+        } catch {
+          /* ignore */
+        }
+      }
     }
   } catch {
     /* ignore */
@@ -160,10 +174,12 @@ export default function TelegramInit() {
       };
       let cancelled = false;
       let started = false;
+      let retried = false;
+      let firstFetchHadParam = false;
       let tries = 0;
 
       const tick = () => {
-        if (cancelled || started) return;
+        if (cancelled || started && retried) return;
         tries += 1;
 
         const webApp = w.Telegram?.WebApp;
@@ -191,21 +207,36 @@ export default function TelegramInit() {
           webApp.ready?.();
 
           if (initData) {
-            started = true;
+            const startParamNow = (() => {
+              try {
+                return localStorage.getItem(LS_START_PARAM);
+              } catch {
+                return null;
+              }
+            })();
+            const hadParam = !!startParamNow;
             const tzOffset = new Date().getTimezoneOffset();
-            void fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
-              headers: (() => {
-                const headers = new Headers({ "x-telegram-init-data": initData });
-                try {
-                  const startParam = localStorage.getItem(LS_START_PARAM);
-                  if (startParam) headers.set("x-tg-start-param", startParam);
-                } catch {
-                  /* ignore */
-                }
-                return headers;
-              })(),
-              cache: "no-store"
-            }).catch(() => null);
+            const fireFetch = () =>
+              fetch(`/api/me?tz_offset=${encodeURIComponent(String(tzOffset))}`, {
+                headers: (() => {
+                  const headers = new Headers({ "x-telegram-init-data": initData });
+                  if (startParamNow) headers.set("x-tg-start-param", startParamNow);
+                  return headers;
+                })(),
+                cache: "no-store"
+              }).catch(() => null);
+
+            if (!started) {
+              // Первый запрос: создаёт/обновляет пользователя и передаёт start_param.
+              started = true;
+              firstFetchHadParam = hadParam;
+              void fireFetch();
+            } else if (!retried && !firstFetchHadParam && hadParam) {
+              // start_param появился позже (initDataUnsafe/URL) — отправляем ещё один
+              // запрос, чтобы бэкенд начислил рефералку/клик блогера.
+              retried = true;
+              void fireFetch();
+            }
 
             const canFullscreen =
               (typeof webApp.isVersionAtLeast === "function" && webApp.isVersionAtLeast("8.0")) ||
@@ -223,7 +254,7 @@ export default function TelegramInit() {
           }
         }
 
-        if (!started && tries < 20) {
+        if (!cancelled && (started && !retried && !firstFetchHadParam || !started) && tries < 60) {
           window.setTimeout(tick, 250);
         }
       };

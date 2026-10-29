@@ -36,7 +36,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     bot_username: botUsername,
     app_slug: appSlug,
-    example_ref_link_template: `https://t.me/${botUsername || "<BOT>"}/${appSlug}?startapp=ref_<CODE>&mode=fullscreen`,
-    example_blog_link_template: `https://t.me/${botUsername || "<BOT>"}/${appSlug}?startapp=blog_<CODE>&mode=fullscreen`
+    example_ref_link_template: `https://t.me/${botUsername || "<BOT>"}?start=ref_<CODE>`,
+    example_blog_link_template: `https://t.me/${botUsername || "<BOT>"}?start=blog_<CODE>`
   });
 }

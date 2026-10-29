@@ -52,16 +52,35 @@ export async function GET(req: NextRequest) {
       return jsonError("Не удалось создать пользователя", 500);
     }
 
+    let tracked = false;
+    let trackError: string | null = null;
+
     if (startParamRaw?.startsWith("blog_")) {
-      try {
-        await supabase.rpc("track_blogger_click", {
-          p_tg_user_id: extracted.userId,
-          p_blogger_code: startParamRaw.slice(5),
-          p_meta: { via: "start_param" }
-        });
-      } catch (clickErr) {
-        console.error("[api/me] track_blogger_click failed", clickErr);
+      const { error: clickError } = await supabase.rpc("track_blogger_click", {
+        p_tg_user_id: extracted.userId,
+        p_blogger_code: startParamRaw.slice(5),
+        p_meta: { via: "start_param" }
+      });
+      if (clickError) {
+        trackError = clickError.message;
+        console.error("[api/me] track_blogger_click failed", clickError);
+      } else {
+        tracked = true;
       }
+    }
+
+    // Диагностика доставки start_param: смотрим, доехал ли код блогера до сервера.
+    try {
+      const { error: evErr } = await supabase.from("start_param_events").insert({
+        tg_user_id: extracted.userId,
+        initdata_start_param: extracted.startParam,
+        header_start_param: startParamHeader,
+        tracked,
+        error: trackError
+      });
+      if (evErr) console.error("[api/me] start_param_events insert failed", evErr.message);
+    } catch (diagErr) {
+      console.error("[api/me] start_param_events insert throw", diagErr);
     }
 
     if (tzOffsetMinutes != null) {
