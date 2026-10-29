@@ -64,13 +64,13 @@ export default function AboutPage() {
         >
           <Image src="/стрелканазад.PNG" alt="" width={52} height={26} className={styles.aboutNavArrowImage} priority />
         </button>
-        <div className={`${styles.commonTopHeader} ${styles.aboutTopHeader}`} aria-hidden="true">
+        <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
             src="/белоеглавноеменюрулетка.png"
             alt=""
             width={4052}
             height={1312}
-            className={`${styles.commonTopHeaderImage} ${styles.aboutHeaderImage}`}
+            className={styles.commonTopHeaderImage}
             priority
             sizes="(max-width: 520px) 100vw, 520px"
             quality={90}
