@@ -455,8 +455,10 @@ export default function AdminOrdersPage() {
                           </span>
                         ) : (
                           <>
-                            <strong>{got}</strong>
-                            <span className={styles.muted}> / {goal} подписчиков</span>
+                            <strong style={{ fontFamily: "monospace" }}>
+                              {got}/{goal}
+                            </strong>
+                            <span className={styles.muted}> подписчиков</span>
                           </>
                         )}
                       </div>
@@ -691,7 +693,10 @@ export default function AdminOrdersPage() {
                           />
                         </div>
                         <div style={{ fontSize: 12 }}>
-                          <strong>{c.confirmed_count}</strong> / {c.goal_subscribers} · {pct.toFixed(1)}%
+                          <strong style={{ fontFamily: "monospace" }}>
+                            {c.confirmed_count}/{c.goal_subscribers}
+                          </strong>{" "}
+                          · {pct.toFixed(1)}%
                         </div>
                       </td>
                       <td className={styles.td}>
