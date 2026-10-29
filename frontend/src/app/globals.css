@@ -81,6 +81,9 @@ body:has(.app-frame) {
   .app-frame .fullScreenPage .commonTopHeader {
     top: 94px;
   }
+  .app-frame .fullScreenPage .aboutTopHeader {
+    top: 142px;
+  }
 
   .app-frame .friendProfileStack .profileBottomImage {
     bottom: 0;

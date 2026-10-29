@@ -1192,6 +1192,14 @@
   filter: invert(1) brightness(1.6);
   object-fit: contain;
 }
+.aboutHeaderImage {
+  width: 150%;
+}
+
+.aboutTopHeader {
+  top: 142px;
+}
+
 .placeholderPage {
   width: 100%;
   min-height: 100vh;
@@ -3815,6 +3823,10 @@
 
   :global(.app-frame) .commonTopHeader {
     top: 94px;
+  }
+
+  :global(.app-frame) .aboutTopHeader {
+    top: 142px;
   }
 
   :global(.app-frame) .friendProfileStack .profileBottomImage {
