@@ -31,18 +31,12 @@ function parseStartPayload(text: string): string | null {
   return payload && payload.length > 0 ? payload : null;
 }
 
-function extractRefCodeFromPayload(payload: string | null): string | null {
-  if (!payload) return null;
-  const v = payload.trim();
-  if (!v) return null;
-  if (v.startsWith("ref_")) return v.slice(4) || null;
-  return null;
-}
-
 async function handleStartFromBot(tgUserId: number, username: string | null, payload: string | null) {
   const supabase = getAdminSupabase();
   if (!supabase) return null;
-  const refCode = extractRefCodeFromPayload(payload);
+  const refCode = payload?.startsWith("ref_") ? payload.slice(4) ?? null : null;
+  const blogCode = payload?.startsWith("blog_") ? payload.slice(5) ?? null : null;
+  const advCode = payload?.startsWith("adv_") ? payload.slice(4) ?? null : null;
   const { data, error } = await supabase.rpc("handle_start", {
     p_tg_user_id: tgUserId,
     p_username: username,
@@ -50,25 +44,45 @@ async function handleStartFromBot(tgUserId: number, username: string | null, pay
   });
   if (error) {
     console.error("telegram_webhook_handle_start_failed", error);
-    return null;
   }
   // Переход по t.me/bot?start=blog_<code> / adv_<code>: payload в /start доезжает
   // надёжно, в отличие от startapp со стороны мини-аппа.
-  if (payload?.startsWith("blog_")) {
-    const { error: clickError } = await supabase.rpc("track_blogger_click", {
+  let clickError: string | null = null;
+  if (blogCode) {
+    const { error: e } = await supabase.rpc("track_blogger_click", {
       p_tg_user_id: tgUserId,
-      p_blogger_code: payload.slice(5),
+      p_blogger_code: blogCode,
       p_meta: { via: "bot_start" }
     });
-    if (clickError) console.error("telegram_webhook_track_blogger_click_failed", clickError);
+    if (e) {
+      clickError = e.message;
+      console.error("telegram_webhook_track_blogger_click_failed", e);
+    }
   }
-  if (payload?.startsWith("adv_")) {
-    const { error: clickError } = await supabase.rpc("track_advertiser_click", {
+  if (advCode) {
+    const { error: e } = await supabase.rpc("track_advertiser_click", {
       p_tg_user_id: tgUserId,
-      p_advertiser_code: payload.slice(4),
+      p_advertiser_code: advCode,
       p_meta: { via: "bot_start" }
     });
-    if (clickError) console.error("telegram_webhook_track_advertiser_click_failed", clickError);
+    if (e) console.error("telegram_webhook_track_advertiser_click_failed", e);
+  }
+  // Диагностика: с каким payload пришёл /start и отработал ли клик.
+  try {
+    const { error: auditError } = await supabase.from("audit_events").insert({
+      tg_user_id: tgUserId,
+      event_type: "bot_start",
+      payload: {
+        ref_code: refCode,
+        blog_code: blogCode,
+        adv_code: advCode,
+        is_new_user: (data as { is_new_user?: boolean } | null)?.is_new_user ?? null,
+        click_error: clickError
+      }
+    });
+    if (auditError) console.error("telegram_webhook_audit_bot_start_failed", auditError.message);
+  } catch (auditError) {
+    console.error("telegram_webhook_audit_bot_start_throw", auditError);
   }
   return data ?? null;
 }
