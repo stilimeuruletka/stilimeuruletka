@@ -52,6 +52,24 @@ async function handleStartFromBot(tgUserId: number, username: string | null, pay
     console.error("telegram_webhook_handle_start_failed", error);
     return null;
   }
+  // Переход по t.me/bot?start=blog_<code> / adv_<code>: payload в /start доезжает
+  // надёжно, в отличие от startapp со стороны мини-аппа.
+  if (payload?.startsWith("blog_")) {
+    const { error: clickError } = await supabase.rpc("track_blogger_click", {
+      p_tg_user_id: tgUserId,
+      p_blogger_code: payload.slice(5),
+      p_meta: { via: "bot_start" }
+    });
+    if (clickError) console.error("telegram_webhook_track_blogger_click_failed", clickError);
+  }
+  if (payload?.startsWith("adv_")) {
+    const { error: clickError } = await supabase.rpc("track_advertiser_click", {
+      p_tg_user_id: tgUserId,
+      p_advertiser_code: payload.slice(4),
+      p_meta: { via: "bot_start" }
+    });
+    if (clickError) console.error("telegram_webhook_track_advertiser_click_failed", clickError);
+  }
   return data ?? null;
 }
 
