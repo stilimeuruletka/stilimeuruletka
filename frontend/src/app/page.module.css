@@ -1149,6 +1149,11 @@
   padding: 0;
   cursor: pointer;
   z-index: 2;
+  transition: none;
+}
+
+.fullScreenCenterButton:active {
+  transform: translate(-50%, -50%);
 }
 
 .fullScreenCenterButtonImage {
@@ -1172,6 +1177,10 @@
 
 .aboutNavArrowRight {
   right: 8px;
+  transform: scaleX(-1);
+}
+
+.aboutNavArrowRight:active {
   transform: scaleX(-1);
 }
 
