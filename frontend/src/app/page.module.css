@@ -2878,13 +2878,13 @@
 
 /* На «О бренде» верхняя плашка главного меню чуть меньше */
 .commonTopHeader .aboutHeaderImage {
-  width: 63%;
+  width: 60%;
   transform: translateX(2px);
 }
 
 /* На «Истории» верхняя плашка главного меню чуть меньше */
 .placeholderFrame .commonTopHeaderImage {
-  width: 60%;
+  width: 57%;
 }
 
 .commonTopHeaderUser {
