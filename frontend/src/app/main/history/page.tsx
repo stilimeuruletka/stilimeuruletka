@@ -178,7 +178,7 @@ export default function HistoryPage() {
   }, [isClient]);
 
   return (
-    <div className={styles.placeholderPage}>
+    <div className={`${styles.placeholderPage} ${styles.historyHeaderPage}`}>
       <div className={styles.placeholderFrame}>
         <Image src="/историястильныхспинов.PNG" alt="" fill className={styles.fullScreenImage} sizes="100vw" quality={80} />
 

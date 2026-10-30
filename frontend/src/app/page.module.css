@@ -2883,7 +2883,7 @@
 }
 
 /* На «Истории» верхняя плашка главного меню чуть меньше */
-.placeholderFrame .commonTopHeaderImage {
+.historyHeaderPage .commonTopHeaderImage {
   width: 57%;
 }
 
