@@ -2879,7 +2879,7 @@
 /* На «О бренде» верхняя плашка главного меню чуть меньше */
 .commonTopHeader .aboutHeaderImage {
   width: 60%;
-  transform: translate(2px, 2px);
+  transform: translate(2px, 8px);
 }
 
 /* На «Истории» верхняя плашка главного меню чуть меньше */
