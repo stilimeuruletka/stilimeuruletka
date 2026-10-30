@@ -2806,17 +2806,9 @@
 
 /* Только для высоких современных iPhone (14-17 и похожие, класс ставится по UA,
    Android и другие устройства не затрагиваются):
-   убираем растяжение видео, опускаем крутку и экран результата, мельче счётчик. */
-:global(.is-iphone-tall) .spinIntroVideo {
-  object-fit: contain;
-}
-
+   видео растянуто на весь экран, крутка опущена. */
 :global(.is-iphone-tall) .rouletteStage {
   top: 57%;
-}
-
-:global(.is-iphone-tall) .rouletteWheelArt {
-  transform: translateY(-56px) scale(1.12);
 }
 
 :global(.is-iphone-tall) .spinResultTopHeader {
