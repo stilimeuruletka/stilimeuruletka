@@ -1634,7 +1634,7 @@
 }
 
 .historySpinPage .commonTopHeaderImage {
-  width: 68%;
+  width: 76%;
   transform: translateX(0);
 }
 
@@ -2874,6 +2874,16 @@
   object-fit: contain;
   margin: 0 auto;
   transform: translateX(-2px);
+}
+
+/* На «О бренде» верхняя плашка главного меню чуть меньше */
+.commonTopHeader .aboutHeaderImage {
+  width: 63%;
+}
+
+/* На «Истории» верхняя плашка главного меню чуть меньше */
+.placeholderFrame .commonTopHeaderImage {
+  width: 63%;
 }
 
 .commonTopHeaderUser {

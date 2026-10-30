@@ -186,7 +186,7 @@ export default function HistorySpinPage() {
       <div className={styles.historySpinFrame}>
         <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
-            src="/заменаглавноеменючерн_v2.png"
+            src="/историяспиноввверх.png"
             alt=""
             width={1040}
             height={336}
