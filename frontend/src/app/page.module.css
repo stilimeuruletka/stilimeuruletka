@@ -1189,8 +1189,8 @@
 }
 
 .aboutNavArrowImage {
-  width: 104px;
-  height: 52px;
+  width: 100px;
+  height: 50px;
   max-width: none;
   display: block;
   filter: invert(1) brightness(1.6);
@@ -2879,11 +2879,12 @@
 /* На «О бренде» верхняя плашка главного меню чуть меньше */
 .commonTopHeader .aboutHeaderImage {
   width: 63%;
+  transform: translateX(2px);
 }
 
 /* На «Истории» верхняя плашка главного меню чуть меньше */
 .placeholderFrame .commonTopHeaderImage {
-  width: 63%;
+  width: 60%;
 }
 
 .commonTopHeaderUser {
