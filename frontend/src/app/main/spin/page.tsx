@@ -272,6 +272,8 @@ export default function RoulettePage() {
   const [spinAtIso, setSpinAtIso] = useState<string | null>(null);
   const introVideoRef = useRef<HTMLVideoElement | null>(null);
   const [introDone, setIntroDone] = useState(false);
+  const autoSpinDoneRef = useRef(false);
+  const startSpinRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     rotationRef.current = rotation;
@@ -455,6 +457,23 @@ export default function RoulettePage() {
       setError(e instanceof Error ? e.message : "Спин недоступен");
     }
   }, [spinning, availableSpins, fetchDatabaseBalance]);
+
+  useEffect(() => {
+    startSpinRef.current = startSpin;
+  }, [startSpin]);
+
+  // Первый спин — автоматический: рулетка «вылетает» на 8-й секунде ролика
+  // (или по его окончании), затем сама крутится и останавливается на нужном
+  // слоте — это и есть крутка. Доп. крутки ролик не перезапускают.
+  useEffect(() => {
+    if (!introDone) return;
+    const id = window.setTimeout(() => {
+      if (autoSpinDoneRef.current) return;
+      autoSpinDoneRef.current = true;
+      void startSpinRef.current();
+    }, 700);
+    return () => window.clearTimeout(id);
+  }, [introDone]);
 
   const onWheelTransitionEnd = useCallback(() => {
     if (!spinning) return;

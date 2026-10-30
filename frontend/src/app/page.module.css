@@ -1130,6 +1130,10 @@
   object-fit: contain;
 }
 
+.aboutBackgroundImage {
+  transform: scale(1.05);
+}
+
 .fullScreenOverlayImage {
   object-fit: contain;
   pointer-events: none;
@@ -1231,7 +1235,7 @@
 }
 
 .placeholderBackIcon {
-  width: 200px;
+  width: 150px;
   height: auto;
   display: block;
 }
@@ -1630,8 +1634,8 @@
 }
 
 .historySpinPage .commonTopHeaderImage {
-  width: 84%;
-  transform: translateX(2px);
+  width: 68%;
+  transform: translateX(0);
 }
 
 .historySpinPage .profileArrowLeftProfile,

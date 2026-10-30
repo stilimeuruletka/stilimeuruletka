@@ -263,7 +263,7 @@ export default function HistoryPage() {
         </Link>
         <div className={styles.commonTopHeader} aria-hidden="true">
           <Image
-            src="/чернымглавноеменюистория.png"
+            src="/заменаглавноеменючерн_v2.png"
             alt=""
             width={1040}
             height={336}

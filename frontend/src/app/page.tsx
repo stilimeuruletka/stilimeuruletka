@@ -72,10 +72,7 @@ export default function Home() {
     };
   }, []);
 
-  // Звук: на iOS автоплей со звуком заблокирован до первого касания —
-  // в разметке видео стартует в muted-режиме (иначе play() на iPhone
-  // «зависает» в ожидании тапа и видео не начинает играть).
-  // Первый тап по экрану включает звук.
+  // Автоплей со звуком — видео стартует сразу со звуком.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -94,16 +91,6 @@ export default function Home() {
     };
 
     play();
-
-    const unlock = () => {
-      v.muted = false;
-      play();
-    };
-    document.addEventListener("pointerdown", unlock, { passive: true });
-
-    return () => {
-      document.removeEventListener("pointerdown", unlock);
-    };
   }, [playlist[index]]);
 
   // Фиксируем просмотр текущего видео
@@ -140,7 +127,6 @@ export default function Home() {
         src={playlist[index]}
         className={styles.splashVideo}
         autoPlay
-        muted
         playsInline
         preload="auto"
         onPlay={() => recordView(index)}

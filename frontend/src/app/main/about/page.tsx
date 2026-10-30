@@ -66,7 +66,7 @@ export default function AboutPage() {
         </button>
         <div className={`${styles.commonTopHeader} ${styles.aboutTopHeader}`} aria-hidden="true">
           <Image
-            src="/белоеглавноеменюрулетка.png"
+            src="/заменаглавноеменюбелый.png"
             alt=""
             width={4052}
             height={1312}
@@ -80,7 +80,7 @@ export default function AboutPage() {
           src={backgroundSrc}
           alt="О бренде"
           fill
-          className={styles.fullScreenImage}
+          className={`${styles.fullScreenImage} ${styles.aboutBackgroundImage}`}
           priority
           sizes="(max-width: 520px) 100vw, 520px"
           quality={90}

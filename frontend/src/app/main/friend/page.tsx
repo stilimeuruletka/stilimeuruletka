@@ -151,7 +151,7 @@ export default function FriendPage() {
           <div className={styles.profileUsername}>{displayName}</div>
         </div>
 
-        <button type="button" className={styles.profileInviteButtonOverlay}>
+        <button type="button" className={styles.profileInviteButtonOverlay} onClick={handleCopyReferral} aria-label="Пригласить">
           <Image
             src="/пригласить-trim.png"
             alt="Пригласить"

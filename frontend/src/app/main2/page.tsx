@@ -37,7 +37,7 @@ export default function Main2Page() {
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <Link href="/main/profile" className={styles.cardLink} aria-label="Профиль подробный">
+            <Link href="/main/stub/1" className={styles.cardLink} aria-label="Профиль подробный">
               <div className={styles.girlWrap}>
                 <Image
                   src="/7девушка.PNG"
@@ -63,7 +63,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/support" className={`${styles.cardLink} ${styles.cardLinkLower}`} aria-label="Страница в разработке">
+            <Link href="/main/stub/2" className={`${styles.cardLink} ${styles.cardLinkLower}`} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/8девушка.PNG"
@@ -88,7 +88,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/support" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/stub/3" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/9девушка.PNG"
@@ -115,7 +115,7 @@ export default function Main2Page() {
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <Link href="/main/support" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/stub/4" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/10девушка.PNG"
@@ -140,7 +140,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/support" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/stub/5" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/11девушка.PNG"
@@ -165,7 +165,7 @@ export default function Main2Page() {
           </div>
 
           <div className={styles.card}>
-            <Link href="/main/support" className={styles.cardLink} aria-label="Страница в разработке">
+            <Link href="/main/stub/6" className={styles.cardLink} aria-label="Страница в разработке">
               <div className={styles.girlWrap}>
                 <Image
                   src="/12девушка.PNG"
