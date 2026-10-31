@@ -2884,7 +2884,8 @@
 
 /* На «Истории» верхняя плашка главного меню чуть меньше */
 .historyHeaderPage .commonTopHeaderImage {
-  width: 57%;
+  width: 53%;
+  transform: translate(2px, 8px);
 }
 
 .commonTopHeaderUser {
@@ -3167,7 +3168,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(2px, 5px);
+  transform: translate(2px, 8px);
   font-family: var(--font-uncage);
   font-size: 10px;
   letter-spacing: 0.06em;
