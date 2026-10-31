@@ -123,6 +123,19 @@ export default function FriendPage() {
     <div className={styles.placeholderPage}>
       <div className={styles.placeholderFrame}>
         <div className={`${styles.profileStack} ${styles.friendProfileStack}`}>
+        <div className={styles.friendMenuPlate} aria-hidden="true" />
+        <div className={styles.friendMenu} aria-hidden="true">
+          <Image
+            src="/главноеменюрулеткакрасный.png"
+            alt="Стильная рулетка"
+            width={1040}
+            height={336}
+            className={styles.friendMenuImage}
+            priority
+            sizes="(max-width: 520px) 100vw, 520px"
+            quality={90}
+          />
+        </div>
         <Link href="/main" className={`${styles.profileArrow} ${styles.profileArrowLeft}`} aria-label="Назад">
           <Image
             src="/стрелканазад.PNG"

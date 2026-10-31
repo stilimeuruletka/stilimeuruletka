@@ -353,12 +353,12 @@
 }
 
 .profileArrowLeftProfile {
-  left: 4px;
+  left: 0px;
   top: 100px;
 }
 
 .profileArrowRightProfile {
-  right: 50px;
+  right: 44px;
   top: 100px;
 }
 
@@ -539,11 +539,11 @@
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileArrowLeft {
-  top: 80px;
+  top: 86px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileArrowRight {
-  top: 80px;
+  top: 86px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileAvatarBlockOverlay {
@@ -568,13 +568,13 @@
 }
 
 .friendProfileStack .profileArrowLeft {
-  left: 24px;
-  top: 66px;
+  left: 0px;
+  top: 72px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 24px;
-  top: 66px;
+  right: 30px;
+  top: 72px;
   transform: scaleX(-1);
 }
 
@@ -671,6 +671,53 @@
   max-width: 520px;
   z-index: 0;
   object-fit: contain;
+}
+
+/* Плашка под аватаром: замазывает старые надписи справа/слева от «тг»,
+   цвет — как фон картинки (прозрачный PNG → светло-серый градиент страницы) */
+.friendProfileStack .friendMenuPlate {
+  position: absolute;
+  left: 50%;
+  top: 116px; /* ровно уровень баннера (.friendMenu) */
+  width: calc((100% - 32px) * 0.68); /* ровно ширина баннера, без полей по бокам */
+  height: auto;
+  aspect-ratio: 1040 / 336; /* ровно высота баннера */
+  transform: translateX(-50%);
+  background: #ededea;
+  z-index: 2;
+}
+
+.friendProfileStack .friendMenuPlate:active {
+  transform: translateX(-50%) scale(1);
+}
+
+/* Баннер «стильная рулетка» поверх плашки (как в шапке /main/profile) */
+.friendProfileStack .friendMenu {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 116px;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+.friendProfileStack .friendMenuImage {
+  width: 68%;
+  max-width: none;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  transform: translateX(-2px);
+}
+
+:global(.is-iphone-tall) .friendProfileStack .friendMenuPlate {
+  top: 88px;
+}
+
+:global(.is-iphone-tall) .friendProfileStack .friendMenu {
+  top: 88px;
 }
 
 .profileCard {
@@ -2882,10 +2929,11 @@
   transform: translate(2px, 8px);
 }
 
-/* На «Истории» верхняя плашка главного меню чуть меньше */
+/* На «Истории» верхняя плашка «главное меню стильная рулетка»
+   — как на /main/profile (68%, та же позиция) */
 .historyHeaderPage .commonTopHeaderImage {
-  width: 53%;
-  transform: translate(2px, 8px);
+  width: 68%;
+  transform: translateX(-2px);
 }
 
 .commonTopHeaderUser {
@@ -3158,6 +3206,8 @@
   width: 100%;
   height: auto;
   display: block;
+  /* Кружок «Использовать спин» чуть выше; текст поверх не трогаем */
+  transform: translateY(-6px);
 }
 
 .profileSpinTimerText {
