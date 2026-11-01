@@ -204,8 +204,8 @@
 }
 
 .friendProfileStack .profileAvatarCircle {
-  width: 60px;
-  height: 60px;
+  width: 72px;
+  height: 72px;
 }
 
 .friendProfileStack .profileUsername {
@@ -499,7 +499,7 @@
 }
 
 .friendProfileStack .profileAvatarBlockOverlay {
-  top: 68px;
+  top: 76px;
   transform: translateX(-50%) scale(1.0);
   transform-origin: top center;
   display: flex;
@@ -539,15 +539,15 @@
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileArrowLeft {
-  top: 86px;
+  top: 94px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileArrowRight {
-  top: 86px;
+  top: 94px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .profileAvatarBlockOverlay {
-  top: 86px;
+  top: 94px;
 }
 
 .friendProfileStack .profileInviteImageOverlay {
@@ -569,16 +569,19 @@
 
 .friendProfileStack .profileArrowLeft {
   left: 0px;
-  top: 72px;
+  top: 80px;
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 30px;
-  top: 72px;
+  right: 6px;
+  top: 80px;
   transform: scaleX(-1);
 }
 
 .friendProfileStack .profileArrowRight .profileArrow {
+  position: absolute;
+  right: 0px;
+  top: 8px;
   width: 104px;
   height: 52px;
   transform: none;
@@ -678,7 +681,7 @@
 .friendProfileStack .friendMenuPlate {
   position: absolute;
   left: 50%;
-  top: 116px; /* ровно уровень баннера (.friendMenu) */
+  top: 124px; /* ровно уровень баннера (.friendMenu) */
   width: calc((100% - 32px) * 0.68); /* ровно ширина баннера, без полей по бокам */
   height: auto;
   aspect-ratio: 1040 / 336; /* ровно высота баннера */
@@ -696,7 +699,7 @@
   position: absolute;
   left: 16px;
   right: 16px;
-  top: 116px;
+  top: 124px;
   z-index: 2;
   pointer-events: none;
   display: flex;
@@ -713,11 +716,11 @@
 }
 
 :global(.is-iphone-tall) .friendProfileStack .friendMenuPlate {
-  top: 88px;
+  top: 96px;
 }
 
 :global(.is-iphone-tall) .friendProfileStack .friendMenu {
-  top: 88px;
+  top: 96px;
 }
 
 .profileCard {
@@ -2929,11 +2932,10 @@
   transform: translate(2px, 8px);
 }
 
-/* На «Истории» верхняя плашка «главное меню стильная рулетка»
-   — как на /main/profile (68%, та же позиция) */
+/* На «Истории» верхняя плашка «главное меню стильная рулетка» чуть меньше */
 .historyHeaderPage .commonTopHeaderImage {
-  width: 68%;
-  transform: translateX(-2px);
+  width: 53%;
+  transform: translate(2px, 8px);
 }
 
 .commonTopHeaderUser {
@@ -3218,7 +3220,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 0;
-  transform: translate(2px, 8px);
+  transform: translate(2px, 4px);
   font-family: var(--font-uncage);
   font-size: 10px;
   letter-spacing: 0.06em;
