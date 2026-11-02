@@ -353,12 +353,12 @@
 }
 
 .profileArrowLeftProfile {
-  left: 0px;
+  left: 6px;
   top: 100px;
 }
 
 .profileArrowRightProfile {
-  right: 44px;
+  right: 56px;
   top: 100px;
 }
 
@@ -500,7 +500,7 @@
 
 .friendProfileStack .profileAvatarBlockOverlay {
   top: 76px;
-  transform: translateX(-50%) scale(1.0);
+  transform: translateX(calc(-50% + 6px)) scale(1.0);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
@@ -573,7 +573,7 @@
 }
 
 .friendProfileStack .profileArrowRight {
-  right: 6px;
+  right: 4px;
   top: 80px;
   transform: scaleX(-1);
 }
@@ -3209,7 +3209,7 @@
   height: auto;
   display: block;
   /* Кружок «Использовать спин» чуть выше; текст поверх не трогаем */
-  transform: translateY(-6px);
+  transform: translateY(-8px);
 }
 
 .profileSpinTimerText {
