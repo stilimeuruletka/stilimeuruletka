@@ -500,7 +500,7 @@
 
 .friendProfileStack .profileAvatarBlockOverlay {
   top: 76px;
-  transform: translateX(calc(-50% + 6px)) scale(1.0);
+  transform: translateX(calc(-50% + 5px)) scale(1.0);
   transform-origin: top center;
   display: flex;
   flex-direction: column;
@@ -2932,9 +2932,9 @@
   transform: translate(2px, 8px);
 }
 
-/* На «Истории» верхняя плашка «главное меню стильная рулетка» чуть меньше */
+/* На «Истории» верхняя плашка «главное меню стильная рулетка» как на /main/about */
 .historyHeaderPage .commonTopHeaderImage {
-  width: 53%;
+  width: 60%;
   transform: translate(2px, 8px);
 }
 
