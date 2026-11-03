@@ -204,8 +204,8 @@
 }
 
 .friendProfileStack .profileAvatarCircle {
-  width: 72px;
-  height: 72px;
+  width: 70px;
+  height: 70px;
 }
 
 .friendProfileStack .profileUsername {
@@ -568,7 +568,7 @@
 }
 
 .friendProfileStack .profileArrowLeft {
-  left: 0px;
+  left: 6px;
   top: 80px;
 }
 
@@ -3233,6 +3233,11 @@
   margin-top: 4px;
   font-size: 10px;
   letter-spacing: 0.08em;
+}
+
+/* «Использовать спин» — ровно там же, где первая строка «ДО СЛЕДУЮЩЕГО СПИНА» */
+.profileSpinTimerTextSingle {
+  transform: translate(2px, 2px) translateY(-14px);
 }
 
 .profileLead {

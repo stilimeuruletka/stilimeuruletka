@@ -158,7 +158,7 @@ function SpinTimer() {
         sizes="320px"
         quality={80}
       />
-      <div className={styles.profileSpinTimerText}>
+      <div className={`${styles.profileSpinTimerText}${canSpin ? ` ${styles.profileSpinTimerTextSingle}` : ""}`}>
         {canSpin ? (
           "Использовать спин"
         ) : (
