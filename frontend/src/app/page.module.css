@@ -3237,7 +3237,7 @@
 
 /* «Использовать спин» — ровно там же, где первая строка «ДО СЛЕДУЮЩЕГО СПИНА» */
 .profileSpinTimerTextSingle {
-  transform: translate(2px, 2px) translateY(-13px);
+  transform: translate(2px, 2px) translateY(-8px);
 }
 
 .profileLead {
