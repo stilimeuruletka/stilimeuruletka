@@ -72,7 +72,11 @@ export default function Home() {
     };
   }, []);
 
-  // Автоплей со звуком — видео стартует сразу со звуком.
+  // Звук: пытаемся запустить видео сразу со звуком. Если платформа
+  // блокирует автоплей со звуком (iOS/Android до первого касания) —
+  // play() отклоняется или «зависает»; тогда через сторожевой таймер
+  // перезапускаем в muted-режиме, чтобы видео плавно стартовало без
+  // обрывов. Первый тап по экрану включает звук.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -90,7 +94,29 @@ export default function Home() {
       }
     };
 
+    // Сначала пробуем со звуком
+    v.muted = false;
     play();
+
+    // Если через полсекунды видео так и не заиграло — значит звук
+    // заблокирован, плавно стартуем без звука
+    const watchdog = window.setTimeout(() => {
+      if (v.paused) {
+        v.muted = true;
+        play();
+      }
+    }, 500);
+
+    const unlock = () => {
+      v.muted = false;
+      play();
+    };
+    document.addEventListener("pointerdown", unlock, { passive: true });
+
+    return () => {
+      window.clearTimeout(watchdog);
+      document.removeEventListener("pointerdown", unlock);
+    };
   }, [playlist[index]]);
 
   // Фиксируем просмотр текущего видео
