@@ -99,10 +99,12 @@ export default function FriendsPage() {
         <div className={styles.friendsListScroll}>
           {showEmpty && (
             <div className={styles.friendsListEmpty}>
-              <p className={styles.friendsListEmptyText}>У вас нет приглашенных друзей.</p>
-              <p className={styles.friendsListEmptyText}>Приглашай стильных друзей и</p>
-              <p className={styles.friendsListEmptyText}>получай дополнительные</p>
-              <p className={styles.friendsListEmptyText}>спины за каждого.</p>
+              <div className={styles.friendsListEmptyTextBlock}>
+                <p className={styles.friendsListEmptyText}>У вас нет приглашенных друзей.</p>
+                <p className={styles.friendsListEmptyText}>Приглашай стильных друзей и</p>
+                <p className={styles.friendsListEmptyText}>получай дополнительные</p>
+                <p className={styles.friendsListEmptyText}>спины за каждого.</p>
+              </div>
               <p className={styles.friendsListEmptyBonus}>1 друг — 1 дополнительный спин</p>
               <div className={styles.friendsListEmptyReferral}>
                 <span className={styles.friendsListEmptyReferralLabel}>— Реферальная ссылка</span>
