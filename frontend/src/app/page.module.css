@@ -1288,10 +1288,12 @@
   width: 150px;
   height: auto;
   display: block;
+  margin-left: 14px;
 }
 
 .placeholderBackIconSmall {
   width: 46px;
+  margin-left: 0;
 }
 
 .friendsListPage {
