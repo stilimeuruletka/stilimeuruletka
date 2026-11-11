@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SETTINGS_KEY = "splash_video_url";
-const DEFAULT_SPLASH = "/ГЛАВНОЕВИДЕО.mp4";
+const DEFAULT_SPLASH = "/ГЛАВНОЕВИДЕО.mp4?v=3";
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL;

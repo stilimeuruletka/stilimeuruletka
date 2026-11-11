@@ -6,7 +6,7 @@ import { verifyAdminSession } from "../../../../../lib/adminSession";
 export const runtime = "nodejs";
 
 const SETTINGS_KEY = "splash_video_url";
-const DEFAULT_SPLASH = "/ГЛАВНОЕВИДЕО.mp4";
+const DEFAULT_SPLASH = "/ГЛАВНОЕВИДЕО.mp4?v=3";
 
 function parseAdminCookie(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null;

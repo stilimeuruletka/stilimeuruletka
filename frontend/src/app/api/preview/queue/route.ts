@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 
-const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4";
+const DEFAULT_OWN = "/ГЛАВНОЕВИДЕО.mp4?v=3";
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
