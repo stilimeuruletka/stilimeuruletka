@@ -14,7 +14,7 @@ type FriendItem = {
 
 type TelegramSdkWindow = Window & {
   Telegram?: {
-    WebApp?: { initData?: string };
+    WebApp?: { initData?: string; showAlert?: (message: string) => void };
   };
 };
 
@@ -29,21 +29,58 @@ function getInitData() {
   return typeof initData === "string" && initData.length > 10 ? initData : null;
 }
 
+function getReferralLinkApiUrl() {
+  const base = getBackendBase();
+  return base ? `${base}/api/referral/link` : "/api/referral/link";
+}
+
 export default function FriendsPage() {
   const router = useRouter();
   const [friends, setFriends] = useState<FriendItem[]>([]);
   const [count, setCount] = useState<number | null>(null);
 
+  const handleCopyReferral = async () => {
+    const w = window as TelegramSdkWindow;
+    const initData = getInitData();
+    if (!initData || typeof window === "undefined") {
+      w.Telegram?.WebApp?.showAlert?.("Не удалось получить ссылку");
+      return;
+    }
+
+    let link: string | null = null;
+    try {
+      const res = await fetch(getReferralLinkApiUrl(), {
+        headers: { "x-telegram-init-data": initData }
+      });
+      if (res.ok) {
+        const json = (await res.json().catch(() => null)) as { link?: string } | null;
+        link = typeof json?.link === "string" ? json.link : null;
+      }
+    } catch {
+      link = null;
+    }
+
+    if (!link) {
+      w.Telegram?.WebApp?.showAlert?.("Не удалось получить ссылку");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(link);
+      }
+      w.Telegram?.WebApp?.showAlert?.("Реферальная ссылка скопирована");
+    } catch {
+      w.Telegram?.WebApp?.showAlert?.("Не удалось скопировать ссылку");
+    }
+  };
+
   const load = useCallback(async () => {
     const initData = getInitData();
     if (!initData) {
-      const demo: FriendItem[] = [
-        { tg_user_id: 1, username: "alice", photo_url: null, created_at: new Date().toISOString() },
-        { tg_user_id: 2, username: "bob", photo_url: null, created_at: new Date().toISOString() },
-        { tg_user_id: 3, username: "carol", photo_url: null, created_at: new Date().toISOString() }
-      ];
-      setFriends(demo);
-      setCount(demo.length);
+      // ВРЕМЕННО: пустое состояние для предпросмотра (демо-друзья отключены)
+      setFriends([]);
+      setCount(0);
       return;
     }
 
@@ -106,10 +143,9 @@ export default function FriendsPage() {
                 <p className={styles.friendsListEmptyText}>спины за каждого.</p>
               </div>
               <p className={styles.friendsListEmptyBonus}>1 друг — 1 дополнительный спин</p>
-              <div className={styles.friendsListEmptyReferral}>
-                <span className={styles.friendsListEmptyReferralLabel}>— Реферальная ссылка</span>
-                <Image src="/рефссылка.PNG" alt="Реферальная ссылка" width={64} height={64} className={styles.friendsListEmptyReferralIcon} />
-              </div>
+              <button type="button" className={styles.friendsListEmptyReferralBtn} onClick={handleCopyReferral} aria-label="Скопировать реферальную ссылку">
+                <Image src="/рефссылказакрытая_nobg.png" alt="Реферальная ссылка" width={450} height={114} className={styles.friendsListEmptyReferralImage} />
+              </button>
             </div>
           )}
           {friends.map((f) => (
