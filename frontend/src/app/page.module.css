@@ -1281,22 +1281,7 @@
   top: 100px;
   left: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.placeholderArrow {
-  width: 41px;
-  height: auto;
-  display: block;
-  margin-left: 12px;
-}
-
-.placeholderText {
-  width: 56px;
-  height: auto;
-  display: block;
+  display: inline-flex;
 }
 
 .placeholderBackIcon {
