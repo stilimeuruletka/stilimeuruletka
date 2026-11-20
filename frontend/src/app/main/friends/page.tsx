@@ -144,7 +144,8 @@ export default function FriendsPage() {
               </div>
               <p className={styles.friendsListEmptyBonus}>1 друг — 1 дополнительный спин</p>
               <button type="button" className={styles.friendsListEmptyReferralBtn} onClick={handleCopyReferral} aria-label="Скопировать реферальную ссылку">
-                <Image src="/рефссылказакрытая_nobg.png" alt="Реферальная ссылка" width={450} height={114} className={styles.friendsListEmptyReferralImage} />
+                <span className={styles.friendsListEmptyReferralLabel}>— РЕФЕРАЛЬНАЯ ССЫЛКА</span>
+                <Image src="/рефссылка.PNG" alt="" width={64} height={64} className={styles.friendsListEmptyReferralIcon} />
               </button>
             </div>
           )}
