@@ -2598,18 +2598,18 @@
 }
 
 .spinResultTopNavLeft {
-  left: -20px;
-  top: 54px;
+  left: 8px;
+  top: 100px;
 }
 
 .spinResultTopNavRight {
-  right: -20px;
-  top: 54px;
+  right: 8px;
+  top: 100px;
 }
 
 .spinResultTopNavIcon {
-  width: 104px;
-  height: 52px;
+  width: 100px;
+  height: 50px;
   max-width: none;
   display: block;
   object-fit: contain;
@@ -2624,7 +2624,7 @@
 
 .spinResultTopHeader {
   position: absolute;
-  top: 44px;
+  top: 94px;
   left: 16px;
   right: 16px;
   z-index: 58;
@@ -2632,12 +2632,13 @@
 }
 
 .spinResultTopHeaderImg {
-  width: 84%;
+  width: 60%;
   max-width: none;
   height: auto;
   display: block;
   object-fit: contain;
   margin: 0 auto;
+  transform: translate(2px, 8px);
 }
 
 .spinResultTicketPlatform {
@@ -2879,12 +2880,12 @@
 }
 
 :global(.is-iphone-tall) .spinResultTopHeader {
-  top: 70px;
+  top: 94px;
 }
 
 :global(.is-iphone-tall) .spinResultTopNavLeft,
 :global(.is-iphone-tall) .spinResultTopNavRight {
-  top: 84px;
+  top: 100px;
 }
 
 :global(.is-iphone-tall) .spinResultTicketPlatform {
