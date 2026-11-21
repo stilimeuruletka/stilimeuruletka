@@ -1941,7 +1941,7 @@
   position: absolute;
   left: 50%;
   right: auto;
-  top: 42%;
+  top: 38%;
   bottom: auto;
   transform: translate(-50%, -50%);
   display: flex;
@@ -2632,7 +2632,7 @@
 }
 
 .spinResultTopHeaderImg {
-  width: 60%;
+  width: 68%;
   max-width: none;
   height: auto;
   display: block;
