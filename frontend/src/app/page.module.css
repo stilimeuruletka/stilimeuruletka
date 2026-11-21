@@ -1367,9 +1367,9 @@
 .friendsListBackButton {
   position: absolute;
   top: 36px;
-  left: 28px;
-  border: 0;
-  background: transparent;
+  left: 36px;
+  background: none;
+  border: none;
   padding: 0;
   cursor: pointer;
   z-index: 3;
@@ -1464,7 +1464,7 @@
   font-size: clamp(15px, 3.8vw, 22px);
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #0f172a;
+  color: #ffffff;
   white-space: nowrap;
   text-transform: uppercase;
 }
