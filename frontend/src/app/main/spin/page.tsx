@@ -288,9 +288,9 @@ export default function RoulettePage() {
     };
   }, []);
 
-  // Колесо показываем уже на 10-й секунде ролика (на 1 секунду раньше), не дожидаясь его окончания.
+  // Колесо показываем уже на 9-й секунде ролика, не дожидаясь его окончания.
   useEffect(() => {
-    const id = window.setTimeout(() => setIntroDone(true), 10000);
+    const id = window.setTimeout(() => setIntroDone(true), 9000);
     return () => window.clearTimeout(id);
   }, []);
 
