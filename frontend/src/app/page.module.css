@@ -2639,7 +2639,7 @@
   display: block;
   object-fit: contain;
   margin: 0 auto;
-  transform: translate(2px, 8px);
+  transform: translate(-4px, 8px);
 }
 
 .spinResultTicketPlatform {
