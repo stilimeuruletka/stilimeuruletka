@@ -1458,6 +1458,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  transform: translateX(12px);
 }
 
 .friendsListEmptyReferralLabel {
