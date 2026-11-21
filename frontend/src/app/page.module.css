@@ -2075,6 +2075,7 @@
 .rouletteWheelArt {
   position: absolute;
   inset: 0;
+  transform: translateY(-16px);
 }
 
 .rouletteWheelComposite {
